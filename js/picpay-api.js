@@ -10,8 +10,8 @@ class PicPayAPI {
         try {
             const paymentData = {
                 referenceId: `raspacash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                callbackUrl: `${window.location.origin}/webhook/picpay`,
-                returnUrl: `${window.location.origin}`,
+                callbackUrl: `https://raspacashbr.online/webhook/picpay`,
+                returnUrl: `https://raspacashbr.online`,
                 value: amount,
                 buyer: {
                     firstName: 'Cliente',
