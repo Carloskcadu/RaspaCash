@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RaspaCash - Sistema de Raspadinhas Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://hatchcanvas.com/_/assets/ab_1s6w6I71z0G4U_uWcPcB1/keys//js/picpay-api.js"></script>
+    <script src="https://hatchcanvas.com/_/assets/ab_1s6w6I71z0G4U_uWcPcB1/keys//js/github-api.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .canvas-scratch {
+            touch-action: none;
+            user-select: none;
+        }
+        
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-25%);
+                animation-timing-function: cubic-bezier(0.8,0,1,1);
+            }
+            50% {
+                transform: none;
+                animation-timing-function: cubic-bezier(0,0,0.2,1);
+            }
+        }
+        
+        @keyframes pulse {
+            50% {
+                opacity: .5;
+            }
+        }
+        
+        .bg-gradient-animated {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Responsividade melhorada */
+        @media (max-width: 640px) {
+            .text-4xl { font-size: 2rem; }
+            .text-3xl { font-size: 1.875rem; }
+            .text-2xl { font-size: 1.5rem; }
+            .text-xl { font-size: 1.25rem; }
+            .text-lg { font-size: 1.125rem; }
+            .p-8 { padding: 1rem; }
+            .p-6 { padding: 1rem; }
+            .gap-6 { gap: 1rem; }
+            .space-y-6 > * + * { margin-top: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="w-full h-screen"></div>
+    <script src="https://hatchcanvas.com/_/assets/ab_1s6w6I71z0G4U_uWcPcB1/keys//js/main.js"></script>
+</body>
+</html>
