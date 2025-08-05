@@ -1,0 +1,33 @@
+{
+  "name": "raspacash",
+  "version": "1.0.0",
+  "description": "Sistema de Raspadinhas Online com PIX",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=3000 --host=localhost --open=/",
+    "build": "echo 'Projeto já está pronto para produção'",
+    "deploy": "gh-pages -d .",
+    "dev": "live-server --port=3000 --host=localhost --open=/"
+  },
+  "keywords": [
+    "raspadinha",
+    "pix",
+    "javascript",
+    "games",
+    "lottery"
+  ],
+  "author": "RaspaCash Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "gh-pages": "^4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seu-usuario/raspacash.git"
+  },
+  "homepage": "https://seu-usuario.github.io/raspacash/",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
