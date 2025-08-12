@@ -1,177 +1,127 @@
-// API PicPay para integração com pagamentos PIX
-class PicPayAPI {
-    constructor() {
-        this.baseURL = 'https://appws.picpay.com/ecommerce/public';
-        this.token = process.env.PICPAY_TOKEN || 'YOUR_PICPAY_TOKEN';
-        this.sellerId = process.env.PICPAY_SELLER_ID || 'YOUR_SELLER_ID';
-    }
-    
-    async generatePixPayment(amount, buyerEmail, reference) {
-        try {
-            const paymentData = {
-                referenceId: `raspacash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                callbackUrl: `https://raspacashbr.online/webhook/picpay`,
-                returnUrl: `https://raspacashbr.online`,
-                value: amount,
-                buyer: {
-                    firstName: 'Cliente',
-                    lastName: 'RaspaCash',
-                    document: '11122233344',
-                    email: buyerEmail,
-                    phone: '+5511999999999'
-                }
-            };
-            
-            const response = await fetch(`${this.baseURL}/payments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-picpay-token': this.token
-                },
-                body: JSON.stringify(paymentData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+// API PicPay para pagamentos PIX class PicPayAPI { constructor() { this.baseURL = '<https://appws.picpay.com/ecommerce/public>'; this.token = 'SEU\_TOKEN\_PICPAY'; // Será configurado }
+
+```
+async generatePixPayment(amount, userEmail) {
+    try {
+        const paymentData = {
+            referenceId: `raspacash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            callbackUrl: `https://raspacashbr.online/webhook/picpay`,
+            returnUrl: `https://raspacashbr.online`,
+            value: amount,
+            buyer: {
+                firstName: 'Cliente',
+                lastName: 'RaspaCash',
+                document: '11122233344',
+                email: userEmail || 'cliente@raspacash.com',
+                phone: '+5511999999999'
             }
-            
-            const result = await response.json();
-            
-            return {
-                id: result.referenceId,
-                amount: amount,
-                qr_code: result.qrcode?.base64 || this.generateMockPixCode(amount),
-                status: 'pending',
-                expires_at: new Date(Date.now() + (30 * 60 * 1000)).toISOString()
-            };
-            
-        } catch (error) {
-            console.error('Erro ao gerar PIX PicPay:', error);
-            
-            // Fallback para desenvolvimento/teste
-            return {
-                id: `mock_${Date.now()}`,
-                amount: amount,
-                qr_code: this.generateMockPixCode(amount),
-                status: 'pending',
-                expires_at: new Date(Date.now() + (30 * 60 * 1000)).toISOString()
-            };
-        }
-    }
-    
-    async checkPaymentStatus(paymentId) {
-        try {
-            const response = await fetch(`${this.baseURL}/payments/${paymentId}/status`, {
-                method: 'GET',
-                headers: {
-                    'x-picpay-token': this.token
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const result = await response.json();
-            
-            return {
-                status: result.status,
-                authorizationId: result.authorizationId
-            };
-            
-        } catch (error) {
-            console.error('Erro ao verificar status PicPay:', error);
-            
-            // Fallback para desenvolvimento
-            // Simular pagamento aprovado após 30 segundos para testes
-            if (paymentId.startsWith('mock_')) {
-                const paymentTime = parseInt(paymentId.replace('mock_', ''));
-                const elapsed = Date.now() - paymentTime;
-                
-                if (elapsed > 30000) { // 30 segundos
-                    return {
-                        status: 'paid',
-                        authorizationId: `auth_${Date.now()}`
-                    };
-                }
-            }
-            
-            return {
-                status: 'pending',
-                authorizationId: null
-            };
-        }
-    }
-    
-    async processPixPayout(amount, pixKey, pixKeyType, fullName, userEmail) {
-        try {
-            const payoutData = {
-                referenceId: `payout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                value: amount,
-                destination: {
-                    type: pixKeyType,
-                    key: pixKey,
-                    name: fullName
-                },
-                notification: {
-                    email: userEmail
-                }
-            };
-            
-            const response = await fetch(`${this.baseURL}/payouts`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-picpay-token': this.token
-                },
-                body: JSON.stringify(payoutData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const result = await response.json();
-            
-            return {
-                success: true,
-                transactionId: result.referenceId,
-                status: result.status,
-                message: 'Saque processado com sucesso! Você receberá em até 24 horas.'
-            };
-            
-        } catch (error) {
-            console.error('Erro ao processar saque PicPay:', error);
-            
-            // Para desenvolvimento, simular sucesso
-            return {
-                success: true,
-                transactionId: `mock_payout_${Date.now()}`,
-                status: 'processing',
-                message: 'Saque simulado processado! (modo desenvolvimento)'
-            };
-        }
-    }
-    
-    generateMockPixCode(amount) {
-        // Gerar código PIX mock para desenvolvimento
-        const pixData = {
-            amount: amount,
-            merchant: 'RaspaCash',
-            city: 'SAO PAULO',
-            timestamp: Date.now()
         };
-        
-        return `00020126580014BR.GOV.BCB.PIX0136${btoa(JSON.stringify(pixData)).substr(0, 32)}52040000530398654${String(amount).padStart(8, '0')}5802BR5909RaspaCash6009SAO PAULO6304${Math.random().toString().substr(2, 4)}`;
+
+        // Simular resposta da API para desenvolvimento
+        const mockResponse = {
+            referenceId: paymentData.referenceId,
+            paymentUrl: `https://app.picpay.com/checkout/${paymentData.referenceId}`,
+            qrcode: {
+                content: this.generateMockPixCode(amount),
+                base64: this.generateMockQRCode(amount)
+            },
+            expiresAt: new Date(Date.now() + (30 * 60 * 1000)).toISOString()
+        };
+
+        return {
+            success: true,
+            data: {
+                id: mockResponse.referenceId,
+                amount: amount,
+                qr_code: mockResponse.qrcode.content,
+                qr_code_base64: mockResponse.qrcode.base64,
+                payment_url: mockResponse.paymentUrl,
+                status: 'pending',
+                expires_at: mockResponse.expiresAt
+            }
+        };
+
+    } catch (error) {
+        console.error('Erro ao gerar PIX:', error);
+        return {
+            success: false,
+            message: 'Erro ao gerar pagamento PIX'
+        };
     }
 }
 
-// Função global para criar instância da API
-window.createPicPayAPI = () => {
-    return new PicPayAPI();
-};
+async checkPaymentStatus(paymentId) {
+    try {
+        // Simular verificação de status
+        // Em desenvolvimento, aprovar pagamento após 30 segundos
+        const paymentTime = parseInt(paymentId.split('_')[1]);
+        const elapsed = Date.now() - paymentTime;
 
-// Exportar para uso direto
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PicPayAPI;
+        let status = 'pending';
+        if (elapsed > 30000) { // 30 segundos
+            status = Math.random() > 0.3 ? 'paid' : 'pending'; // 70% chance de aprovado
+        }
+
+        return {
+            success: true,
+            data: {
+                status: status,
+                authorizationId: status === 'paid' ? `auth_${Date.now()}` : null
+            }
+        };
+
+    } catch (error) {
+        console.error('Erro ao verificar status:', error);
+        return {
+            success: false,
+            data: { status: 'pending' }
+        };
+    }
 }
+
+async processPixPayout(amount, pixKey, pixKeyType, fullName, userEmail) {
+    try {
+        const payoutData = {
+            referenceId: `payout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            value: amount,
+            destination: {
+                type: pixKeyType,
+                key: pixKey,
+                name: fullName
+            }
+        };
+
+        // Simular saque bem-sucedido
+        return {
+            success: true,
+            data: {
+                transactionId: payoutData.referenceId,
+                status: 'processing',
+                message: `Saque de R$ ${amount.toFixed(2)} processado! Você receberá em até 24 horas na chave PIX: ${pixKey}`
+            }
+        };
+
+    } catch (error) {
+        console.error('Erro ao processar saque:', error);
+        return {
+            success: false,
+            message: 'Erro ao processar saque'
+        };
+    }
+}
+
+generateMockPixCode(amount) {
+    // Gerar código PIX simulado
+    const pixData = `00020126580014BR.GOV.BCB.PIX0136raspacash${Date.now()}52040000530398654${String(amount * 100).padStart(8, '0')}5802BR5909RaspaCash6009SAO PAULO6304${Math.random().toString().substr(2, 4)}`;
+    return pixData;
+}
+
+generateMockQRCode(amount) {
+    // Gerar QR Code base64 simulado
+    return `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==`;
+}
+```
+
+}
+
+// Criar instância global window\.picpayAPI = new PicPayAPI();
