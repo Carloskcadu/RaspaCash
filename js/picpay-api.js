@@ -1,12 +1,11 @@
-// API PicPay para pagamentos PIX class PicPayAPI { constructor() { this.baseURL = '<https://appws.picpay.com/ecommerce/public>'; this.token = 'SEU\_TOKEN\_PICPAY'; // Será configurado }
+// API PicPay para pagamentos PIX class PicPayAPI { constructor() { this.baseURL = 'https://appws.picpay.com/ecommerce/public'; this.token = 'SEU_TOKEN_PICPAY'; // Será configurado }
 
-```
 async generatePixPayment(amount, userEmail) {
     try {
         const paymentData = {
             referenceId: `raspacash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            callbackUrl: `https://raspacashbr.online/webhook/picpay`,
-            returnUrl: `https://raspacashbr.online`,
+            callbackUrl: `${window.location.origin}/webhook/picpay`,
+            returnUrl: `${window.location.origin}`,
             value: amount,
             buyer: {
                 firstName: 'Cliente',
@@ -120,8 +119,8 @@ generateMockQRCode(amount) {
     // Gerar QR Code base64 simulado
     return `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==`;
 }
-```
+
 
 }
 
-// Criar instância global window\.picpayAPI = new PicPayAPI();
+// Criar instância global window.picpayAPI = new PicPayAPI();
