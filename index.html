@@ -1,13 +1,16 @@
+```
     body {
         font-family: 'Inter', sans-serif;
         margin: 0;
         padding: 0;
-        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
     }
     
     .canvas-scratch {
         touch-action: none;
         user-select: none;
+        cursor: pointer;
     }
     
     .animate-bounce {
@@ -53,7 +56,6 @@
         }
     }
 
-    /* Responsividade melhorada */
     @media (max-width: 640px) {
         .text-4xl { font-size: 2rem; }
         .text-3xl { font-size: 1.875rem; }
@@ -66,3 +68,11 @@
         .space-y-6 > * + * { margin-top: 1rem; }
     }
 </style>
+```
+
+```
+<!-- Scripts -->
+<script src="js/github-api.js"></script>
+<script src="js/picpay-api.js"></script>
+<script src="js/main.js"></script>
+```
