@@ -6,36 +6,15 @@
         min-height: 100vh;
     }
     
-    .canvas-scratch {
-        touch-action: none;
-        user-select: none;
-        cursor: pointer;
-    }
-    
-    .animate-bounce {
-        animation: bounce 1s infinite;
-    }
-    
-    .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
+    .animate-bounce { animation: bounce 1s infinite; }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     
     @keyframes bounce {
-        0%, 100% {
-            transform: translateY(-25%);
-            animation-timing-function: cubic-bezier(0.8,0,1,1);
-        }
-        50% {
-            transform: none;
-            animation-timing-function: cubic-bezier(0,0,0.2,1);
-        }
+        0%, 100% { transform: translateY(-25%); }
+        50% { transform: none; }
     }
     
-    @keyframes pulse {
-        50% {
-            opacity: .5;
-        }
-    }
+    @keyframes pulse { 50% { opacity: .5; } }
     
     .bg-gradient-animated {
         background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
@@ -44,32 +23,661 @@
     }
     
     @keyframes gradient {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
     @media (max-width: 640px) {
         .text-4xl { font-size: 2rem; }
         .text-3xl { font-size: 1.875rem; }
-        .text-2xl { font-size: 1.5rem; }
-        .text-xl { font-size: 1.25rem; }
-        .text-lg { font-size: 1.125rem; }
         .p-8 { padding: 1rem; }
-        .p-6 { padding: 1rem; }
         .gap-6 { gap: 1rem; }
-        .space-y-6 > * + * { margin-top: 1rem; }
     }
 </style>
 
 
-<!-- Scripts -->
-<script src="https://hatchcanvas.com/_/assets/ab_1s6w6I71z0G4U_uWcPcB1/keys//js/github-api.js"></script>
-<script src="https://hatchcanvas.com/_/assets/ab_1s6w6I71z0G4U_uWcPcB1/keys//js/picpay-api.js"></script>
-<script src="https://hatchcanvas.com/_/assets/ab_1s6w6I71z0G4U_uWcPcB1/keys//js/main.js"></script>
+<script>
+    class RaspaCashApp {
+        constructor() {
+            this.currentUser = null;
+            this.currentScreen = 'login';
+            this.gameData = {
+                prizes: [0, 5, 10, 25, 50, 100, 250, 500, 1000, 2000],
+                costs: [1, 2, 5, 10, 20, 50]
+            };
+            this.init();
+        }
+
+        init() {
+            setTimeout(() => {
+                document.getElementById('loading').remove();
+                
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    this.currentUser = JSON.parse(savedUser);
+                    this.currentScreen = 'home';
+                }
+                
+                this.render();
+            }, 1000);
+        }
+
+        render() {
+            const app = document.getElementById('app');
+            
+            switch (this.currentScreen) {
+                case 'login': app.innerHTML = this.renderLogin(); break;
+                case 'home': app.innerHTML = this.renderHome(); break;
+                case 'game': app.innerHTML = this.renderGame(); break;
+                case 'deposit': app.innerHTML = this.renderDeposit(); break;
+                case 'withdraw': app.innerHTML = this.renderWithdraw(); break;
+                default: app.innerHTML = this.renderLogin();
+            }
+            
+            this.attachEventListeners();
+        }
+
+        renderLogin() {
+            return `
+                <div class="min-h-screen flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-purple-600 mb-2">🎰 RaspaCash</h1>
+                            <p class="text-gray-600">Raspadinhas Online com PIX</p>
+                            <p class="text-xs text-gray-400 mt-1">RaspaCashbr.online</p>
+                        </div>
+                        
+                        <form id="loginForm" class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" id="email" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                       placeholder="seu@email.com">
+                            </div>
+                            
+                            <button type="submit" 
+                                    class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                                Entrar / Cadastrar
+                            </button>
+                        </form>
+                        
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-500 mb-2">
+                                🎁 Bônus de R$ 50,00 para novos usuários!
+                            </p>
+                            <p class="text-xs text-gray-400">
+                                Cadastro automático - 100% seguro
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderHome() {
+            return `
+                <div class="min-h-screen">
+                    <header class="bg-white shadow-sm">
+                        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-purple-600">🎰 RaspaCash</h1>
+                                <p class="text-xs text-gray-500">RaspaCashbr.online</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-500">${this.currentUser?.email || 'Usuário'}</p>
+                                    <p class="font-bold text-green-600">💰 R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                                </div>
+                                <button onclick="app.logout()" class="text-red-500 hover:text-red-700 text-sm">
+                                    Sair
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main class="max-w-7xl mx-auto px-4 py-8">
+                        <!-- Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">💰 Saldo Atual</h3>
+                                <p class="text-3xl font-bold text-green-600">R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                                <p class="text-sm text-gray-500 mt-1">Disponível para jogar</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">🎮 Jogos Realizados</h3>
+                                <p class="text-3xl font-bold text-blue-600">${this.currentUser?.totalPlayed || 0}</p>
+                                <p class="text-sm text-gray-500 mt-1">Raspadinhas jogadas</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-2">🏆 Total de Ganhos</h3>
+                                <p class="text-3xl font-bold text-purple-600">R$ ${(this.currentUser?.totalWon || 0).toFixed(2)}</p>
+                                <p class="text-sm text-gray-500 mt-1">Valor total ganho</p>
+                            </div>
+                        </div>
+
+                        <!-- Main Actions -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                            <button onclick="app.goToScreen('game')" 
+                                    class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                                <div class="text-3xl mb-3">🎰</div>
+                                <div class="font-bold text-lg">Jogar Agora</div>
+                                <div class="text-sm opacity-90">Raspadinhas</div>
+                            </button>
+                            
+                            <button onclick="app.goToScreen('deposit')" 
+                                    class="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                                <div class="text-3xl mb-3">💳</div>
+                                <div class="font-bold text-lg">Depositar</div>
+                                <div class="text-sm opacity-90">Via PIX</div>
+                            </button>
+                            
+                            <button onclick="app.goToScreen('withdraw')" 
+                                    class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                                <div class="text-3xl mb-3">💸</div>
+                                <div class="font-bold text-lg">Sacar</div>
+                                <div class="text-sm opacity-90">Instant\u00e2neo</div>
+                            </button>
+                            
+                            <button onclick="app.showHistory()" 
+                                    class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
+                                <div class="text-3xl mb-3">📊</div>
+                                <div class="font-bold text-lg">Histórico</div>
+                                <div class="text-sm opacity-90">Relatórios</div>
+                            </button>
+                        </div>
+
+                        <!-- Promotion Banner -->
+                        <div class="bg-gradient-animated text-white p-8 rounded-xl text-center shadow-2xl">
+                            <h2 class="text-4xl font-bold mb-4">🔥 PROMOÇÃO ESPECIAL! 🔥</h2>
+                            <p class="text-xl mb-6">Ganhe até R$ 2.000 em nossas raspadinhas premium!</p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button onclick="app.goToScreen('game')" 
+                                        class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg">
+                                    🎰 Jogar Agora
+                                </button>
+                                <button onclick="app.goToScreen('deposit')" 
+                                        class="bg-yellow-400 text-purple-800 px-8 py-4 rounded-lg font-bold hover:bg-yellow-300 transition-colors text-lg">
+                                    💰 Depositar e Ganhar
+                                </button>
+                            </div>
+                        </div>
+                    </main>
+
+                    <!-- Footer -->
+                    <footer class="bg-gray-800 text-white py-8 mt-12">
+                        <div class="max-w-7xl mx-auto px-4 text-center">
+                            <p class="text-lg font-bold mb-2">🎰 RaspaCash - RaspaCashbr.online</p>
+                            <p class="text-sm text-gray-400">Raspadinhas online com PIX • Depósitos e saques instantâneos</p>
+                            <p class="text-xs text-gray-500 mt-4">© 2024 RaspaCash. Jogue com responsabilidade.</p>
+                        </div>
+                    </footer>
+                </div>
+            `;
+        }
+
+        renderGame() {
+            return `
+                <div class="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800">
+                    <header class="bg-black bg-opacity-20 text-white p-4">
+                        <div class="max-w-7xl mx-auto flex justify-between items-center">
+                            <button onclick="app.goToScreen('home')" 
+                                    class="flex items-center text-white hover:text-gray-300 transition-colors">
+                                ← Voltar
+                            </button>
+                            <div class="text-center">
+                                <h1 class="text-2xl font-bold">🎰 Raspadinha</h1>
+                                <p class="text-sm opacity-75">RaspaCashbr.online</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold">💰 R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main class="max-w-4xl mx-auto px-4 py-8">
+                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+                            <!-- Game Selection -->
+                            <div class="text-center mb-8">
+                                <h2 class="text-3xl font-bold text-gray-800 mb-2">🎰 Escolha sua Raspadinha</h2>
+                                <p class="text-gray-600 mb-6">Quanto maior o valor, maior o prêmio!</p>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    ${this.gameData.costs.map(cost => `
+                                        <button onclick="app.playScratchCard(${cost})" 
+                                                class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-xl hover:scale-105 transition-transform shadow-lg ${this.currentUser.balance < cost ? 'opacity-50 cursor-not-allowed' : ''}">
+                                            <div class="text-2xl font-bold">R$ ${cost}</div>
+                                            <div class="text-sm opacity-90">Máximo</div>
+                                            <div class="text-lg font-bold">R$ ${(cost * 200).toLocaleString()}</div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div id="gameResult" class="text-center text-2xl font-bold min-h-[100px] flex items-center justify-center">
+                                <p class="text-gray-500">Selecione um valor acima para jogar! 🎯</p>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            `;
+        }
+
+        renderDeposit() {
+            return `
+                <div class="min-h-screen bg-gradient-to-br from-green-500 to-emerald-600">
+                    <header class="bg-black bg-opacity-20 text-white p-4">
+                        <div class="max-w-7xl mx-auto flex justify-between items-center">
+                            <button onclick="app.goToScreen('home')" 
+                                    class="flex items-center text-white hover:text-gray-300">
+                                ← Voltar
+                            </button>
+                            <div class="text-center">
+                                <h1 class="text-2xl font-bold">💳 Depositar</h1>
+                                <p class="text-sm opacity-75">PIX Instantâneo</p>
+                            </div>
+                            <div></div>
+                        </div>
+                    </header>
+
+                    <main class="max-w-md mx-auto px-4 py-8">
+                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+                            <div class="text-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-800">💳 Depósito via PIX</h2>
+                                <p class="text-gray-600">Instantâneo e seguro</p>
+                                <p class="text-sm text-green-600 font-semibold mt-2">Taxa zero • Aprovação imediata</p>
+                            </div>
+
+                            <form id="depositForm" class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">💰 Valor para Depósito</label>
+                                    <select id="depositAmount" required 
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-lg">
+                                        <option value="">💳 Selecione o valor</option>
+                                        <option value="10">R$ 10,00 → Ganhe até R$ 2.000</option>
+                                        <option value="25">R$ 25,00 → Ganhe até R$ 5.000</option>
+                                        <option value="50">R$ 50,00 → Ganhe até R$ 10.000</option>
+                                        <option value="100">R$ 100,00 → Ganhe até R$ 20.000</option>
+                                        <option value="200">R$ 200,00 → Ganhe até R$ 40.000</option>
+                                        <option value="500">R$ 500,00 → Ganhe até R$ 100.000</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" 
+                                        class="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors">
+                                    🔥 Gerar PIX Agora
+                                </button>
+                            </form>
+
+                            <div id="pixResult" class="hidden mt-6">
+                                <div class="text-center p-6 bg-gray-50 rounded-lg">
+                                    <h3 class="text-xl font-bold mb-4 text-green-600">✅ PIX Gerado com Sucesso!</h3>
+                                    <div class="bg-white p-4 rounded-lg mb-4 shadow-sm">
+                                        <div class="text-6xl mb-2">📱</div>
+                                        <p class="text-sm text-gray-600">Abra seu app do banco</p>
+                                        <p class="text-sm text-gray-600">e escaneie o código</p>
+                                    </div>
+                                    <div class="bg-gray-100 p-3 rounded text-xs break-all mb-4 font-mono">
+                                        <strong>Código PIX Copy & Paste:</strong><br>
+                                        <div id="pixCode" class="mt-2 p-2 bg-white rounded border"></div>
+                                    </div>
+                                    <p class="text-sm text-green-600 font-bold mb-4">
+                                        💰 Valor: R$ <span id="pixAmount"></span><br>
+                                        ⏰ Válido por 30 minutos
+                                    </p>
+                                    <button onclick="app.simulatePayment()" 
+                                            class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors">
+                                        ✅ Já Paguei - Verificar Pagamento
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            `;
+        }
+
+        renderWithdraw() {
+            return `
+                <div class="min-h-screen bg-gradient-to-br from-blue-500 to-cyan-600">
+                    <header class="bg-black bg-opacity-20 text-white p-4">
+                        <div class="max-w-7xl mx-auto flex justify-between items-center">
+                            <button onclick="app.goToScreen('home')" 
+                                    class="flex items-center text-white hover:text-gray-300">
+                                ← Voltar
+                            </button>
+                            <div class="text-center">
+                                <h1 class="text-2xl font-bold">💸 Sacar</h1>
+                                <p class="text-sm opacity-75">PIX Instantâneo</p>
+                            </div>
+                            <div></div>
+                        </div>
+                    </header>
+
+                    <main class="max-w-md mx-auto px-4 py-8">
+                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+                            <div class="text-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-800">💸 Saque via PIX</h2>
+                                <div class="bg-green-50 p-3 rounded-lg mt-4">
+                                    <p class="text-green-800 font-bold">💰 Saldo Disponível</p>
+                                    <p class="text-3xl font-bold text-green-600">R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                                </div>
+                            </div>
+
+                            <form id="withdrawForm" class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">💰 Valor para Saque</label>
+                                    <input type="number" id="withdrawAmount" 
+                                           min="10" max="${this.currentUser?.balance || 0}" step="0.01" required 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg"
+                                           placeholder="Mínimo R$ 10,00">
+                                    <p class="text-xs text-gray-500 mt-1">Valor mínimo: R$ 10,00 | Máximo: R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">🔑 Chave PIX</label>
+                                    <input type="text" id="pixKey" required 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                           placeholder="CPF, E-mail, Telefone ou Chave Aleatória">
+                                    <p class="text-xs text-gray-500 mt-1">Digite sua chave PIX cadastrada no banco</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">👤 Nome Completo</label>
+                                    <input type="text" id="fullName" required 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                           placeholder="Seu nome completo (igual ao banco)">
+                                    <p class="text-xs text-gray-500 mt-1">Nome deve ser igual ao cadastrado no banco</p>
+                                </div>
+
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h4 class="font-bold text-blue-800 mb-2">ℹ️ Informações do Saque:</h4>
+                                    <ul class="text-sm text-blue-700 space-y-1">
+                                        <li>• ⚡ Processamento: Instantâneo</li>
+                                        <li>• 💳 Recebimento: Até 24 horas</li>
+                                        <li>• 💰 Taxa: R$ 0,00 (Gratuito)</li>
+                                        <li>• 🔒 Segurança: 256-bit SSL</li>
+                                    </ul>
+                                </div>
+
+                                <button type="submit" 
+                                        class="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors">
+                                    💸 Solicitar Saque Agora
+                                </button>
+                            </form>
+                        </div>
+                    </main>
+                </div>
+            `;
+        }
+
+        attachEventListeners() {
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+            }
+
+            const depositForm = document.getElementById('depositForm');
+            if (depositForm) {
+                depositForm.addEventListener('submit', (e) => this.handleDeposit(e));
+            }
+
+            const withdrawForm = document.getElementById('withdrawForm');
+            if (withdrawForm) {
+                withdrawForm.addEventListener('submit', (e) => this.handleWithdraw(e));
+            }
+        }
+
+        async handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            
+            // Verificar se é usuário existente
+            const existingUser = localStorage.getItem(`user_${btoa(email).replace(/[^a-zA-Z0-9]/g, '')}`);
+            
+            if (existingUser) {
+                this.currentUser = JSON.parse(existingUser);
+            } else {
+                // Novo usuário - bônus de boas-vindas
+                this.currentUser = {
+                    id: btoa(email).replace(/[^a-zA-Z0-9]/g, ''),
+                    email: email,
+                    balance: 50, // Bônus inicial
+                    totalPlayed: 0,
+                    totalWon: 0,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString()
+                };
+                
+                // Salvar novo usuário
+                localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            
+            this.currentScreen = 'home';
+            this.render();
+        }
+
+        async handleDeposit(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            
+            // Simular geração do PIX
+            const pixCode = `00020126580014BR.GOV.BCB.PIX0136raspacashbr${Date.now()}52040000530398654${String(amount * 100).padStart(8, '0')}5802BR5917RaspaCashBR.online6014BELO HORIZONTE62070503***6304${Math.random().toString().substr(2, 4)}`;
+            
+            document.getElementById('pixCode').textContent = pixCode;
+            document.getElementById('pixAmount').textContent = amount.toFixed(2);
+            document.getElementById('pixResult').classList.remove('hidden');
+            
+            // Salvar valor para simulação
+            window.currentDepositAmount = amount;
+        }
+
+        async handleWithdraw(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const pixKey = document.getElementById('pixKey').value;
+            const fullName = document.getElementById('fullName').value;
+            
+            if (amount > this.currentUser.balance) {
+                alert('💰 Saldo insuficiente! Seu saldo atual é R$ ' + this.currentUser.balance.toFixed(2));
+                return;
+            }
+
+            if (amount < 10) {
+                alert('💰 Valor mínimo para saque é R$ 10,00');
+                return;
+            }
+
+            // Processar saque
+            this.currentUser.balance -= amount;
+            
+            // Salvar transação
+            const transaction = {
+                type: 'withdrawal',
+                amount: amount,
+                pixKey: pixKey,
+                fullName: fullName,
+                status: 'processing',
+                date: new Date().toISOString()
+            };
+            
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            // Salvar usuário atualizado
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
+            
+            alert(`✅ Saque de R$ ${amount.toFixed(2)} processado com sucesso!\\n\\n💳 Chave PIX: ${pixKey}\\n👤 Nome: ${fullName}\\n\\n⏰ Você receberá em até 24 horas na sua conta.`);
+            
+            this.goToScreen('home');
+        }
+
+        simulatePayment() {
+            const amount = window.currentDepositAmount || 10;
+            
+            // Simular aprovação do pagamento
+            this.currentUser.balance += amount;
+            
+            // Salvar transação
+            const transaction = {
+                type: 'deposit',
+                amount: amount,
+                status: 'completed',
+                date: new Date().toISOString(),
+                method: 'PIX'
+            };
+            
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            // Salvar usuário atualizado
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
+            
+            alert(`🎉 PAGAMENTO APROVADO!\\n\\n💰 R$ ${amount.toFixed(2)} foi adicionado ao seu saldo!\\n\\n✅ Você já pode jogar as raspadinhas!`);
+            
+            this.goToScreen('home');
+        }
+
+        playScratchCard(cost) {
+            if (this.currentUser.balance < cost) {
+                alert(`💰 Saldo insuficiente!\\n\\nSeu saldo: R$ ${this.currentUser.balance.toFixed(2)}\\nNecessário: R$ ${cost.toFixed(2)}\\n\\n💳 Faça um depósito para continuar jogando!`);
+                return;
+            }
+
+            // Deduzir custo
+            this.currentUser.balance -= cost;
+            this.currentUser.totalPlayed += 1;
+
+            // Calcular prêmio (30% chance de ganhar)
+            const maxPrize = cost * 200;
+            const prizes = this.gameData.prizes.filter(p => p <= maxPrize && p > 0);
+            
+            let randomPrize = 0;
+            if (Math.random() < 0.30) { // 30% chance de ganhar
+                randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+            }
+
+            // Adicionar prêmio se ganhou
+            if (randomPrize > 0) {
+                this.currentUser.balance += randomPrize;
+                this.currentUser.totalWon += randomPrize;
+            }
+
+            // Salvar transação
+            const transaction = {
+                type: 'game',
+                cost: cost,
+                prize: randomPrize,
+                date: new Date().toISOString()
+            };
+            
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+
+            // Salvar dados atualizados
+            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+            localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
+
+            // Mostrar resultado com animação
+            const gameResult = document.getElementById('gameResult');
+            
+            gameResult.innerHTML = `
+                <div class="animate-pulse">
+                    <div class="text-4xl mb-4">🎰</div>
+                    <div class="text-xl">Raspando...</div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                if (randomPrize > 0) {
+                    gameResult.innerHTML = `
+                        <div class="text-center animate-bounce">
+                            <div class="text-6xl mb-4">🎉</div>
+                            <div class="text-3xl font-bold text-green-600 mb-2">PARABÉNS!</div>
+                            <div class="text-2xl font-bold text-green-700">Você ganhou R$ ${randomPrize.toFixed(2)}!</div>
+                            <div class="text-lg text-gray-600 mt-2">💰 Novo saldo: R$ ${this.currentUser.balance.toFixed(2)}</div>
+                        </div>
+                    `;
+                    
+                    // Efeito sonoro simulado
+                    setTimeout(() => {
+                        alert(`🎊 PARABÉNS! 🎊\\n\\n🏆 Você ganhou R$ ${randomPrize.toFixed(2)}!\\n\\n💰 Seu novo saldo é R$ ${this.currentUser.balance.toFixed(2)}\\n\\n🎰 Continue jogando para ganhar mais!`);
+                    }, 1000);
+                } else {
+                    gameResult.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-5xl mb-4">😔</div>
+                            <div class="text-2xl font-bold text-gray-600 mb-2">Que pena!</div>
+                            <div class="text-lg text-gray-600">Não foi desta vez...</div>
+                            <div class="text-lg text-blue-600 mt-2">💰 Saldo atual: R$ ${this.currentUser.balance.toFixed(2)}</div>
+                            <div class="text-sm text-gray-500 mt-2">🍀 Tente novamente! A sorte pode mudar!</div>
+                        </div>
+                    `;
+                }
+                
+                // Limpar resultado após alguns segundos
+                setTimeout(() => {
+                    gameResult.innerHTML = `<p class="text-gray-500">Selecione um valor acima para jogar novamente! 🎯</p>`;
+                }, 5000);
+            }, 2000);
+        }
+
+        goToScreen(screen) {
+            this.currentScreen = screen;
+            this.render();
+        }
+
+        logout() {
+            localStorage.removeItem('currentUser');
+            this.currentUser = null;
+            this.currentScreen = 'login';
+            this.render();
+        }
+
+        showHistory() {
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            let historyText = "📊 HISTÓRICO DE TRANSAÇÕES\\n\\n";
+            
+            if (transactions.length === 0) {
+                historyText += "Nenhuma transação encontrada.";
+            } else {
+                transactions.slice(-10).reverse().forEach((transaction, index) => {
+                    const date = new Date(transaction.date).toLocaleString('pt-BR');
+                    
+                    if (transaction.type === 'deposit') {
+                        historyText += `💳 DEPÓSITO\\n`;
+                        historyText += `💰 R$ ${transaction.amount.toFixed(2)}\\n`;
+                        historyText += `📅 ${date}\\n\\n`;
+                    } else if (transaction.type === 'withdrawal') {
+                        historyText += `💸 SAQUE\\n`;
+                        historyText += `💰 R$ ${transaction.amount.toFixed(2)}\\n`;
+                        historyText += `🔑 ${transaction.pixKey}\\n`;
+                        historyText += `📅 ${date}\\n\\n`;
+                    } else if (transaction.type === 'game') {
+                        historyText += `🎰 RASPADINHA\\n`;
+                        historyText += `💸 Apostou: R$ ${transaction.cost.toFixed(2)}\\n`;
+                        if (transaction.prize > 0) {
+                            historyText += `🏆 Ganhou: R$ ${transaction.prize.toFixed(2)}\\n`;
+                        } else {
+                            historyText += `😔 Não ganhou\\n`;
+                        }
+                        historyText += `📅 ${date}\\n\\n`;
+                    }
+                });
+            }
+            
+            alert(historyText);
+        }
+    }
+
+    // Inicializar aplicação quando a página carregar
+    document.addEventListener('DOMContentLoaded', () => {
+        window.app = new RaspaCashApp();
+    });
+</script>
