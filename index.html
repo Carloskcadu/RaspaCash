@@ -1,25 +1,173 @@
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
         font-family: 'Inter', sans-serif;
-        margin: 0;
-        padding: 0;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
+        color: #333;
     }
     
-    .animate-bounce { animation: bounce 1s infinite; }
-    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .justify-between { justify-content: space-between; }
+    .text-center { text-align: center; }
+    .min-h-screen { min-height: 100vh; }
+    .w-full { width: 100%; }
+    .h-screen { height: 100vh; }
+    .rounded-xl { border-radius: 12px; }
+    .rounded-lg { border-radius: 8px; }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
     
-    @keyframes bounce {
-        0%, 100% { transform: translateY(-25%); }
-        50% { transform: none; }
+    .bg-white { background: white; }
+    .bg-gray-50 { background: #f9fafb; }
+    .bg-gray-100 { background: #f3f4f6; }
+    .bg-gray-800 { background: #1f2937; }
+    .bg-black { background: rgba(0,0,0,0.2); }
+    
+    .text-white { color: white; }
+    .text-gray-400 { color: #9ca3af; }
+    .text-gray-500 { color: #6b7280; }
+    .text-gray-600 { color: #4b5563; }
+    .text-gray-700 { color: #374151; }
+    .text-gray-800 { color: #1f2937; }
+    .text-purple-600 { color: #7c3aed; }
+    .text-green-600 { color: #059669; }
+    .text-blue-600 { color: #2563eb; }
+    .text-red-600 { color: #dc2626; }
+    
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 14px; }
+    .text-lg { font-size: 18px; }
+    .text-xl { font-size: 20px; }
+    .text-2xl { font-size: 24px; }
+    .text-3xl { font-size: 30px; }
+    .text-4xl { font-size: 36px; }
+    .text-6xl { font-size: 60px; }
+    
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    
+    .p-4 { padding: 16px; }
+    .p-6 { padding: 24px; }
+    .p-8 { padding: 32px; }
+    .py-3 { padding: 16px 0; }
+    .py-4 { padding: 16px 0; }
+    .px-4 { padding: 0 16px; }
+    .px-8 { padding: 0 32px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mb-8 { margin-bottom: 32px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .gap-4 { gap: 16px; }
+    .gap-6 { gap: 24px; }
+    
+    .border { border: 1px solid #d1d5db; }
+    .border-l-4 { border-left: 4px solid; }
+    .border-green-500 { border-left-color: #10b981; }
+    .border-blue-500 { border-left-color: #3b82f6; }
+    .border-purple-500 { border-left-color: #8b5cf6; }
+    
+    input, select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.2s;
     }
     
-    @keyframes pulse { 50% { opacity: .5; } }
+    input:focus, select:focus {
+        outline: none;
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
     
-    .bg-gradient-animated {
+    button {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 16px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+    }
+    
+    .btn-green {
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+    }
+    
+    .btn-blue {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+    }
+    
+    .btn-red {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        color: white;
+    }
+    
+    .btn-orange {
+        background: linear-gradient(135deg, #ea580c, #f97316);
+        color: white;
+    }
+    
+    .game-card {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 24px;
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .game-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .game-card.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .stats-card {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .promo-banner {
         background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
         background-size: 400% 400%;
         animation: gradient 15s ease infinite;
+        color: white;
+        padding: 32px;
+        border-radius: 12px;
+        text-align: center;
     }
     
     @keyframes gradient {
@@ -27,12 +175,49 @@
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-
+    
+    .animate-bounce {
+        animation: bounce 1s infinite;
+    }
+    
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(-25%); }
+        50% { transform: none; }
+    }
+    
+    @keyframes pulse {
+        50% { opacity: .5; }
+    }
+    
+    .hidden { display: none !important; }
+    
+    .header {
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 16px 0;
+    }
+    
+    .space-y-6 > * + * { margin-top: 24px; }
+    
+    @media (min-width: 768px) {
+        .md\\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .md\\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+    
+    @media (min-width: 1024px) {
+        .lg\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    }
+    
     @media (max-width: 640px) {
-        .text-4xl { font-size: 2rem; }
-        .text-3xl { font-size: 1.875rem; }
-        .p-8 { padding: 1rem; }
-        .gap-6 { gap: 1rem; }
+        .text-4xl { font-size: 28px; }
+        .text-3xl { font-size: 24px; }
+        .p-8 { padding: 16px; }
+        .gap-6 { gap: 16px; }
+        .container { padding: 0 16px; }
     }
 </style>
 
@@ -55,24 +240,39 @@
                 
                 const savedUser = localStorage.getItem('currentUser');
                 if (savedUser) {
-                    this.currentUser = JSON.parse(savedUser);
-                    this.currentScreen = 'home';
+                    try {
+                        this.currentUser = JSON.parse(savedUser);
+                        this.currentScreen = 'home';
+                    } catch (e) {
+                        localStorage.removeItem('currentUser');
+                    }
                 }
                 
                 this.render();
-            }, 1000);
+            }, 1500);
         }
 
         render() {
             const app = document.getElementById('app');
             
             switch (this.currentScreen) {
-                case 'login': app.innerHTML = this.renderLogin(); break;
-                case 'home': app.innerHTML = this.renderHome(); break;
-                case 'game': app.innerHTML = this.renderGame(); break;
-                case 'deposit': app.innerHTML = this.renderDeposit(); break;
-                case 'withdraw': app.innerHTML = this.renderWithdraw(); break;
-                default: app.innerHTML = this.renderLogin();
+                case 'login':
+                    app.innerHTML = this.renderLogin();
+                    break;
+                case 'home':
+                    app.innerHTML = this.renderHome();
+                    break;
+                case 'game':
+                    app.innerHTML = this.renderGame();
+                    break;
+                case 'deposit':
+                    app.innerHTML = this.renderDeposit();
+                    break;
+                case 'withdraw':
+                    app.innerHTML = this.renderWithdraw();
+                    break;
+                default:
+                    app.innerHTML = this.renderLogin();
             }
             
             this.attachEventListeners();
@@ -80,24 +280,21 @@
 
         renderLogin() {
             return `
-                <div class="min-h-screen flex items-center justify-center p-4">
-                    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                <div class="min-h-screen flex items-center justify-center" style="padding: 20px;">
+                    <div class="bg-white rounded-xl shadow-2xl p-8" style="width: 100%; max-width: 400px;">
                         <div class="text-center mb-8">
                             <h1 class="text-4xl font-bold text-purple-600 mb-2">🎰 RaspaCash</h1>
                             <p class="text-gray-600">Raspadinhas Online com PIX</p>
-                            <p class="text-xs text-gray-400 mt-1">RaspaCashbr.online</p>
+                            <p class="text-xs text-gray-400 mt-2">RaspaCashbr.online</p>
                         </div>
                         
                         <form id="loginForm" class="space-y-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                                <input type="email" id="email" required 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                       placeholder="seu@email.com">
+                                <label class="text-sm font-semibold text-gray-700" style="display: block; margin-bottom: 8px;">Email</label>
+                                <input type="email" id="email" required placeholder="seu@email.com">
                             </div>
                             
-                            <button type="submit" 
-                                    class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                            <button type="submit" class="w-full btn-primary">
                                 Entrar / Cadastrar
                             </button>
                         </form>
@@ -118,142 +315,124 @@
         renderHome() {
             return `
                 <div class="min-h-screen">
-                    <header class="bg-white shadow-sm">
-                        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                    <header class="header">
+                        <div class="container flex justify-between items-center">
                             <div>
                                 <h1 class="text-2xl font-bold text-purple-600">🎰 RaspaCash</h1>
                                 <p class="text-xs text-gray-500">RaspaCashbr.online</p>
                             </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="text-right">
+                            <div class="flex items-center" style="gap: 16px;">
+                                <div class="text-center">
                                     <p class="text-sm text-gray-500">${this.currentUser?.email || 'Usuário'}</p>
                                     <p class="font-bold text-green-600">💰 R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
                                 </div>
-                                <button onclick="app.logout()" class="text-red-500 hover:text-red-700 text-sm">
+                                <button onclick="app.logout()" style="color: #dc2626; font-size: 14px;">
                                     Sair
                                 </button>
                             </div>
                         </div>
                     </header>
 
-                    <main class="max-w-7xl mx-auto px-4 py-8">
+                    <main class="container" style="padding-top: 32px; padding-bottom: 32px;">
                         <!-- Stats -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
+                            <div class="stats-card border-l-4 border-green-500">
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2">💰 Saldo Atual</h3>
                                 <p class="text-3xl font-bold text-green-600">R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
-                                <p class="text-sm text-gray-500 mt-1">Disponível para jogar</p>
+                                <p class="text-sm text-gray-500 mt-2">Disponível para jogar</p>
                             </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500">
+                            <div class="stats-card border-l-4 border-blue-500">
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2">🎮 Jogos Realizados</h3>
                                 <p class="text-3xl font-bold text-blue-600">${this.currentUser?.totalPlayed || 0}</p>
-                                <p class="text-sm text-gray-500 mt-1">Raspadinhas jogadas</p>
+                                <p class="text-sm text-gray-500 mt-2">Raspadinhas jogadas</p>
                             </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500">
+                            <div class="stats-card border-l-4 border-purple-500">
                                 <h3 class="text-lg font-semibold text-gray-700 mb-2">🏆 Total de Ganhos</h3>
                                 <p class="text-3xl font-bold text-purple-600">R$ ${(this.currentUser?.totalWon || 0).toFixed(2)}</p>
-                                <p class="text-sm text-gray-500 mt-1">Valor total ganho</p>
+                                <p class="text-sm text-gray-500 mt-2">Valor total ganho</p>
                             </div>
                         </div>
 
                         <!-- Main Actions -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                            <button onclick="app.goToScreen('game')" 
-                                    class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
-                                <div class="text-3xl mb-3">🎰</div>
-                                <div class="font-bold text-lg">Jogar Agora</div>
-                                <div class="text-sm opacity-90">Raspadinhas</div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                            <button onclick="app.goToScreen('game')" class="game-card">
+                                <div class="text-3xl mb-2">🎰</div>
+                                <div class="font-bold text-lg">Jogar</div>
+                                <div class="text-sm" style="opacity: 0.9;">Raspadinhas</div>
                             </button>
                             
-                            <button onclick="app.goToScreen('deposit')" 
-                                    class="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
-                                <div class="text-3xl mb-3">💳</div>
+                            <button onclick="app.goToScreen('deposit')" class="btn-green p-6 rounded-xl text-center">
+                                <div class="text-3xl mb-2">💳</div>
                                 <div class="font-bold text-lg">Depositar</div>
-                                <div class="text-sm opacity-90">Via PIX</div>
+                                <div class="text-sm" style="opacity: 0.9;">Via PIX</div>
                             </button>
                             
-                            <button onclick="app.goToScreen('withdraw')" 
-                                    class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
-                                <div class="text-3xl mb-3">💸</div>
+                            <button onclick="app.goToScreen('withdraw')" class="btn-blue p-6 rounded-xl text-center">
+                                <div class="text-3xl mb-2">💸</div>
                                 <div class="font-bold text-lg">Sacar</div>
-                                <div class="text-sm opacity-90">Instant\u00e2neo</div>
+                                <div class="text-sm" style="opacity: 0.9;">Instantâneo</div>
                             </button>
                             
-                            <button onclick="app.showHistory()" 
-                                    class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6 rounded-xl hover:scale-105 transition-transform shadow-lg">
-                                <div class="text-3xl mb-3">📊</div>
+                            <button onclick="app.showHistory()" class="btn-orange p-6 rounded-xl text-center">
+                                <div class="text-3xl mb-2">📊</div>
                                 <div class="font-bold text-lg">Histórico</div>
-                                <div class="text-sm opacity-90">Relatórios</div>
+                                <div class="text-sm" style="opacity: 0.9;">Relatórios</div>
                             </button>
                         </div>
 
                         <!-- Promotion Banner -->
-                        <div class="bg-gradient-animated text-white p-8 rounded-xl text-center shadow-2xl">
+                        <div class="promo-banner shadow-2xl">
                             <h2 class="text-4xl font-bold mb-4">🔥 PROMOÇÃO ESPECIAL! 🔥</h2>
                             <p class="text-xl mb-6">Ganhe até R$ 2.000 em nossas raspadinhas premium!</p>
-                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                                <button onclick="app.goToScreen('game')" 
-                                        class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg">
+                            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                                <button onclick="app.goToScreen('game')" style="background: white; color: #7c3aed; padding: 16px 32px; border-radius: 8px; font-weight: bold;">
                                     🎰 Jogar Agora
                                 </button>
-                                <button onclick="app.goToScreen('deposit')" 
-                                        class="bg-yellow-400 text-purple-800 px-8 py-4 rounded-lg font-bold hover:bg-yellow-300 transition-colors text-lg">
-                                    💰 Depositar e Ganhar
+                                <button onclick="app.goToScreen('deposit')" style="background: #fbbf24; color: #7c2d12; padding: 16px 32px; border-radius: 8px; font-weight: bold;">
+                                    💰 Depositar
                                 </button>
                             </div>
                         </div>
                     </main>
-
-                    <!-- Footer -->
-                    <footer class="bg-gray-800 text-white py-8 mt-12">
-                        <div class="max-w-7xl mx-auto px-4 text-center">
-                            <p class="text-lg font-bold mb-2">🎰 RaspaCash - RaspaCashbr.online</p>
-                            <p class="text-sm text-gray-400">Raspadinhas online com PIX • Depósitos e saques instantâneos</p>
-                            <p class="text-xs text-gray-500 mt-4">© 2024 RaspaCash. Jogue com responsabilidade.</p>
-                        </div>
-                    </footer>
                 </div>
             `;
         }
 
         renderGame() {
             return `
-                <div class="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800">
-                    <header class="bg-black bg-opacity-20 text-white p-4">
-                        <div class="max-w-7xl mx-auto flex justify-between items-center">
-                            <button onclick="app.goToScreen('home')" 
-                                    class="flex items-center text-white hover:text-gray-300 transition-colors">
+                <div class="min-h-screen" style="background: linear-gradient(135deg, #7c3aed, #3b82f6, #7c3aed);">
+                    <header class="bg-black p-4">
+                        <div class="container flex justify-between items-center text-white">
+                            <button onclick="app.goToScreen('home')" style="color: white;">
                                 ← Voltar
                             </button>
                             <div class="text-center">
                                 <h1 class="text-2xl font-bold">🎰 Raspadinha</h1>
-                                <p class="text-sm opacity-75">RaspaCashbr.online</p>
                             </div>
-                            <div class="text-right">
+                            <div>
                                 <p class="font-bold">💰 R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
                             </div>
                         </div>
                     </header>
 
-                    <main class="max-w-4xl mx-auto px-4 py-8">
-                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
-                            <!-- Game Selection -->
+                    <main class="container" style="padding: 32px 20px;">
+                        <div class="bg-white rounded-xl p-8 shadow-2xl">
                             <div class="text-center mb-8">
                                 <h2 class="text-3xl font-bold text-gray-800 mb-2">🎰 Escolha sua Raspadinha</h2>
                                 <p class="text-gray-600 mb-6">Quanto maior o valor, maior o prêmio!</p>
                                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     ${this.gameData.costs.map(cost => `
                                         <button onclick="app.playScratchCard(${cost})" 
-                                                class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-xl hover:scale-105 transition-transform shadow-lg ${this.currentUser.balance < cost ? 'opacity-50 cursor-not-allowed' : ''}">
+                                                class="game-card ${this.currentUser.balance < cost ? 'disabled' : ''}">
                                             <div class="text-2xl font-bold">R$ ${cost}</div>
-                                            <div class="text-sm opacity-90">Máximo</div>
+                                            <div class="text-sm">Máximo</div>
                                             <div class="text-lg font-bold">R$ ${(cost * 200).toLocaleString()}</div>
                                         </button>
                                     `).join('')}
                                 </div>
                             </div>
 
-                            <div id="gameResult" class="text-center text-2xl font-bold min-h-[100px] flex items-center justify-center">
+                            <div id="gameResult" class="text-center text-2xl font-bold" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
                                 <p class="text-gray-500">Selecione um valor acima para jogar! 🎯</p>
                             </div>
                         </div>
@@ -264,69 +443,57 @@
 
         renderDeposit() {
             return `
-                <div class="min-h-screen bg-gradient-to-br from-green-500 to-emerald-600">
-                    <header class="bg-black bg-opacity-20 text-white p-4">
-                        <div class="max-w-7xl mx-auto flex justify-between items-center">
-                            <button onclick="app.goToScreen('home')" 
-                                    class="flex items-center text-white hover:text-gray-300">
+                <div class="min-h-screen" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <header class="bg-black p-4">
+                        <div class="container flex justify-between items-center text-white">
+                            <button onclick="app.goToScreen('home')" style="color: white;">
                                 ← Voltar
                             </button>
                             <div class="text-center">
                                 <h1 class="text-2xl font-bold">💳 Depositar</h1>
-                                <p class="text-sm opacity-75">PIX Instantâneo</p>
                             </div>
                             <div></div>
                         </div>
                     </header>
 
-                    <main class="max-w-md mx-auto px-4 py-8">
-                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+                    <main class="flex items-center justify-center" style="padding: 32px 20px; min-height: 80vh;">
+                        <div class="bg-white rounded-xl p-8 shadow-2xl" style="width: 100%; max-width: 400px;">
                             <div class="text-center mb-6">
                                 <h2 class="text-2xl font-bold text-gray-800">💳 Depósito via PIX</h2>
                                 <p class="text-gray-600">Instantâneo e seguro</p>
-                                <p class="text-sm text-green-600 font-semibold mt-2">Taxa zero • Aprovação imediata</p>
                             </div>
 
                             <form id="depositForm" class="space-y-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">💰 Valor para Depósito</label>
-                                    <select id="depositAmount" required 
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 text-lg">
-                                        <option value="">💳 Selecione o valor</option>
-                                        <option value="10">R$ 10,00 → Ganhe até R$ 2.000</option>
-                                        <option value="25">R$ 25,00 → Ganhe até R$ 5.000</option>
-                                        <option value="50">R$ 50,00 → Ganhe até R$ 10.000</option>
-                                        <option value="100">R$ 100,00 → Ganhe até R$ 20.000</option>
-                                        <option value="200">R$ 200,00 → Ganhe até R$ 40.000</option>
-                                        <option value="500">R$ 500,00 → Ganhe até R$ 100.000</option>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">💰 Valor</label>
+                                    <select id="depositAmount" required>
+                                        <option value="">Selecione o valor</option>
+                                        <option value="10">R$ 10,00</option>
+                                        <option value="25">R$ 25,00</option>
+                                        <option value="50">R$ 50,00</option>
+                                        <option value="100">R$ 100,00</option>
+                                        <option value="200">R$ 200,00</option>
+                                        <option value="500">R$ 500,00</option>
                                     </select>
                                 </div>
 
-                                <button type="submit" 
-                                        class="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors">
+                                <button type="submit" class="w-full btn-green">
                                     🔥 Gerar PIX Agora
                                 </button>
                             </form>
 
                             <div id="pixResult" class="hidden mt-6">
                                 <div class="text-center p-6 bg-gray-50 rounded-lg">
-                                    <h3 class="text-xl font-bold mb-4 text-green-600">✅ PIX Gerado com Sucesso!</h3>
-                                    <div class="bg-white p-4 rounded-lg mb-4 shadow-sm">
+                                    <h3 class="text-xl font-bold mb-4 text-green-600">✅ PIX Gerado!</h3>
+                                    <div class="bg-white p-4 rounded-lg mb-4">
                                         <div class="text-6xl mb-2">📱</div>
-                                        <p class="text-sm text-gray-600">Abra seu app do banco</p>
-                                        <p class="text-sm text-gray-600">e escaneie o código</p>
+                                        <p class="text-sm text-gray-600">Escaneie com seu banco</p>
                                     </div>
-                                    <div class="bg-gray-100 p-3 rounded text-xs break-all mb-4 font-mono">
-                                        <strong>Código PIX Copy & Paste:</strong><br>
-                                        <div id="pixCode" class="mt-2 p-2 bg-white rounded border"></div>
-                                    </div>
-                                    <p class="text-sm text-green-600 font-bold mb-4">
-                                        💰 Valor: R$ <span id="pixAmount"></span><br>
-                                        ⏰ Válido por 30 minutos
+                                    <p class="text-sm font-bold mb-4 text-green-600">
+                                        💰 Valor: R$ <span id="pixAmount"></span>
                                     </p>
-                                    <button onclick="app.simulatePayment()" 
-                                            class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors">
-                                        ✅ Já Paguei - Verificar Pagamento
+                                    <button onclick="app.simulatePayment()" class="w-full btn-blue">
+                                        ✅ Já Paguei - Verificar
                                     </button>
                                 </div>
                             </div>
@@ -338,70 +505,46 @@
 
         renderWithdraw() {
             return `
-                <div class="min-h-screen bg-gradient-to-br from-blue-500 to-cyan-600">
-                    <header class="bg-black bg-opacity-20 text-white p-4">
-                        <div class="max-w-7xl mx-auto flex justify-between items-center">
-                            <button onclick="app.goToScreen('home')" 
-                                    class="flex items-center text-white hover:text-gray-300">
+                <div class="min-h-screen" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                    <header class="bg-black p-4">
+                        <div class="container flex justify-between items-center text-white">
+                            <button onclick="app.goToScreen('home')" style="color: white;">
                                 ← Voltar
                             </button>
                             <div class="text-center">
                                 <h1 class="text-2xl font-bold">💸 Sacar</h1>
-                                <p class="text-sm opacity-75">PIX Instantâneo</p>
                             </div>
                             <div></div>
                         </div>
                     </header>
 
-                    <main class="max-w-md mx-auto px-4 py-8">
-                        <div class="bg-white rounded-2xl p-8 shadow-2xl">
+                    <main class="flex items-center justify-center" style="padding: 32px 20px; min-height: 80vh;">
+                        <div class="bg-white rounded-xl p-8 shadow-2xl" style="width: 100%; max-width: 400px;">
                             <div class="text-center mb-6">
                                 <h2 class="text-2xl font-bold text-gray-800">💸 Saque via PIX</h2>
-                                <div class="bg-green-50 p-3 rounded-lg mt-4">
-                                    <p class="text-green-800 font-bold">💰 Saldo Disponível</p>
-                                    <p class="text-3xl font-bold text-green-600">R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                                <div class="bg-gray-50 p-3 rounded-lg mt-4">
+                                    <p class="text-green-800 font-bold">💰 Saldo: R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
                                 </div>
                             </div>
 
                             <form id="withdrawForm" class="space-y-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">💰 Valor para Saque</label>
-                                    <input type="number" id="withdrawAmount" 
-                                           min="10" max="${this.currentUser?.balance || 0}" step="0.01" required 
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-lg"
-                                           placeholder="Mínimo R$ 10,00">
-                                    <p class="text-xs text-gray-500 mt-1">Valor mínimo: R$ 10,00 | Máximo: R$ ${(this.currentUser?.balance || 0).toFixed(2)}</p>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">💰 Valor</label>
+                                    <input type="number" id="withdrawAmount" min="10" max="${this.currentUser?.balance || 0}" step="0.01" required placeholder="Mínimo R$ 10,00">
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">🔑 Chave PIX</label>
-                                    <input type="text" id="pixKey" required 
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                           placeholder="CPF, E-mail, Telefone ou Chave Aleatória">
-                                    <p class="text-xs text-gray-500 mt-1">Digite sua chave PIX cadastrada no banco</p>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">🔑 Chave PIX</label>
+                                    <input type="text" id="pixKey" required placeholder="CPF, Email, Telefone">
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">👤 Nome Completo</label>
-                                    <input type="text" id="fullName" required 
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Seu nome completo (igual ao banco)">
-                                    <p class="text-xs text-gray-500 mt-1">Nome deve ser igual ao cadastrado no banco</p>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">👤 Nome Completo</label>
+                                    <input type="text" id="fullName" required placeholder="Seu nome completo">
                                 </div>
 
-                                <div class="bg-blue-50 p-4 rounded-lg">
-                                    <h4 class="font-bold text-blue-800 mb-2">ℹ️ Informações do Saque:</h4>
-                                    <ul class="text-sm text-blue-700 space-y-1">
-                                        <li>• ⚡ Processamento: Instantâneo</li>
-                                        <li>• 💳 Recebimento: Até 24 horas</li>
-                                        <li>• 💰 Taxa: R$ 0,00 (Gratuito)</li>
-                                        <li>• 🔒 Segurança: 256-bit SSL</li>
-                                    </ul>
-                                </div>
-
-                                <button type="submit" 
-                                        class="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors">
-                                    💸 Solicitar Saque Agora
+                                <button type="submit" class="w-full btn-blue">
+                                    💸 Solicitar Saque
                                 </button>
                             </form>
                         </div>
@@ -427,164 +570,100 @@
             }
         }
 
-        async handleLogin(e) {
+        handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             
-            // Verificar se é usuário existente
-            const existingUser = localStorage.getItem(`user_${btoa(email).replace(/[^a-zA-Z0-9]/g, '')}`);
+            const userId = btoa(email).replace(/[^a-zA-Z0-9]/g, '');
+            const existingUser = localStorage.getItem(`user_${userId}`);
             
             if (existingUser) {
                 this.currentUser = JSON.parse(existingUser);
             } else {
-                // Novo usuário - bônus de boas-vindas
                 this.currentUser = {
-                    id: btoa(email).replace(/[^a-zA-Z0-9]/g, ''),
+                    id: userId,
                     email: email,
-                    balance: 50, // Bônus inicial
+                    balance: 50,
                     totalPlayed: 0,
                     totalWon: 0,
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString()
+                    createdAt: new Date().toISOString()
                 };
-                
-                // Salvar novo usuário
-                localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
+                localStorage.setItem(`user_${userId}`, JSON.stringify(this.currentUser));
             }
 
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-            
             this.currentScreen = 'home';
             this.render();
         }
 
-        async handleDeposit(e) {
+        handleDeposit(e) {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('depositAmount').value);
             
-            // Simular geração do PIX
-            const pixCode = `00020126580014BR.GOV.BCB.PIX0136raspacashbr${Date.now()}52040000530398654${String(amount * 100).padStart(8, '0')}5802BR5917RaspaCashBR.online6014BELO HORIZONTE62070503***6304${Math.random().toString().substr(2, 4)}`;
-            
-            document.getElementById('pixCode').textContent = pixCode;
             document.getElementById('pixAmount').textContent = amount.toFixed(2);
             document.getElementById('pixResult').classList.remove('hidden');
-            
-            // Salvar valor para simulação
             window.currentDepositAmount = amount;
         }
 
-        async handleWithdraw(e) {
+        handleWithdraw(e) {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
             const pixKey = document.getElementById('pixKey').value;
             const fullName = document.getElementById('fullName').value;
             
             if (amount > this.currentUser.balance) {
-                alert('💰 Saldo insuficiente! Seu saldo atual é R$ ' + this.currentUser.balance.toFixed(2));
+                alert('💰 Saldo insuficiente!');
                 return;
             }
 
             if (amount < 10) {
-                alert('💰 Valor mínimo para saque é R$ 10,00');
+                alert('💰 Valor mínimo é R$ 10,00');
                 return;
             }
 
-            // Processar saque
             this.currentUser.balance -= amount;
-            
-            // Salvar transação
-            const transaction = {
-                type: 'withdrawal',
-                amount: amount,
-                pixKey: pixKey,
-                fullName: fullName,
-                status: 'processing',
-                date: new Date().toISOString()
-            };
-            
-            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-            transactions.push(transaction);
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            
-            // Salvar usuário atualizado
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
             localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
             
-            alert(`✅ Saque de R$ ${amount.toFixed(2)} processado com sucesso!\\n\\n💳 Chave PIX: ${pixKey}\\n👤 Nome: ${fullName}\\n\\n⏰ Você receberá em até 24 horas na sua conta.`);
-            
+            alert(`✅ Saque de R$ ${amount.toFixed(2)} processado!\\n\\nChave PIX: ${pixKey}\\nNome: ${fullName}\\n\\nVocê receberá em até 24 horas.`);
             this.goToScreen('home');
         }
 
         simulatePayment() {
             const amount = window.currentDepositAmount || 10;
-            
-            // Simular aprovação do pagamento
             this.currentUser.balance += amount;
-            
-            // Salvar transação
-            const transaction = {
-                type: 'deposit',
-                amount: amount,
-                status: 'completed',
-                date: new Date().toISOString(),
-                method: 'PIX'
-            };
-            
-            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-            transactions.push(transaction);
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            
-            // Salvar usuário atualizado
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
             localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
             
-            alert(`🎉 PAGAMENTO APROVADO!\\n\\n💰 R$ ${amount.toFixed(2)} foi adicionado ao seu saldo!\\n\\n✅ Você já pode jogar as raspadinhas!`);
-            
+            alert(`🎉 PAGAMENTO APROVADO!\\n\\n💰 R$ ${amount.toFixed(2)} adicionado ao seu saldo!`);
             this.goToScreen('home');
         }
 
         playScratchCard(cost) {
             if (this.currentUser.balance < cost) {
-                alert(`💰 Saldo insuficiente!\\n\\nSeu saldo: R$ ${this.currentUser.balance.toFixed(2)}\\nNecessário: R$ ${cost.toFixed(2)}\\n\\n💳 Faça um depósito para continuar jogando!`);
+                alert(`💰 Saldo insuficiente!\\n\\nSeu saldo: R$ ${this.currentUser.balance.toFixed(2)}\\nNecessário: R$ ${cost.toFixed(2)}`);
                 return;
             }
 
-            // Deduzir custo
             this.currentUser.balance -= cost;
             this.currentUser.totalPlayed += 1;
 
-            // Calcular prêmio (30% chance de ganhar)
             const maxPrize = cost * 200;
             const prizes = this.gameData.prizes.filter(p => p <= maxPrize && p > 0);
             
             let randomPrize = 0;
-            if (Math.random() < 0.30) { // 30% chance de ganhar
+            if (Math.random() < 0.30) {
                 randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
             }
 
-            // Adicionar prêmio se ganhou
             if (randomPrize > 0) {
                 this.currentUser.balance += randomPrize;
                 this.currentUser.totalWon += randomPrize;
             }
 
-            // Salvar transação
-            const transaction = {
-                type: 'game',
-                cost: cost,
-                prize: randomPrize,
-                date: new Date().toISOString()
-            };
-            
-            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-            transactions.push(transaction);
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-
-            // Salvar dados atualizados
             localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
             localStorage.setItem(`user_${this.currentUser.id}`, JSON.stringify(this.currentUser));
 
-            // Mostrar resultado com animação
             const gameResult = document.getElementById('gameResult');
             
             gameResult.innerHTML = `
@@ -601,13 +680,12 @@
                             <div class="text-6xl mb-4">🎉</div>
                             <div class="text-3xl font-bold text-green-600 mb-2">PARABÉNS!</div>
                             <div class="text-2xl font-bold text-green-700">Você ganhou R$ ${randomPrize.toFixed(2)}!</div>
-                            <div class="text-lg text-gray-600 mt-2">💰 Novo saldo: R$ ${this.currentUser.balance.toFixed(2)}</div>
+                            <div class="text-lg text-gray-600 mt-2">💰 Saldo: R$ ${this.currentUser.balance.toFixed(2)}</div>
                         </div>
                     `;
                     
-                    // Efeito sonoro simulado
                     setTimeout(() => {
-                        alert(`🎊 PARABÉNS! 🎊\\n\\n🏆 Você ganhou R$ ${randomPrize.toFixed(2)}!\\n\\n💰 Seu novo saldo é R$ ${this.currentUser.balance.toFixed(2)}\\n\\n🎰 Continue jogando para ganhar mais!`);
+                        alert(`🎊 PARABÉNS! 🎊\\n\\n🏆 Você ganhou R$ ${randomPrize.toFixed(2)}!\\n\\n💰 Novo saldo: R$ ${this.currentUser.balance.toFixed(2)}`);
                     }, 1000);
                 } else {
                     gameResult.innerHTML = `
@@ -615,16 +693,14 @@
                             <div class="text-5xl mb-4">😔</div>
                             <div class="text-2xl font-bold text-gray-600 mb-2">Que pena!</div>
                             <div class="text-lg text-gray-600">Não foi desta vez...</div>
-                            <div class="text-lg text-blue-600 mt-2">💰 Saldo atual: R$ ${this.currentUser.balance.toFixed(2)}</div>
-                            <div class="text-sm text-gray-500 mt-2">🍀 Tente novamente! A sorte pode mudar!</div>
+                            <div class="text-lg text-blue-600 mt-2">💰 Saldo: R$ ${this.currentUser.balance.toFixed(2)}</div>
                         </div>
                     `;
                 }
                 
-                // Limpar resultado após alguns segundos
                 setTimeout(() => {
-                    gameResult.innerHTML = `<p class="text-gray-500">Selecione um valor acima para jogar novamente! 🎯</p>`;
-                }, 5000);
+                    gameResult.innerHTML = `<p class="text-gray-500">Selecione um valor para jogar novamente! 🎯</p>`;
+                }, 4000);
             }, 2000);
         }
 
@@ -641,42 +717,10 @@
         }
 
         showHistory() {
-            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-            let historyText = "📊 HISTÓRICO DE TRANSAÇÕES\\n\\n";
-            
-            if (transactions.length === 0) {
-                historyText += "Nenhuma transação encontrada.";
-            } else {
-                transactions.slice(-10).reverse().forEach((transaction, index) => {
-                    const date = new Date(transaction.date).toLocaleString('pt-BR');
-                    
-                    if (transaction.type === 'deposit') {
-                        historyText += `💳 DEPÓSITO\\n`;
-                        historyText += `💰 R$ ${transaction.amount.toFixed(2)}\\n`;
-                        historyText += `📅 ${date}\\n\\n`;
-                    } else if (transaction.type === 'withdrawal') {
-                        historyText += `💸 SAQUE\\n`;
-                        historyText += `💰 R$ ${transaction.amount.toFixed(2)}\\n`;
-                        historyText += `🔑 ${transaction.pixKey}\\n`;
-                        historyText += `📅 ${date}\\n\\n`;
-                    } else if (transaction.type === 'game') {
-                        historyText += `🎰 RASPADINHA\\n`;
-                        historyText += `💸 Apostou: R$ ${transaction.cost.toFixed(2)}\\n`;
-                        if (transaction.prize > 0) {
-                            historyText += `🏆 Ganhou: R$ ${transaction.prize.toFixed(2)}\\n`;
-                        } else {
-                            historyText += `😔 Não ganhou\\n`;
-                        }
-                        historyText += `📅 ${date}\\n\\n`;
-                    }
-                });
-            }
-            
-            alert(historyText);
+            alert('📊 HISTÓRICO\\n\\n📈 Funcionalidade em desenvolvimento!\\n\\nEm breve você poderá ver:\\n• Histórico de jogos\\n• Depósitos e saques\\n• Relatórios detalhados');
         }
     }
 
-    // Inicializar aplicação quando a página carregar
     document.addEventListener('DOMContentLoaded', () => {
         window.app = new RaspaCashApp();
     });
