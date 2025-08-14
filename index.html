@@ -1,630 +1,2006 @@
-    /* Layout Classes */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-    .flex { display: flex; }
-    .items-center { align-items: center; }
-    .justify-center { justify-content: center; }
-    .justify-between { justify-content: space-between; }
-    .text-center { text-align: center; }
-    .min-h-screen { min-height: 100vh; }
-    .w-full { width: 100%; }
-    .h-screen { height: 100vh; }
-    .hidden { display: none !important; }
+import React, { useState, useRef, useEffect } from 'react';
 
-    /* Grid System */
-    .grid { display: grid; gap: 20px; }
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+const SistemaRaspadinha = () => {
+  const canvasRef = useRef(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [isScratching, setIsScratching] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [prize, setPrize] = useState(0);
+  const [balance, setBalance] = useState(0);
+  const [scratchedArea, setScratchedArea] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showDeposit, setShowDeposit] = useState(false);
+  const [showFeed, setShowFeed] = useState(false);
+  const [user, setUser] = useState({ name: '', email: '' });
+  const [depositAmount, setDepositAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('pix');
+  const [showPromotion, setShowPromotion] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawData, setWithdrawData] = useState({
+    fullName: '',
+    pixKey: '',
+    pixKeyType: 'cpf'
+  });
+  
+  // Sistema de sequência de fidelidade por cartela
+  const [loyaltySequences, setLoyaltySequences] = useState({
+    1: { spent: 0, games: 0 }, // Plano Clássico R$ 5
+    2: { spent: 0, games: 0 }, // Plano Premium R$ 10  
+    3: { spent: 0, games: 0 }  // Plano VIP R$ 20
+  });
+  const [promoCards, setPromoCards] = useState([]);
+  const [scratchCard, setScratchCard] = useState(null);
+  const [revealedNumbers, setRevealedNumbers] = useState([]);
+  const [cellRevealStatus, setCellRevealStatus] = useState([]);
+  
+  // Estados para PIX e integrações
+  const [showPixModal, setShowPixModal] = useState(false);
+  const [currentPixPayment, setCurrentPixPayment] = useState(null);
+  const [pixCheckInterval, setPixCheckInterval] = useState(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  
+  // APIs
+  const [picPayAPI, setPicPayAPI] = useState(null);
+  const [githubAPI, setGithubAPI] = useState(null);
 
-    /* Responsive Grid */
-    @media (max-width: 768px) {
-        .grid-3, .grid-4 { grid-template-columns: 1fr; }
-        .grid-2 { grid-template-columns: 1fr; }
+  const plans = [
+    {
+      id: 1,
+      name: "Plano Clássico",
+      cost: 5,
+      maxPrize: 500,
+      returnRate: 0.03,
+      color: "from-green-400 to-green-600",
+      image: "k5jKx_PuSlu9D3B5fy__S",
+      description: "Diversão garantida com prêmios de até R$ 500!"
+    },
+    {
+      id: 2,
+      name: "Plano Premium",
+      cost: 10,
+      maxPrize: 1000,
+      returnRate: 0.02,
+      color: "from-purple-400 to-purple-600",
+      image: "bXC6a4Ey18td10IKMReUE",
+      description: "Experiência premium com prêmios de até R$ 1.000!"
+    },
+    {
+      id: 3,
+      name: "Plano VIP",
+      cost: 20,
+      maxPrize: 2000,
+      returnRate: 0.015,
+      color: "from-red-400 to-red-600",
+      image: "PL81tydFO1QpD82xexV25",
+      description: "Exclusividade VIP com prêmios de até R$ 2.000!"
     }
+  ];
 
-    @media (min-width: 769px) and (max-width: 1024px) {
-        .grid-4 { grid-template-columns: repeat(2, 1fr); }
-        .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  // Pacotes promocionais
+  const promotionalPacks = [
+    {
+      id: 'promo-1',
+      planId: 1,
+      name: "Pacote Clássico",
+      quantity: 5,
+      originalPrice: 25,
+      promoPrice: 15,
+      discount: 40,
+      color: "from-green-400 to-green-600",
+      image: "FRbl23c868N2puDFaHwJf"
+    },
+    {
+      id: 'promo-2',
+      planId: 2,
+      name: "Pacote Premium",
+      quantity: 5,
+      originalPrice: 50,
+      promoPrice: 40,
+      discount: 20,
+      color: "from-purple-400 to-purple-600",
+      image: "n8whZEnqinUez0l5jAXIw"
+    },
+    {
+      id: 'promo-3',
+      planId: 3,
+      name: "Pacote VIP",
+      quantity: 5,
+      originalPrice: 100,
+      promoPrice: 85,
+      discount: 15,
+      color: "from-red-400 to-red-600",
+      image: "HRhqmfvIk4IhQN6HOoh8k"
     }
+  ];
 
-    /* Colors */
-    .bg-white { background: white; }
-    .bg-gray-50 { background: #f9fafb; }
-    .bg-gray-100 { background: #f3f4f6; }
-    .bg-gray-800 { background: #1f2937; }
-    .text-white { color: white; }
-    .text-gray-400 { color: #9ca3af; }
-    .text-gray-500 { color: #6b7280; }
-    .text-gray-600 { color: #4b5563; }
-    .text-gray-700 { color: #374151; }
-    .text-gray-800 { color: #1f2937; }
-    .text-purple-600 { color: #7c3aed; }
-    .text-green-600 { color: #059669; }
-    .text-blue-600 { color: #2563eb; }
-    .text-red-600 { color: #dc2626; }
-    .text-orange-600 { color: #ea580c; }
+  // Feed de ganhos falsos
+  const fakeFeed = [
+    { name: "João S.", amount: 150, plan: "Clássico", time: "2 min atrás" },
+    { name: "Maria L.", amount: 890, plan: "Premium", time: "5 min atrás" },
+    { name: "Carlos P.", amount: 45, plan: "Clássico", time: "8 min atrás" },
+    { name: "Ana R.", amount: 1200, plan: "VIP", time: "12 min atrás" },
+    { name: "Pedro M.", amount: 320, plan: "Premium", time: "15 min atrás" },
+    { name: "Julia F.", amount: 75, plan: "Clássico", time: "18 min atrás" },
+    { name: "Roberto K.", amount: 1890, plan: "VIP", time: "22 min atrás" },
+    { name: "Fernanda O.", amount: 450, plan: "Premium", time: "25 min atrás" }
+  ];
 
-    /* Typography */
-    .text-xs { font-size: 12px; }
-    .text-sm { font-size: 14px; }
-    .text-base { font-size: 16px; }
-    .text-lg { font-size: 18px; }
-    .text-xl { font-size: 20px; }
-    .text-2xl { font-size: 24px; }
-    .text-3xl { font-size: 30px; }
-    .text-4xl { font-size: 36px; }
-    .text-5xl { font-size: 48px; }
-    .font-bold { font-weight: 700; }
-    .font-semibold { font-weight: 600; }
-    .font-medium { font-weight: 500; }
-
-    /* Spacing */
-    .p-2 { padding: 8px; }
-    .p-3 { padding: 12px; }
-    .p-4 { padding: 16px; }
-    .p-6 { padding: 24px; }
-    .p-8 { padding: 32px; }
-    .py-2 { padding: 8px 0; }
-    .py-3 { padding: 12px 0; }
-    .py-4 { padding: 16px 0; }
-    .px-4 { padding: 0 16px; }
-    .px-6 { padding: 0 24px; }
-    .px-8 { padding: 0 32px; }
-    .m-2 { margin: 8px; }
-    .m-4 { margin: 16px; }
-    .mb-2 { margin-bottom: 8px; }
-    .mb-4 { margin-bottom: 16px; }
-    .mb-6 { margin-bottom: 24px; }
-    .mb-8 { margin-bottom: 32px; }
-    .mt-2 { margin-top: 8px; }
-    .mt-4 { margin-top: 16px; }
-    .mt-6 { margin-top: 24px; }
-    .ml-2 { margin-left: 8px; }
-    .mr-2 { margin-right: 8px; }
-
-    /* Borders & Shadows */
-    .rounded { border-radius: 6px; }
-    .rounded-lg { border-radius: 8px; }
-    .rounded-xl { border-radius: 12px; }
-    .rounded-2xl { border-radius: 16px; }
-    .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-    .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-    .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-
-    /* Border */
-    .border { border: 1px solid #d1d5db; }
-    .border-l-4 { border-left: 4px solid; }
-    .border-green-500 { border-left-color: #10b981; }
-    .border-blue-500 { border-left-color: #3b82f6; }
-    .border-purple-500 { border-left-color: #8b5cf6; }
-
-    /* Forms */
-    input, select, textarea {
-        width: 100%;
-        padding: 12px 16px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: all 0.2s;
-        font-family: inherit;
+  // Calcular bônus de fidelidade para o plano específico
+  const calculateLoyaltyBonus = (planId) => {
+    const sequence = loyaltySequences[planId];
+    const plan = plans.find(p => p.id === planId);
+    
+    if (!sequence || !plan) return 0;
+    
+    // Meta de gasto para ativar bônus de fidelidade (10x o custo da cartela)
+    const spendTarget = plan.cost * 10;
+    
+    if (sequence.spent >= spendTarget) {
+      // Calcular bônus progressivo: 2% a cada 10 jogadas extras após atingir a meta
+      const extraSpent = sequence.spent - spendTarget;
+      const extraCycles = Math.floor(extraSpent / spendTarget);
+      const bonusRate = Math.min(extraCycles * 0.02, 0.15); // Máximo 15% de bônus
+      
+      return bonusRate;
     }
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: #7c3aed;
-        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-    }
+    
+    return 0;
+  };
 
-    /* Buttons */
-    button {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-size: 16px;
-        font-family: inherit;
-    }
-    .btn-primary { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; }
-    .btn-green { background: linear-gradient(135deg, #059669, #10b981); color: white; }
-    .btn-blue { background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; }
-    .btn-red { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
-    .btn-orange { background: linear-gradient(135deg, #ea580c, #f97316); color: white; }
-
-    button:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    button:active { transform: translateY(0); }
-    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    /* Cards */
-    .card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        padding: 24px;
-        transition: all 0.3s;
-    }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-
-    /* Game Cards */
-    .game-card {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        border: none;
-        font-family: inherit;
-    }
-    .game-card:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); }
-    .game-card:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    /* Action Cards */
-    .action-card {
-        padding: 24px;
-        border-radius: 12px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s;
-        border: none;
-        font-family: inherit;
-        color: white;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .action-card:hover { transform: scale(1.05); }
-
-    /* Header */
-    .header {
-        background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        padding: 16px 0;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-
-    /* Animations */
-    .animate-bounce { animation: bounce 1s infinite; }
-    .animate-pulse { animation: pulse 2s infinite; }
-    .animate-spin { animation: spin 1s linear infinite; }
-
-    @keyframes bounce { 0%, 100% { transform: translateY(-25%); } 50% { transform: none; } }
-    @keyframes pulse { 50% { opacity: .5; } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Promo Banner */
-    .promo-banner {
-        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-        background-size: 400% 400%;
-        animation: gradient 15s ease infinite;
-        color: white;
-        padding: 32px;
-        border-radius: 16px;
-        text-align: center;
-    }
-
-    @keyframes gradient {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-
-    /* Loading */
-    .loading-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        color: white;
-    }
-
-    /* Mobile Responsiveness */
-    @media (max-width: 640px) {
-        .container { padding: 0 16px; }
-        .text-4xl { font-size: 28px; }
-        .text-3xl { font-size: 24px; }
-        .text-2xl { font-size: 20px; }
-        .p-8 { padding: 16px; }
-        .p-6 { padding: 16px; }
-        .grid { gap: 16px; }
-        button { padding: 12px 20px; font-size: 14px; }
-        input, select { font-size: 16px; } /* Prevent zoom on iOS */
-    }
-
-    /* Utility */
-    .opacity-90 { opacity: 0.9; }
-    .opacity-75 { opacity: 0.75; }
-    .opacity-50 { opacity: 0.5; }
-    .cursor-pointer { cursor: pointer; }
-    .cursor-not-allowed { cursor: not-allowed; }
-    .select-none { user-select: none; }
-    .overflow-hidden { overflow: hidden; }
-    .relative { position: relative; }
-    .absolute { position: absolute; }
-    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-    .space-y-4 > * + * { margin-top: 16px; }
-    .space-y-6 > * + * { margin-top: 24px; }
-</style>
-</head>
-<body>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="text-center">
-            <div class="animate-spin text-4xl mb-4">🎰</div>
-            <h2 class="text-xl">Carregando RaspaCash...</h2>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div id="main-content" class="hidden min-h-screen">
-        <!-- Header -->
-        <header class="header">
-            <div class="container flex justify-between items-center">
-                <div class="flex items-center">
-                    <span class="text-2xl mr-2">🎰</span>
-                    <h1 class="text-xl font-bold text-gray-800">RaspaCash</h1>
-                </div>
-                <div class="flex items-center space-y-4">
-                    <div class="mr-4">
-                        <span class="text-sm text-gray-600">Saldo:</span>
-                        <span id="user-balance" class="font-bold text-green-600">R$ 50,00</span>
-                    </div>
-                    <button id="profile-btn" class="btn-primary">👤 Perfil</button>
-                </div>
-            </div>
-        </header>
-
-        <!-- Hero Section -->
-        <section class="py-12">
-            <div class="container">
-                <div class="promo-banner mb-8">
-                    <h2 class="text-4xl font-bold mb-4">🎉 Bem-vindo ao RaspaCash! 🎉</h2>
-                    <p class="text-lg mb-6">Jogue raspadinhas online e ganhe prêmios reais!</p>
-                    <div class="flex justify-center space-y-4">
-                        <button onclick="scrollToGames()" class="btn-primary text-lg px-8 py-4">
-                            🎮 Começar a Jogar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Game Selection -->
-        <section id="games-section" class="py-8">
-            <div class="container">
-                <h3 class="text-3xl font-bold text-center text-white mb-8">🎯 Escolha Sua Raspadinha</h3>
-                
-                <div class="grid grid-3 mb-8">
-                    <!-- Clássica -->
-                    <div class="game-card" onclick="selectGame('classica')">
-                        <div class="text-3xl mb-3">🎫</div>
-                        <h4 class="text-lg font-bold mb-2">Clássica</h4>
-                        <p class="text-sm mb-3">3 símbolos iguais = Prêmio!</p>
-                        <div class="text-xs opacity-75">
-                            <div>Custo: R$ 5,00</div>
-                            <div>Prêmio: até R$ 100,00</div>
-                        </div>
-                    </div>
-
-                    <!-- Premium -->
-                    <div class="game-card" onclick="selectGame('premium')" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
-                        <div class="text-3xl mb-3">💎</div>
-                        <h4 class="text-lg font-bold mb-2">Premium</h4>
-                        <p class="text-sm mb-3">Maiores chances de ganhar!</p>
-                        <div class="text-xs opacity-75">
-                            <div>Custo: R$ 15,00</div>
-                            <div>Prêmio: até R$ 500,00</div>
-                        </div>
-                    </div>
-
-                    <!-- Super Jackpot -->
-                    <div class="game-card" onclick="selectGame('jackpot')" style="background: linear-gradient(135deg, #f59e0b, #f97316);">
-                        <div class="text-3xl mb-3">🏆</div>
-                        <h4 class="text-lg font-bold mb-2">Super Jackpot</h4>
-                        <p class="text-sm mb-3">O prêmio dos sonhos!</p>
-                        <div class="text-xs opacity-75">
-                            <div>Custo: R$ 25,00</div>
-                            <div>Prêmio: até R$ 2.500,00</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Game Area -->
-        <div id="game-area" class="hidden">
-            <div class="container py-8">
-                <div class="bg-white rounded-2xl p-8 max-w-2xl mx-auto">
-                    <div class="text-center mb-6">
-                        <h3 id="game-title" class="text-2xl font-bold text-gray-800 mb-2"></h3>
-                        <p class="text-gray-600">Raspe os campos abaixo para revelar os símbolos!</p>
-                    </div>
-
-                    <!-- Scratch Cards -->
-                    <div id="scratch-area" class="grid grid-3 gap-4 mb-6"></div>
-
-                    <!-- Game Controls -->
-                    <div class="flex justify-center space-y-4 mb-6">
-                        <button id="scratch-all-btn" class="btn-orange mr-4" onclick="scratchAll()">
-                            ✨ Raspar Todos
-                        </button>
-                        <button id="new-game-btn" class="btn-green" onclick="newGame()" disabled>
-                            🎮 Novo Jogo
-                        </button>
-                    </div>
-
-                    <!-- Result Area -->
-                    <div id="result-area" class="text-center hidden">
-                        <div id="result-message" class="text-xl font-bold mb-4"></div>
-                        <div id="prize-amount" class="text-3xl font-bold text-green-600 mb-4"></div>
-                    </div>
-
-                    <!-- Back Button -->
-                    <div class="text-center">
-                        <button onclick="backToGameSelection()" class="btn-primary">
-                            ← Voltar aos Jogos
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistics -->
-        <section class="py-8">
-            <div class="container">
-                <div class="grid grid-3 gap-6">
-                    <div class="card text-center">
-                        <div class="text-2xl mb-2">🎮</div>
-                        <h4 class="font-bold text-gray-800 mb-1">Jogos Hoje</h4>
-                        <p id="games-today" class="text-2xl font-bold text-blue-600">0</p>
-                    </div>
-                    <div class="card text-center">
-                        <div class="text-2xl mb-2">💰</div>
-                        <h4 class="font-bold text-gray-800 mb-1">Ganhos Hoje</h4>
-                        <p id="winnings-today" class="text-2xl font-bold text-green-600">R$ 0,00</p>
-                    </div>
-                    <div class="card text-center">
-                        <div class="text-2xl mb-2">🏆</div>
-                        <h4 class="font-bold text-gray-800 mb-1">Maior Prêmio</h4>
-                        <p id="biggest-win" class="text-2xl font-bold text-purple-600">R$ 0,00</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="py-8">
-            <div class="container text-center text-white">
-                <p class="mb-4">© 2024 RaspaCash - Jogue com Responsabilidade</p>
-                <div class="flex justify-center space-y-4">
-                    <a href="#" class="hover:text-yellow-300 mx-2">Termos de Uso</a>
-                    <a href="#" class="hover:text-yellow-300 mx-2">Privacidade</a>
-                    <a href="#" class="hover:text-yellow-300 mx-2">Suporte</a>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        // Game Configuration
-        const gameTypes = {
-            classica: {
-                name: 'Raspadinha Clássica',
-                cost: 5.00,
-                maxPrize: 100.00,
-                symbols: ['🍒', '🍋', '⭐', '💎', '🎯', '🔥'],
-                winChance: 0.25
-            },
-            premium: {
-                name: 'Raspadinha Premium',
-                cost: 15.00,
-                maxPrize: 500.00,
-                symbols: ['💎', '👑', '🏆', '⚡', '🌟', '💰'],
-                winChance: 0.35
-            },
-            jackpot: {
-                name: 'Super Jackpot',
-                cost: 25.00,
-                maxPrize: 2500.00,
-                symbols: ['🏆', '👑', '💰', '⚡', '🌟', '🔥'],
-                winChance: 0.15
-            }
-        };
-
-        // Game State
-        let currentGame = null;
-        let playerBalance = 50.00;
-        let gameStats = {
-            gamesPlayed: 0,
-            totalWinnings: 0,
-            biggestWin: 0
-        };
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-            }, 2000);
-            
-            updateDisplay();
-        });
-
-        // Game Functions
-        function selectGame(gameType) {
-            if (playerBalance < gameTypes[gameType].cost) {
-                alert('Saldo insuficiente! Adicione mais créditos para jogar.');
-                return;
-            }
-
-            currentGame = {
-                type: gameType,
-                config: gameTypes[gameType],
-                cards: [],
-                scratched: [],
-                result: null
-            };
-
-            setupGameArea();
+  // Função para gerar cartela com números aleatórios + sistema de fidelidade
+  const generateScratchCard = (plan) => {
+    const numbers = [];
+    const maxNumber = plan.maxPrize;
+    
+    // Verificar se atingiu o valor mínimo para poder ganhar
+    const sequence = loyaltySequences[plan.id];
+    const spendTarget = plan.cost * 10; // Meta mínima para poder ganhar
+    const hasReachedMinimum = sequence.spent >= spendTarget;
+    
+    // Taxa base + bônus de fidelidade
+    const loyaltyBonus = calculateLoyaltyBonus(plan.id);
+    const finalReturnRate = plan.returnRate + loyaltyBonus;
+    
+    // Decidir se vai ganhar baseado na taxa de retorno + bônus
+    const random = Math.random();
+    
+    // SÓ PODE GANHAR SE ATINGIU O VALOR MÍNIMO
+    if (hasReachedMinimum && random < finalReturnRate) {
+      // VAI GANHAR - gerar cartela ganhadora
+      let prizeNumber;
+      if (random < 0.001) { // 0.1% chance de prêmio máximo (extremamente raro)
+        prizeNumber = plan.maxPrize;
+      } else if (random < 0.003) { // 0.2% chance de prêmio grande
+        prizeNumber = Math.floor(Math.random() * (plan.maxPrize * 0.2)) + (plan.maxPrize * 0.1);
+      } else { // chance de prêmio pequeno (mais comum) - menor ainda
+        prizeNumber = Math.floor(Math.random() * (plan.cost * 3)) + plan.cost;
+      }
+      
+      // Começar com números aleatórios
+      for (let i = 0; i < 9; i++) {
+        numbers.push(Math.floor(Math.random() * maxNumber) + 1);
+      }
+      
+      // Escolher 3 posições aleatórias para colocar o número premiado
+      const positions = [];
+      while (positions.length < 3) {
+        const pos = Math.floor(Math.random() * 9);
+        if (!positions.includes(pos)) {
+          positions.push(pos);
         }
-
-        function setupGameArea() {
-            document.getElementById('games-section').classList.add('hidden');
-            document.getElementById('game-area').classList.remove('hidden');
-            
-            const title = document.getElementById('game-title');
-            title.textContent = currentGame.config.name;
-
-            const scratchArea = document.getElementById('scratch-area');
-            scratchArea.innerHTML = '';
-
-            // Create 9 scratch cards
-            for (let i = 0; i < 9; i++) {
-                const card = document.createElement('div');
-                card.className = 'relative bg-gray-300 rounded-lg aspect-square flex items-center justify-center cursor-pointer text-4xl select-none';
-                card.style.background = 'linear-gradient(45deg, #d1d5db, #9ca3af)';
-                card.innerHTML = '?';
-                card.onclick = () => scratchCard(i);
-                scratchArea.appendChild(card);
-
-                // Generate random symbol
-                const symbols = currentGame.config.symbols;
-                const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                currentGame.cards[i] = symbol;
-                currentGame.scratched[i] = false;
-            }
-
-            // Simulate winning logic
-            if (Math.random() < currentGame.config.winChance) {
-                const winSymbol = currentGame.config.symbols[0];
-                const positions = [0, 4, 8]; // diagonal or random positions
-                positions.forEach(pos => {
-                    currentGame.cards[pos] = winSymbol;
-                });
-            }
-
-            document.getElementById('result-area').classList.add('hidden');
-            document.getElementById('scratch-all-btn').disabled = false;
-            document.getElementById('new-game-btn').disabled = true;
+      }
+      
+      positions.forEach(pos => {
+        numbers[pos] = prizeNumber;
+      });
+      
+      return { 
+        numbers, 
+        prizeNumber, 
+        isWinner: true, 
+        loyaltyBonus: loyaltyBonus,
+        finalReturnRate: finalReturnRate,
+        hasReachedMinimum: hasReachedMinimum
+      };
+    } else {
+      // NÃO VAI GANHAR - mas sempre garantir 2 números iguais para dar esperança
+      
+      // Gerar números base aleatórios
+      for (let i = 0; i < 9; i++) {
+        numbers.push(Math.floor(Math.random() * maxNumber) + 1);
+      }
+      
+      // Escolher um número "quase ganhador" (não pode ser muito alto para não frustar)
+      const almostWinNumber = Math.floor(Math.random() * (plan.cost * 8)) + plan.cost;
+      
+      // Escolher 2 posições aleatórias para colocar o número "quase ganhador"
+      const positions = [];
+      while (positions.length < 2) {
+        const pos = Math.floor(Math.random() * 9);
+        if (!positions.includes(pos)) {
+          positions.push(pos);
         }
-
-        function scratchCard(index) {
-            if (currentGame.scratched[index]) return;
-
-            currentGame.scratched[index] = true;
-            const cards = document.getElementById('scratch-area').children;
-            const card = cards[index];
-            
-            card.innerHTML = currentGame.cards[index];
-            card.style.background = 'white';
-            card.classList.add('shadow-md');
-            card.onclick = null;
-
-            checkWin();
+      }
+      
+      // Colocar exatamente 2 números iguais
+      positions.forEach(pos => {
+        numbers[pos] = almostWinNumber;
+      });
+      
+      // Garantir que os outros números não formem trio
+      const numberCounts = {};
+      numbers.forEach(num => {
+        numberCounts[num] = (numberCounts[num] || 0) + 1;
+      });
+      
+      // Corrigir se algum outro número apareceu 3+ vezes
+      Object.keys(numberCounts).forEach(num => {
+        if (numberCounts[num] >= 3 && parseInt(num) !== almostWinNumber) {
+          const indices = numbers.map((n, i) => n == num ? i : -1).filter(i => i !== -1);
+          // Substituir os números extras para não formar trio
+          for (let i = 2; i < indices.length; i++) {
+            let newNumber;
+            do {
+              newNumber = Math.floor(Math.random() * maxNumber) + 1;
+            } while (newNumber === almostWinNumber || newNumber === parseInt(num));
+            numbers[indices[i]] = newNumber;
+          }
         }
+      });
+      
+      return { 
+        numbers, 
+        prizeNumber: 0, 
+        isWinner: false, 
+        almostWinNumber,
+        loyaltyBonus: loyaltyBonus,
+        finalReturnRate: finalReturnRate,
+        hasReachedMinimum: hasReachedMinimum
+      };
+    }
+  };
 
-        function scratchAll() {
-            for (let i = 0; i < 9; i++) {
-                if (!currentGame.scratched[i]) {
-                    setTimeout(() => scratchCard(i), i * 200);
-                }
-            }
-            document.getElementById('scratch-all-btn').disabled = true;
+  // Função para verificar se ganhou
+  const checkWin = (numbers) => {
+    const counts = {};
+    numbers.forEach(num => {
+      counts[num] = (counts[num] || 0) + 1;
+    });
+    
+    const winningNumber = Object.keys(counts).find(num => counts[num] >= 3);
+    return winningNumber ? parseInt(winningNumber) : 0;
+  };
+
+  // Inicializar APIs ao carregar
+  useEffect(() => {
+    // Carregar scripts das APIs
+    const loadScripts = async () => {
+      try {
+        // Carregar QRCode library
+        if (!window.QRCode) {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+          script.onload = () => console.log('QRCode library loaded');
+          document.head.appendChild(script);
         }
+        
+        // Carregar APIs PicPay e GitHub se disponíveis
+        if (typeof window !== 'undefined') {
+          // Tentar carregar PicPay API
+          if (window.createPicPayAPI) {
+            const api = window.createPicPayAPI();
+            setPicPayAPI(api);
+            console.log('✅ PicPay API carregada');
+          } else {
+            console.warn('⚠️ PicPay API não encontrada');
+          }
+          
+          // Tentar carregar GitHub API
+          if (window.createGitHubAPI) {
+            const api = window.createGitHubAPI();
+            setGithubAPI(api);
+            console.log('✅ GitHub API carregada');
+          } else {
+            console.warn('⚠️ GitHub API não encontrada');
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar APIs:', error);
+      }
+    };
+    
+    loadScripts();
+  }, []);
 
-        function checkWin() {
-            const allScratched = currentGame.scratched.every(s => s);
-            if (!allScratched) return;
+  // Funções de login e depósito - SEM LOGIN DE TESTE
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const userData = {
+      name: formData.get('name')?.trim(),
+      email: formData.get('email')?.trim()
+    };
+    
+    // Validações
+    if (!userData.name || userData.name.length < 2) {
+      alert('Por favor, digite seu nome completo (mínimo 2 caracteres)');
+      return;
+    }
+    
+    if (!userData.email || !userData.email.includes('@')) {
+      alert('Por favor, digite um email válido');
+      return;
+    }
+    
+    setUser(userData);
+    
+    try {
+      // Carregar dados do usuário do GitHub
+      if (githubAPI) {
+        const userDataFromGitHub = await githubAPI.loadUserData(userData.email);
+        setBalance(userDataFromGitHub.balance || 0);
+        console.log('✅ Dados do usuário carregados do GitHub');
+      } else {
+        // Fallback para localStorage se GitHub não estiver disponível
+        const localData = localStorage.getItem(`user_${userData.email}`);
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          setBalance(parsed.balance || 0);
+        } else {
+          setBalance(0);
+        }
+        console.warn('⚠️ GitHub API não disponível, usando localStorage');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
+      setBalance(0);
+    }
+    
+    setIsLoggedIn(true);
+    setShowLogin(false);
+  };
 
-            // Deduct cost
-            playerBalance -= currentGame.config.cost;
-            gameStats.gamesPlayed++;
+  // Integração real com saque PIX via PicPay
+  const handleWithdraw = async (e) => {
+    e.preventDefault();
+    const amount = parseFloat(withdrawAmount);
+    
+    if (amount < 100) {
+      alert('Saque mínimo de R$ 100,00!');
+      return;
+    }
+    
+    if (amount > balance) {
+      alert('Saldo insuficiente para saque!');
+      return;
+    }
 
-            // Check for wins
-            const symbolCounts = {};
-            currentGame.cards.forEach(symbol => {
-                symbolCounts[symbol] = (symbolCounts[symbol] || 0) + 1;
+    if (!withdrawData.fullName.trim()) {
+      alert('Por favor, preencha seu nome completo!');
+      return;
+    }
+
+    if (!withdrawData.pixKey.trim()) {
+      alert('Por favor, preencha sua chave PIX!');
+      return;
+    }
+    
+    if (!picPayAPI) {
+      alert('Sistema de saque não disponível. Tente novamente.');
+      return;
+    }
+    
+    try {
+      setIsProcessingPayment(true);
+      
+      // Processar saque via PicPay
+      const result = await picPayAPI.processPixPayout(
+        amount,
+        withdrawData.pixKey,
+        withdrawData.pixKeyType,
+        withdrawData.fullName,
+        user.email
+      );
+      
+      if (result.success) {
+        // Deduzir do saldo
+        setBalance(prev => prev - amount);
+        
+        // Registrar no GitHub
+        if (githubAPI) {
+          await githubAPI.logTransaction({
+            type: 'withdrawal',
+            amount: amount,
+            userId: user.email,
+            method: 'picpay_pix',
+            pixKey: withdrawData.pixKey,
+            status: 'processing'
+          });
+          
+          // Disparar webhook
+          await githubAPI.triggerWebhook('pix_payout_requested', {
+            user_id: user.email,
+            amount: amount,
+            pix_key: withdrawData.pixKey,
+            pix_key_type: withdrawData.pixKeyType,
+            full_name: withdrawData.fullName
+          });
+        }
+        
+        setWithdrawAmount('');
+        setWithdrawData({ fullName: '', pixKey: '', pixKeyType: 'cpf' });
+        setShowWithdraw(false);
+        
+        alert(`Saque de R$ ${amount.toFixed(2)} solicitado com sucesso! ${result.message}`);
+      } else {
+        throw new Error('Falha ao processar saque');
+      }
+      
+    } catch (error) {
+      console.error('Erro ao processar saque:', error);
+      alert('Erro ao processar saque: ' + error.message);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+
+
+  // Integração real com PicPay PIX
+  const handleDeposit = async (e) => {
+    e.preventDefault();
+    const amount = parseFloat(depositAmount);
+    
+    if (!amount || amount < 5) {
+      alert('Valor mínimo para depósito: R$ 5,00');
+      return;
+    }
+    
+    if (!picPayAPI) {
+      alert('Sistema de pagamento não disponível. Tente novamente.');
+      return;
+    }
+    
+    try {
+      setIsProcessingPayment(true);
+      
+      // Gerar PIX via PicPay
+      const pixData = await picPayAPI.generatePixPayment(amount, user.email, user.email);
+      
+      setCurrentPixPayment(pixData);
+      setShowPixModal(true);
+      setShowDeposit(false);
+      
+      // Iniciar verificação de pagamento
+      startPaymentCheck(pixData.id);
+      
+    } catch (error) {
+      console.error('Erro ao gerar PIX:', error);
+      alert('Erro ao gerar PIX: ' + error.message);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Verificar status do pagamento PIX
+  const startPaymentCheck = (paymentId) => {
+    const interval = setInterval(async () => {
+      try {
+        if (!picPayAPI) return;
+        
+        const status = await picPayAPI.checkPaymentStatus(paymentId);
+        
+        if (status.status === 'paid' || status.status === 'completed') {
+          // Pagamento confirmado
+          const amount = currentPixPayment.amount;
+          setBalance(prev => prev + amount);
+          
+          // Registrar no GitHub
+          if (githubAPI) {
+            await githubAPI.logTransaction({
+              type: 'deposit',
+              amount: amount,
+              userId: user.email,
+              method: 'picpay_pix',
+              status: 'completed'
             });
-
-            let won = false;
-            let prizeAmount = 0;
-
-            // Check for 3 or more matching symbols
-            for (const symbol in symbolCounts) {
-                if (symbolCounts[symbol] >= 3) {
-                    won = true;
-                    prizeAmount = calculatePrize(symbolCounts[symbol], currentGame.config);
-                    break;
-                }
-            }
-
-            showResult(won, prizeAmount);
             
-            if (won) {
-                playerBalance += prizeAmount;
-                gameStats.totalWinnings += prizeAmount;
-                gameStats.biggestWin = Math.max(gameStats.biggestWin, prizeAmount);
+            // Disparar webhook
+            await githubAPI.triggerWebhook('pix_payment_confirmed', {
+              user_id: user.email,
+              amount: amount,
+              status: status.status,
+              transaction_id: status.authorizationId,
+              reference_id: paymentId
+            });
+          }
+          
+          clearInterval(interval);
+          setPixCheckInterval(null);
+          setShowPixModal(false);
+          
+          alert(`Pagamento confirmado! R$ ${amount.toFixed(2)} foi adicionado ao seu saldo.`);
+          
+        } else if (status.status === 'expired' || status.status === 'cancelled') {
+          clearInterval(interval);
+          setPixCheckInterval(null);
+          setShowPixModal(false);
+          alert('Pagamento expirado ou cancelado.');
+        }
+        
+      } catch (error) {
+        console.error('Erro ao verificar pagamento:', error);
+      }
+    }, 5000); // Verificar a cada 5 segundos
+    
+    setPixCheckInterval(interval);
+    
+    // Limpar após 30 minutos
+    setTimeout(() => {
+      if (interval) {
+        clearInterval(interval);
+        setPixCheckInterval(null);
+      }
+    }, 30 * 60 * 1000);
+  };
+
+  // Referência para canvas auxiliar invisível que sempre mantém os números
+  const backgroundCanvasRef = useRef(null);
+
+  // Sistema de CAMADAS - números sempre visíveis por baixo do canvas
+  useEffect(() => {
+    if (selectedPlan && scratchCard && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      
+      // Limpar canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Canvas TRANSPARENTE inicialmente (números ficam visíveis por baixo)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Cobrir tudo com cobertura cinza após um delay
+      setTimeout(() => {
+        // Cobertura opaca por cima dos números
+        ctx.fillStyle = '#666666';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Textura da cobertura
+        ctx.fillStyle = '#777777';
+        for (let i = 0; i < canvas.width; i += 15) {
+          for (let j = 0; j < canvas.height; j += 15) {
+            if ((i + j) % 30 === 0) {
+              ctx.fillRect(i, j, 8, 8);
             }
-
-            updateDisplay();
-            document.getElementById('new-game-btn').disabled = false;
+          }
         }
+        
+        // Texto da cobertura
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = '#000000';
+        ctx.shadowBlur = 3;
+        
+        ctx.fillText('RASPE PARA REVELAR', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.font = 'bold 14px Arial';
+        ctx.fillText('3 números iguais = GANHOU!', canvas.width / 2, canvas.height / 2);
+        ctx.font = 'bold 12px Arial';
+        ctx.fillText('(Clique e arraste)', canvas.width / 2, canvas.height / 2 + 20);
+        
+        ctx.shadowBlur = 0;
+      }, 100);
+      
+      // Reset dos estados
+      setScratchedArea(0);
+      setIsRevealed(false);
+      setRevealedNumbers([]);
+      setCellRevealStatus(new Array(9).fill(false));
+    }
+  }, [selectedPlan, scratchCard]);
 
-        function calculatePrize(matches, config) {
-            const multipliers = { 3: 0.2, 4: 0.4, 5: 0.6, 6: 0.8, 7: 0.9, 8: 0.95, 9: 1.0 };
-            return Math.floor(config.maxPrize * (multipliers[matches] || 0.2));
+  // Função de raspar com sistema de camadas
+  const scratch = (e) => {
+    if (!canvasRef.current || !isScratching || !scratchCard) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // APENAS remover cobertura para revelar números que estão por baixo
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 25, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    
+    // Calcular área total raspada (contar pixels transparentes)
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let transparent = 0;
+    let totalPixels = 0;
+    
+    for (let i = 3; i < imageData.data.length; i += 4) {
+      totalPixels++;
+      if (imageData.data[i] < 100) {
+        transparent++;
+      }
+    }
+    
+    const scratchPercent = transparent / totalPixels;
+    setScratchedArea(scratchPercent);
+    
+    // Quando raspar 70% ou mais, revelar resultado final (mais responsivo)
+    if (scratchPercent >= 0.7 && !isRevealed) {
+      setIsRevealed(true);
+      
+      // Verificar se ganhou com base nos números da cartela
+      if (scratchCard) {
+        const winningAmount = checkWin(scratchCard.numbers);
+        setPrize(winningAmount);
+      }
+    }
+  };
+
+  const startGame = async (plan) => {
+    if (balance < plan.cost) {
+      alert('Saldo insuficiente!');
+      return;
+    }
+    
+    // Atualizar sequência de fidelidade para este plano específico
+    setLoyaltySequences(prev => ({
+      ...prev,
+      [plan.id]: {
+        spent: prev[plan.id].spent + plan.cost,
+        games: prev[plan.id].games + 1
+      }
+    }));
+    
+    setBalance(prev => prev - plan.cost);
+    setSelectedPlan(plan);
+    const cardData = generateScratchCard(plan);
+    setScratchCard(cardData);
+    setPrize(cardData.prizeNumber);
+    setIsRevealed(false);
+    setRevealedNumbers([]);
+    setCellRevealStatus(new Array(9).fill(false));
+    
+    // Registrar jogo no GitHub
+    if (githubAPI) {
+      try {
+        await githubAPI.logGame({
+          userId: user.email,
+          cost: plan.cost,
+          planName: plan.name,
+          won: cardData.isWinner,
+          prize: cardData.prizeNumber || 0
+        });
+        
+        // Disparar webhook
+        await githubAPI.triggerWebhook('game_played', {
+          user_id: user.email,
+          cost: plan.cost,
+          won: cardData.isWinner,
+          prize: cardData.prizeNumber || 0
+        });
+      } catch (error) {
+        console.error('Erro ao registrar jogo:', error);
+      }
+    }
+  };
+
+  // Comprar pacote promocional
+  const buyPromotionalPack = (pack) => {
+    if (balance < pack.promoPrice) {
+      alert('Saldo insuficiente!');
+      return;
+    }
+
+    const originalPlan = plans.find(p => p.id === pack.planId);
+    if (!originalPlan) return;
+
+    // Descontar o valor do pacote do saldo
+    setBalance(prev => prev - pack.promoPrice);
+    
+    // Fechar modal de promoção
+    setShowPromotion(false);
+    
+    // Criar array com as cartelas do pacote
+    const cards = [];
+    for (let i = 0; i < pack.quantity; i++) {
+      const cardData = generateScratchCard(originalPlan);
+      cards.push({
+        id: i,
+        plan: originalPlan,
+        cardData: cardData,
+        isUsed: false
+      });
+    }
+    
+    // Configurar as cartelas promocionais
+    setPromoCards(cards);
+    setSelectedPlan({
+      ...originalPlan,
+      name: `${pack.name} - Promo`,
+      isPromo: true,
+      originalCost: originalPlan.cost,
+      promoCost: pack.promoPrice,
+      quantity: pack.quantity,
+      remainingGames: pack.quantity,
+      currentCard: null // Garantir que inicia na tela de seleção
+    });
+    
+    // Resetar estados da raspadinha
+    setPrize(0);
+    setIsRevealed(false);
+  };
+
+  // Selecionar cartela para raspar
+  const selectPromoCard = (cardIndex) => {
+    const card = promoCards[cardIndex];
+    if (card && !card.isUsed) {
+      setSelectedPlan(prev => ({
+        ...prev,
+        currentCard: cardIndex
+        // Não diminuir remainingGames aqui, apenas quando finalizar a cartela
+      }));
+      setScratchCard(card.cardData);
+      setPrize(card.cardData.prizeNumber);
+      setIsRevealed(false);
+      setRevealedNumbers([]);
+    }
+  };
+
+  // Finalizar cartela atual e voltar para seleção
+  const finishCurrentCard = () => {
+    // Marcar cartela como usada
+    setPromoCards(prev => 
+      prev.map((card, index) => 
+        index === selectedPlan.currentCard 
+          ? { ...card, isUsed: true }
+          : card
+      )
+    );
+
+    // Diminuir o número de cartelas restantes
+    const newRemainingGames = selectedPlan.remainingGames - 1;
+    
+    // Se ainda há cartelas, voltar para seleção
+    if (newRemainingGames > 0) {
+      setSelectedPlan(prev => ({ 
+        ...prev, 
+        currentCard: null,
+        remainingGames: newRemainingGames
+      }));
+      setPrize(0);
+      setIsRevealed(false);
+      setScratchCard(null);
+      setRevealedNumbers([]);
+      setCellRevealStatus([]);
+      setCellRevealStatus([]);
+      setCellRevealStatus([]);
+    } else {
+      // Acabaram as cartelas, voltar ao menu
+      setSelectedPlan(null);
+      setPromoCards([]);
+      setPrize(0);
+      setIsRevealed(false);
+      setScratchCard(null);
+      setRevealedNumbers([]);
+    }
+  };
+
+  const collectPrize = async () => {
+    setBalance(prev => prev + prize);
+    
+    // Registrar prêmio no GitHub e localStorage
+    if (prize > 0) {
+      const transactionData = {
+        type: 'prize',
+        amount: prize,
+        userId: user.email,
+        method: 'scratch_card',
+        status: 'completed',
+        timestamp: new Date().toISOString()
+      };
+      
+      // Tentar salvar no GitHub
+      if (githubAPI) {
+        try {
+          await githubAPI.logTransaction(transactionData);
+        } catch (error) {
+          console.error('Erro ao registrar prêmio no GitHub:', error);
         }
+      }
+      
+      // Sempre salvar no localStorage como backup
+      try {
+        const userKey = `user_${user.email}`;
+        const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
+        userData.balance = balance + prize;
+        userData.lastUpdated = new Date().toISOString();
+        localStorage.setItem(userKey, JSON.stringify(userData));
+      } catch (error) {
+        console.error('Erro ao salvar no localStorage:', error);
+      }
+    }
+    
+    // Se é um pacote promocional, continuar com as outras cartelas
+    if (selectedPlan?.isPromo && promoCards.length > 0) {
+      finishCurrentCard();
+    } else {
+      // Jogo individual normal
+      setSelectedPlan(null);
+      setPrize(0);
+      setIsRevealed(false);
+      setScratchCard(null);
+      setRevealedNumbers([]);
+    }
+  };
 
-        function showResult(won, amount) {
-            const resultArea = document.getElementById('result-area');
-            const message = document.getElementById('result-message');
-            const prizeEl = document.getElementById('prize-amount');
+  // Modal PIX para pagamento
+  if (showPixModal && currentPixPayment) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-4 text-white flex items-center justify-center relative overflow-hidden">
+        {/* Efeitos de fundo */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-20 w-40 h-40 bg-green-400 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-32 h-32 bg-blue-400 rounded-full blur-2xl animate-bounce"></div>
+        </div>
+        
+        <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-gray-800 relative z-10 shadow-2xl">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <span className="text-3xl">📱</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Pagamento PIX</h3>
+            <p className="text-gray-600">Escaneie o QR Code ou use o código PIX</p>
+          </div>
+          
+          <div className="text-center mb-6">
+            <div id="qrCodeContainer" className="bg-gray-100 p-4 rounded-lg mb-4 flex justify-center">
+              <canvas id="qrCanvas" className="max-w-full"></canvas>
+            </div>
+            <div className="text-2xl font-bold text-green-600 mb-2">
+              R$ {currentPixPayment.amount.toFixed(2).replace('.', ',')}
+            </div>
+            <div className="text-sm text-gray-500 flex items-center justify-center">
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse mr-2"></div>
+              Aguardando pagamento...
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            <button 
+              onClick={() => {
+                if (currentPixPayment?.qr_code) {
+                  navigator.clipboard.writeText(currentPixPayment.qr_code);
+                  alert('Código PIX copiado!');
+                }
+              }}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-all"
+            >
+              📋 Copiar Código PIX
+            </button>
+            <button 
+              onClick={() => {
+                setShowPixModal(false);
+                if (pixCheckInterval) {
+                  clearInterval(pixCheckInterval);
+                  setPixCheckInterval(null);
+                }
+              }}
+              className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition-all"
+            >
+              Cancelar
+            </button>
+          </div>
+          
+          <div className="mt-4 text-center text-xs text-gray-400">
+            <p>⏰ Este PIX expira em 30 minutos</p>
+            <p>💡 O pagamento será confirmado automaticamente</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-            if (won) {
-                message.textContent = '🎉 PARABÉNS! VOCÊ GANHOU! 🎉';
-                message.className = 'text-xl font-bold mb-4 text-green-600';
-                prizeEl.textContent = `R$ ${amount.toFixed(2)}`;
-                prizeEl.className = 'text-3xl font-bold text-green-600 mb-4';
-            } else {
-                message.textContent = '😔 Que pena! Tente novamente!';
-                message.className = 'text-xl font-bold mb-4 text-red-600';
-                prizeEl.textContent = 'R$ 0,00';
-                prizeEl.className = 'text-3xl font-bold text-red-600 mb-4';
+  // Gerar QR Code quando o modal PIX é mostrado
+  useEffect(() => {
+    if (showPixModal && currentPixPayment && currentPixPayment.qr_code) {
+      const canvas = document.getElementById('qrCanvas');
+      if (canvas && window.QRCode) {
+        window.QRCode.toCanvas(canvas, currentPixPayment.qr_code, { 
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        }, function (error) {
+          if (error) console.error('Erro ao gerar QR Code:', error);
+        });
+      }
+    }
+  }, [showPixModal, currentPixPayment]);
+
+  // Tela de login
+  if (!isLoggedIn) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 p-8 text-white flex items-center justify-center relative overflow-hidden">
+        {/* Efeitos de fundo animados */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-pink-400 rounded-full blur-xl animate-bounce"></div>
+          <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-purple-400 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-28 h-28 bg-green-400 rounded-full blur-xl animate-bounce"></div>
+        </div>
+        <div className="bg-gradient-to-br from-purple-800/80 to-blue-800/80 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full border border-yellow-400/30 shadow-2xl relative z-10">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+              🎰 RaspaCash 🎰
+            </h1>
+            <p className="text-lg text-yellow-200">Faça login para começar a ganhar!</p>
+            <div className="flex justify-center space-x-2 mt-2">
+              <span className="text-2xl animate-bounce">💰</span>
+              <span className="text-2xl animate-pulse">🎉</span>
+              <span className="text-2xl animate-bounce">💎</span>
+            </div>
+          </div>
+          
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2">Nome Completo</label>
+              <input
+                name="name"
+                type="text"
+                required
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
+                placeholder="Seu nome completo"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">Email</label>
+              <input
+                name="email"
+                type="email"
+                required
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
+                placeholder="seu@email.com"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 border-green-300"
+            >
+              ✨ Entrar na Plataforma ✨
+            </button>
+          </form>
+
+          <div className="mt-4">
+            <div className="text-center text-sm mb-3 opacity-75">
+              <p>— OU —</p>
+            </div>
+
+          </div>
+          
+          <div className="mt-6 text-center text-sm opacity-75">
+            <p>Ao fazer login, você concorda com nossos termos de uso</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Modal de saque
+  if (showWithdraw) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
+        {/* Efeitos de fundo */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-20 w-40 h-40 bg-yellow-400 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-400 rounded-full blur-2xl animate-bounce"></div>
+        </div>
+        <div className="bg-gradient-to-br from-gray-900/90 to-purple-900/90 backdrop-blur-lg rounded-2xl p-4 sm:p-8 max-w-md w-full mx-auto my-4 border border-purple-400/50 shadow-2xl relative z-10">
+          <div className="text-center mb-4 sm:mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              💸 Solicitar Saque 💸
+            </h2>
+            <p className="text-base sm:text-lg text-yellow-300">Saque via PIX - Rápido e Seguro</p>
+            <div className="flex justify-center space-x-2 mt-2">
+              <span className="text-lg sm:text-xl animate-bounce">💰</span>
+              <span className="text-lg sm:text-xl animate-pulse">📱</span>
+              <span className="text-lg sm:text-xl animate-bounce">⚡</span>
+            </div>
+          </div>
+
+          {/* Aviso de saque mínimo */}
+          <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4 mb-4">
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-300 mb-1">
+                ⚠️ SAQUE MÍNIMO ⚠️
+              </div>
+              <div className="text-base text-yellow-200">
+                R$ 100,00
+              </div>
+              <div className="text-sm text-yellow-300 mt-1">
+                Processamento em até 24 horas
+              </div>
+            </div>
+          </div>
+          
+          <form onSubmit={handleWithdraw} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2">Valor do Saque</label>
+              <input
+                type="number"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+                min="100"
+                max={balance}
+                step="0.01"
+                required
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
+                placeholder="R$ 100,00 (mínimo)"
+              />
+              <div className="text-xs text-yellow-300 mt-1">
+                💰 Saldo disponível: R$ {balance.toFixed(2)}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2">Nome Completo</label>
+              <input
+                type="text"
+                value={withdrawData.fullName}
+                onChange={(e) => setWithdrawData(prev => ({ ...prev, fullName: e.target.value }))}
+                required
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
+                placeholder="Seu nome completo como no CPF"
+              />
+              <div className="text-xs text-yellow-300 mt-1">
+                👤 Nome igual ao documento de identidade
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2">Tipo de Chave PIX</label>
+              <select
+                value={withdrawData.pixKeyType}
+                onChange={(e) => setWithdrawData(prev => ({ ...prev, pixKeyType: e.target.value }))}
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white"
+              >
+                <option value="cpf" className="bg-gray-800">CPF</option>
+                <option value="email" className="bg-gray-800">E-mail</option>
+                <option value="telefone" className="bg-gray-800">Telefone</option>
+                <option value="aleatoria" className="bg-gray-800">Chave Aleatória</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2">Chave PIX</label>
+              <input
+                type="text"
+                value={withdrawData.pixKey}
+                onChange={(e) => setWithdrawData(prev => ({ ...prev, pixKey: e.target.value }))}
+                required
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
+                placeholder={
+                  withdrawData.pixKeyType === 'cpf' ? '000.000.000-00' :
+                  withdrawData.pixKeyType === 'email' ? 'seu@email.com' :
+                  withdrawData.pixKeyType === 'telefone' ? '(11) 99999-9999' :
+                  'Chave aleatória do PIX'
+                }
+              />
+              <div className="text-xs text-yellow-300 mt-1">
+                🔑 {
+                  withdrawData.pixKeyType === 'cpf' ? 'Digite seu CPF (com ou sem pontos)' :
+                  withdrawData.pixKeyType === 'email' ? 'E-mail cadastrado no seu banco' :
+                  withdrawData.pixKeyType === 'telefone' ? 'Telefone cadastrado no PIX' :
+                  'Chave aleatória gerada pelo seu banco'
+                }
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold mb-2">Método de Pagamento</label>
+              <div className="flex justify-center">
+                <div className="p-4 rounded-lg border-2 border-purple-400 bg-gradient-to-br from-purple-400/30 to-pink-400/30 shadow-lg shadow-purple-400/20 w-48">
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">📱</div>
+                    <div className="text-lg font-bold text-purple-200">PIX</div>
+                    <div className="text-sm text-purple-300 mt-1">Único método disponível</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              type="submit"
+              disabled={
+                isProcessingPayment ||
+                !withdrawAmount || 
+                parseFloat(withdrawAmount) < 100 || 
+                parseFloat(withdrawAmount) > balance ||
+                !withdrawData.fullName.trim() ||
+                !withdrawData.pixKey.trim()
+              }
+              className={`w-full py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 ${
+                isProcessingPayment
+                  ? 'bg-gray-500 cursor-not-allowed border-gray-400'
+                  : withdrawAmount && 
+                    parseFloat(withdrawAmount) >= 100 && 
+                    parseFloat(withdrawAmount) <= balance &&
+                    withdrawData.fullName.trim() &&
+                    withdrawData.pixKey.trim()
+                    ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white border-purple-300'
+                    : 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border-gray-400'
+              }`}
+            >
+              {isProcessingPayment
+                ? '⏳ Processando Saque...'
+                : !withdrawAmount || parseFloat(withdrawAmount) < 100 
+                ? '💸 Saque Mínimo R$ 100' 
+                : parseFloat(withdrawAmount) > balance 
+                ? '💸 Saldo Insuficiente'
+                : !withdrawData.fullName.trim() || !withdrawData.pixKey.trim()
+                ? '📝 Preencha todos os dados'
+                : `💸 Sacar R$ ${parseFloat(withdrawAmount).toFixed(2)} via PIX`
+              }
+            </button>
+          </form>
+          
+          <button
+            onClick={() => {
+              setShowWithdraw(false);
+              setWithdrawAmount('');
+              setWithdrawData({ fullName: '', pixKey: '', pixKeyType: 'cpf' });
+            }}
+            className="w-full mt-4 bg-gray-600 hover:bg-gray-700 py-4 rounded-xl font-bold transition-all text-lg border-2 border-gray-400"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Modal de depósito
+  if (showDeposit) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
+        {/* Efeitos de fundo */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-20 left-20 w-40 h-40 bg-yellow-400 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-400 rounded-full blur-2xl animate-bounce"></div>
+        </div>
+        <div className="bg-gradient-to-br from-gray-900/90 to-purple-900/90 backdrop-blur-lg rounded-2xl p-4 sm:p-8 max-w-md w-full mx-auto my-4 border border-purple-400/50 shadow-2xl relative z-10">
+          <div className="text-center mb-4 sm:mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              💳 Fazer Depósito 💳
+            </h2>
+            <p className="text-base sm:text-lg text-yellow-300">Escolha o método de pagamento</p>
+            <div className="flex justify-center space-x-2 mt-2">
+              <span className="text-lg sm:text-xl animate-bounce">💰</span>
+              <span className="text-lg sm:text-xl animate-pulse">🎯</span>
+              <span className="text-lg sm:text-xl animate-bounce">⚡</span>
+            </div>
+          </div>
+          
+          <form onSubmit={handleDeposit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2">Valor do Depósito</label>
+              <input
+                type="number"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                min="5"
+                step="0.01"
+                required
+                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
+                placeholder="R$ 0,00"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold mb-2">Método de Pagamento</label>
+              <div className="flex justify-center">
+                <div className="p-4 rounded-lg border-2 border-green-400 bg-gradient-to-br from-green-400/30 to-emerald-400/30 shadow-lg shadow-green-400/20 w-48">
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">📱</div>
+                    <div className="text-lg font-bold text-green-200">PIX</div>
+                    <div className="text-sm text-green-300 mt-1">Pagamento instantâneo</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              type="submit"
+              disabled={isProcessingPayment}
+              className={`w-full py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 ${
+                isProcessingPayment
+                  ? 'bg-gray-500 cursor-not-allowed border-gray-400'
+                  : 'bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 border-green-300'
+              }`}
+            >
+              {isProcessingPayment ? '⏳ Gerando PIX...' : '🚀 Depositar via PIX ⚡'}
+            </button>
+          </form>
+          
+          <button
+            onClick={() => setShowDeposit(false)}
+            className="w-full mt-4 bg-gray-600 hover:bg-gray-700 py-4 rounded-xl font-bold transition-all text-lg border-2 border-gray-400"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Modal de promoções
+  if (showPromotion) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-yellow-500 via-orange-500 via-red-500 to-pink-500 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
+        {/* Efeitos de fundo promocional */}
+        <div className="absolute inset-0 opacity-25">
+          <div className="absolute top-10 left-10 w-40 h-40 bg-yellow-300 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute top-60 right-20 w-32 h-32 bg-orange-300 rounded-full blur-xl animate-bounce"></div>
+          <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-red-300 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-36 h-36 bg-pink-300 rounded-full blur-2xl animate-bounce"></div>
+        </div>
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-8">
+            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent animate-pulse">
+              🔥 SUPER PROMOÇÃO! 🔥
+            </h2>
+            <p className="text-2xl text-yellow-100 font-bold">PACOTES ESPECIAIS COM DESCONTO!</p>
+            <div className="flex justify-center space-x-3 mt-3">
+              <span className="text-3xl animate-bounce">💰</span>
+              <span className="text-3xl animate-pulse">🎁</span>
+              <span className="text-3xl animate-bounce">✨</span>
+              <span className="text-3xl animate-pulse">🎉</span>
+              <span className="text-3xl animate-bounce">💎</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+            {promotionalPacks.map(pack => {
+              const originalPlan = plans.find(p => p.id === pack.planId);
+              return (
+                <div key={pack.id} className="bg-gradient-to-br from-gray-900/90 via-purple-900/90 to-blue-900/90 backdrop-blur-lg rounded-xl overflow-hidden border-4 border-yellow-400/60 shadow-2xl transform hover:scale-105 transition-all relative">
+                  {/* Badge de desconto */}
+                  <div className="absolute -top-3 -right-3 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse z-10 shadow-lg">
+                    -{pack.discount}% OFF!
+                  </div>
+
+                  <div className="h-48 overflow-hidden relative">
+                    <img 
+                      src={pack.image} 
+                      alt={pack.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className={`inline-block px-4 py-2 rounded-full text-lg font-bold mb-4 bg-gradient-to-r ${pack.color} text-white shadow-lg animate-pulse`}>
+                      🎁 {pack.name} 🎁
+                    </div>
+                    
+                    <div className="bg-yellow-400/20 rounded-lg p-4 mb-4 border border-yellow-400/40">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-yellow-300 mb-2">
+                          {pack.quantity} RASPADINHAS
+                        </div>
+                        <div className="text-lg text-gray-300">
+                          Baseado no {originalPlan?.name}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3 text-base mb-6">
+                      <div className="flex justify-between items-center">
+                        <span>💰 Prêmio máximo cada:</span>
+                        <span className="font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                          R$ {originalPlan?.maxPrize.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-red-300 line-through">💸 Preço normal:</span>
+                        <span className="text-red-300 line-through font-bold">R$ {pack.originalPrice}</span>
+                      </div>
+                      <div className="flex justify-between items-center bg-green-400/20 rounded-lg p-2 border border-green-400/40">
+                        <span className="font-bold text-green-300">🔥 PREÇO PROMOCIONAL:</span>
+                        <span className="font-bold text-2xl text-green-200">R$ {pack.promoPrice}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-yellow-300">💾 Economia:</span>
+                        <span className="font-bold text-xl text-yellow-200">R$ {pack.originalPrice - pack.promoPrice}</span>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => buyPromotionalPack(pack)}
+                      disabled={balance < pack.promoPrice}
+                      className={`w-full py-4 rounded-xl font-bold text-lg transition-all transform active:scale-95 shadow-lg border-2 ${
+                        balance >= pack.promoPrice 
+                          ? 'bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-600 hover:via-orange-600 hover:to-red-600 text-white animate-bounce border-yellow-300' 
+                          : 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border-gray-400'
+                      }`}
+                    >
+                      {balance >= pack.promoPrice ? `🎁 COMPRAR - R$ ${pack.promoPrice} 🎁` : '💸 Saldo Insuficiente'}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="text-center bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-xl p-6 mb-6 border border-red-400/30">
+            <div className="text-2xl font-bold text-red-200 mb-2">
+              ⏰ OFERTA LIMITADA! ⏰
+            </div>
+            <div className="text-lg text-yellow-200">
+              Aproveite os pacotes promocionais e economize até 40%!
+            </div>
+          </div>
+          
+          <button
+            onClick={() => setShowPromotion(false)}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 border-blue-300"
+          >
+            🔙 Voltar ao Menu Principal
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Feed de ganhos
+  if (showFeed) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-green-600 via-teal-600 to-cyan-600 p-4 text-white relative overflow-y-scroll" style={{ overscrollBehavior: 'contain' }}>
+        {/* Efeitos de fundo */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 bg-pink-400 rounded-full blur-xl animate-bounce"></div>
+          <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-purple-400 rounded-full blur-xl animate-pulse"></div>
+        </div>
+        <div className="max-w-2xl mx-auto relative z-10">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+              🎉 Ganhos Recentes 🎉
+            </h2>
+            <p className="text-lg text-yellow-200">Veja quem está ganhando agora!</p>
+            <div className="flex justify-center space-x-2 mt-2">
+              <span className="text-2xl animate-bounce">💰</span>
+              <span className="text-2xl animate-pulse">🏆</span>
+              <span className="text-2xl animate-bounce">💎</span>
+            </div>
+          </div>
+          
+          <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
+            {fakeFeed.map((winner, index) => (
+              <div key={index} className="bg-gradient-to-r from-purple-800/60 via-pink-800/60 to-red-800/60 backdrop-blur-sm rounded-lg p-4 flex items-center justify-between border border-yellow-400/30 transform hover:scale-105 transition-all shadow-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                    {winner.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="font-bold">{winner.name}</div>
+                    <div className="text-sm opacity-75">Plano {winner.plan} • {winner.time}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">R$ {winner.amount}</div>
+                  <div className="text-xs text-yellow-300 font-bold animate-pulse">🎉 GANHOU! 🎉</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <button
+            onClick={() => setShowFeed(false)}
+            className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold transition-all text-lg border-2 border-blue-400"
+          >
+            Voltar ao Jogo
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Tela de seleção de cartelas promocionais
+  if (selectedPlan?.isPromo && promoCards.length > 0 && selectedPlan.currentCard === null) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
+        {/* Efeitos de fundo */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-40 h-40 bg-yellow-400 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute top-60 right-20 w-32 h-32 bg-orange-300 rounded-full blur-xl animate-bounce"></div>
+          <div className="absolute bottom-40 left-1/4 w-48 h-48 bg-red-300 rounded-full blur-3xl animate-pulse"></div>
+        </div>
+
+        <div className="max-w-4xl mx-auto relative z-10">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+              🎁 {selectedPlan.name} 🎁
+            </h2>
+            <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl p-4 border border-green-400/30 mb-4">
+              <div className="text-lg sm:text-xl font-bold text-green-300">
+                💰 Saldo: R$ {balance.toFixed(2)}
+              </div>
+              <div className="text-base text-yellow-200">
+                🎫 Cartelas restantes: {selectedPlan.remainingGames} de {selectedPlan.quantity}
+              </div>
+            </div>
+            <p className="text-lg text-yellow-200 mb-2">Escolha uma cartela para raspar!</p>
+            <div className="flex justify-center space-x-2">
+              <span className="text-2xl animate-bounce">🎯</span>
+              <span className="text-2xl animate-pulse">✨</span>
+              <span className="text-2xl animate-bounce">🎰</span>
+            </div>
+          </div>
+
+          {/* Grid de cartelas */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            {promoCards.map((card, index) => (
+              <div key={index} className="relative">
+                <button
+                  onClick={() => selectPromoCard(index)}
+                  disabled={card.isUsed}
+                  className={`w-full aspect-[3/4] rounded-xl border-2 transition-all transform hover:scale-105 shadow-lg relative overflow-hidden ${
+                    card.isUsed 
+                      ? 'opacity-50 bg-gray-600 border-gray-500 cursor-not-allowed' 
+                      : `bg-gradient-to-br ${selectedPlan.color} border-yellow-400/60 hover:border-yellow-400 animate-pulse hover:animate-none`
+                  }`}
+                >
+                  {card.isUsed ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="text-3xl mb-2">✅</div>
+                      <div className="text-sm font-bold">USADA</div>
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+                      <div className="text-2xl sm:text-3xl mb-2">🎰</div>
+                      <div className="text-xs sm:text-sm font-bold text-center">
+                        Cartela #{index + 1}
+                      </div>
+                      <div className="text-xs text-yellow-200 mt-1">
+                        Toque para raspar
+                      </div>
+                    </div>
+                  )}
+                </button>
+                
+                {/* Badge de prêmio oculto */}
+                {!card.isUsed && (
+                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-bounce shadow-lg">
+                    ?
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Botão voltar */}
+          <div className="text-center">
+            <button
+              onClick={() => {
+                setSelectedPlan(null);
+                setPromoCards([]);
+                setPrize(0);
+                setScratchCard(null);
+                setRevealedNumbers([]);
+                setCellRevealStatus([]);
+              }}
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-6 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 border-blue-300"
+            >
+              🔙 Voltar ao Menu Principal
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedPlan) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-red-500 via-purple-600 via-blue-600 to-green-500 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
+        {/* Efeitos de fundo animados */}
+        <div className="absolute inset-0 opacity-15">
+          <div className="absolute top-20 left-20 w-48 h-48 bg-yellow-400 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-60 right-40 w-32 h-32 bg-pink-400 rounded-full blur-2xl animate-bounce"></div>
+          <div className="absolute bottom-40 left-1/4 w-40 h-40 bg-cyan-400 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-36 h-36 bg-orange-400 rounded-full blur-2xl animate-bounce"></div>
+          <div className="absolute top-1/2 left-1/2 w-28 h-28 bg-lime-400 rounded-full blur-xl animate-pulse"></div>
+        </div>
+        <div className="max-w-6xl mx-auto relative z-10">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
+            <div>
+              <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                🎰 RaspaCash 🎰
+              </h1>
+              <p className="text-sm sm:text-xl text-yellow-200">Olá, {user.name}! 👋</p>
+              <div className="flex space-x-2 mt-1">
+                <span className="text-sm sm:text-lg animate-bounce">💰</span>
+                <span className="text-sm sm:text-lg animate-pulse">⭐</span>
+                <span className="text-sm sm:text-lg animate-bounce">🎯</span>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-2 sm:px-4 py-1 sm:py-2 rounded-lg shadow-lg border border-yellow-400/30">
+                <div className="text-xs sm:text-sm text-yellow-200">💰 Saldo</div>
+                <div className="text-sm sm:text-lg font-bold text-white">R$ {balance.toFixed(2)}</div>
+              </div>
+              <button
+                onClick={() => setShowWithdraw(true)}
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-4 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-base"
+              >
+                💸 Sacar
+              </button>
+              <button
+                onClick={() => setShowDeposit(true)}
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 px-4 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-base"
+              >
+                💳 Depositar
+              </button>
+              <button
+                onClick={() => setShowFeed(true)}
+                className="w-full sm:w-auto bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 px-4 py-3 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg animate-pulse text-base"
+              >
+                🎉 Ganhos
+              </button>
+              <button
+                onClick={() => setShowPromotion(true)}
+                className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-600 hover:via-orange-600 hover:to-red-600 px-6 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-2xl animate-bounce text-lg border-2 border-yellow-300"
+              >
+                🔥 SUPER PROMOÇÃO! 🔥
+              </button>
+            </div>
+          </div>
+          
+          {/* Planos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            {plans.map(plan => (
+              <div key={plan.id} className="bg-gradient-to-br from-gray-900/80 via-purple-900/80 to-blue-900/80 backdrop-blur-lg rounded-xl overflow-hidden hover:from-gray-800/90 hover:via-purple-800/90 hover:to-blue-800/90 transition-all transform hover:scale-105 border border-yellow-400/30 shadow-2xl">
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src={plan.image} 
+                    alt={plan.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div className="p-4 sm:p-6">
+                  <div className={`inline-block px-3 py-1 rounded-full text-xs sm:text-sm font-bold mb-3 bg-gradient-to-r ${plan.color} text-white shadow-lg animate-pulse`}>
+                    ⭐ {plan.name} ⭐
+                  </div>
+                  
+                  <p className="text-xs sm:text-sm mb-4 opacity-90">{plan.description}</p>
+                  
+                  <div className="space-y-2 text-xs sm:text-sm mb-4">
+                    <div className="flex justify-between">
+                      <span>💰 Ganho máximo:</span>
+                      <span className="font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">R$ {plan.maxPrize.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>🎫 Custo:</span>
+                      <span className="font-bold text-cyan-400">R$ {plan.cost}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>📊 Taxa base:</span>
+                      <span className="font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                        {plan.id === 1 ? '15.0%' : plan.id === 2 ? '12.0%' : '8.0%'}
+                      </span>
+                    </div>
+                    
+                    {/* Sistema de Fidelidade */}
+                    {(() => {
+                      const sequence = loyaltySequences[plan.id];
+                      const spendTarget = plan.cost * 10;
+                      const loyaltyBonus = calculateLoyaltyBonus(plan.id);
+                      const progress = Math.min((sequence.spent / spendTarget) * 100, 100);
+                      
+                      return (
+                        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-3 border border-purple-400/30 mt-3">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-bold text-purple-300">🔥 Sequência Fidelidade:</span>
+                            <span className="font-bold text-pink-300">
+                              {loyaltyBonus > 0 ? `+${(loyaltyBonus * 100).toFixed(1)}%` : '0%'}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>Investido: R$ {sequence.spent}</span>
+                            <span>Meta: R$ {spendTarget}</span>
+                          </div>
+                          
+                          <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                            <div 
+                              className={`h-2 rounded-full transition-all duration-300 ${
+                                progress >= 100 
+                                  ? 'bg-gradient-to-r from-green-400 to-emerald-500' 
+                                  : 'bg-gradient-to-r from-purple-400 to-pink-500'
+                              }`}
+                              style={{ width: `${progress}%` }}
+                            ></div>
+                          </div>
+                          
+                          <div className="text-xs text-center">
+                            {progress >= 100 ? (
+                              <span className="text-green-300 font-bold animate-pulse">
+                                ✨ BÔNUS ATIVO! Chances aumentadas! ✨
+                              </span>
+                            ) : progress === 0 ? (
+                              <span className="text-purple-300 font-bold animate-pulse">
+                                🔥 Invista R$ {spendTarget} para DESBLOQUEAR bônus de chances! 🔥
+                              </span>
+                            ) : (
+                              <span className="text-orange-300 font-bold animate-pulse">
+                                🎯 Faltam R$ {(spendTarget - sequence.spent).toFixed(0)} para DESBLOQUEAR bônus! 🎯
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                  
+                  <button
+                    onClick={() => startGame(plan)}
+                    disabled={balance < plan.cost}
+                    className={`w-full py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-base border-2 ${
+                      balance >= plan.cost 
+                        ? 'bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 text-white animate-pulse border-green-300' 
+                        : 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border-gray-400'
+                    }`}
+                  >
+                    {balance >= plan.cost ? `🎰 Jogar - R$ ${plan.cost} 🎰` : '💸 Saldo Insuficiente'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Explicação do Sistema de Fidelidade */}
+          <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl p-4 mb-4 border border-blue-400/30">
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-blue-300 mb-2">
+                🔥 SISTEMA DE FIDELIDADE 🔥
+              </h3>
+              <div className="text-sm text-blue-200 space-y-1">
+                <p>🎯 <strong>SISTEMA ESPECIAL:</strong> Desbloqueie bônus de chances progressivos!</p>
+                <p>💰 <strong>Meta:</strong> Invista 10x o valor da cartela para ATIVAR bônus</p>
+                <p>⚡ <strong>Bônus progressivo:</strong> +2% de chance a cada ciclo extra (máx 15%)</p>
+                <p>🔥 <strong>Exemplo:</strong> R$ 50 na cartela de R$ 5 = Bônus ativado + chances extras!</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center text-sm opacity-75">
+            <p>⚠️ Jogue com responsabilidade. Este é um jogo de azar. +18 anos.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-full bg-gradient-to-br from-pink-600 via-purple-700 via-blue-700 to-teal-600 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
+      {/* Efeitos de fundo da tela de jogo */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-pink-400 rounded-full blur-xl animate-bounce"></div>
+        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-cyan-400 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-28 h-28 bg-orange-400 rounded-full blur-xl animate-bounce"></div>
+      </div>
+      <div className="text-center relative z-10 min-h-full flex flex-col justify-center py-4">
+        <div className="mb-4">
+          <h2 className="text-xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+            🎯 {selectedPlan.name} 🎯
+          </h2>
+          <div className="text-sm sm:text-xl bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent font-bold">
+            💰 Saldo: R$ {balance.toFixed(2)}
+          </div>
+          {selectedPlan.isPromo && (
+            <div className="mt-2 bg-yellow-400/20 rounded-lg p-2 border border-yellow-400/40">
+              <div className="text-sm text-yellow-200">
+                🎫 Cartela {(selectedPlan.currentCard || 0) + 1} de {selectedPlan.quantity} | 
+                Restantes: {selectedPlan.remainingGames}
+              </div>
+            </div>
+          )}
+          
+          {/* Sistema de Fidelidade na tela de jogo */}
+          {!selectedPlan.isPromo && scratchCard && (
+            <div className="mt-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-3 border border-purple-400/30">
+              <div className="text-center">
+                <div className="text-sm font-bold text-purple-300 mb-1">
+                  🔥 Sequência de Fidelidade 🔥
+                </div>
+                {!scratchCard.hasReachedMinimum ? (
+                  <div className="text-sm text-purple-300 font-bold animate-pulse">
+                    🎯 Desbloqueie bônus de chances investindo R$ {selectedPlan.cost * 10}! 🎯
+                  </div>
+                ) : scratchCard.loyaltyBonus > 0 ? (
+                  <div className="text-sm text-green-300 font-bold animate-pulse">
+                    ✨ BÔNUS ATIVO: +{(scratchCard.loyaltyBonus * 100).toFixed(1)}% de chance! ✨
+                  </div>
+                ) : (
+                  <div className="text-sm text-green-300 font-bold animate-pulse">
+                    ✅ BÔNUS DESBLOQUEADO! Chances de ganho ativadas! ✅
+                  </div>
+                )}
+                <div className="text-sm text-purple-300">
+                  Investido: R$ {loyaltySequences[selectedPlan.id]?.spent || 0} | 
+                  Meta: R$ {selectedPlan.cost * 10}
+                </div>
+                <div className="text-xs text-pink-300 mt-1">
+                  {!scratchCard.hasReachedMinimum ? 'Bônus: Aguardando desbloqueio' : `Taxa atual: ${((scratchCard.finalReturnRate || selectedPlan.returnRate) * 100).toFixed(1)}%`}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="bg-gradient-to-br from-gray-900/80 via-purple-900/80 to-blue-900/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 mb-6 border border-yellow-400/30 shadow-2xl">
+          {/* Adendo explicativo */}
+          <div className="bg-yellow-400/20 rounded-lg p-3 mb-4 border border-yellow-400/40">
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-300 mb-1">
+                🎯 COMO GANHAR 🎯
+              </div>
+              <div className="text-sm text-yellow-200">
+                Encontre <span className="font-bold text-yellow-100">3 NÚMEROS IGUAIS</span> para ganhar o valor desse número!
+              </div>
+              <div className="text-xs text-yellow-300 mt-1">
+                Exemplo: 3x R$ 250 = Você ganha R$ 250! 🎉
+              </div>
+            </div>
+          </div>
+          
+          {/* SISTEMA DE CAMADAS - IGUAL AO SEU CÓDIGO */}
+          <div className="relative" style={{ width: '300px', height: '200px', margin: '0 auto' }}>
+            {/* CAMADA DOS NÚMEROS - SEMPRE VISÍVEL POR BAIXO */}
+            <div className="absolute inset-0 grid grid-cols-3 gap-1 p-2 bg-white rounded-lg border-2 border-gray-300">
+              {scratchCard && scratchCard.numbers.map((number, index) => {
+                // Contar quantas vezes cada número aparece
+                const numberCounts = {};
+                scratchCard.numbers.forEach(num => {
+                  numberCounts[num] = (numberCounts[num] || 0) + 1;
+                });
+                
+                const isRepeated = numberCounts[number] >= 2;
+                const isWinner = scratchCard.isWinner && number === scratchCard.prizeNumber;
+                
+                return (
+                  <div 
+                    key={index}
+                    className={`flex items-center justify-center text-xs sm:text-sm font-bold rounded border-2 ${
+                      isWinner 
+                        ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white border-yellow-300 animate-pulse' 
+                        : isRepeated
+                          ? 'bg-gradient-to-br from-yellow-300 to-yellow-400 text-gray-800 border-yellow-400'
+                          : 'bg-gradient-to-br from-white to-gray-100 text-gray-800 border-gray-300'
+                    }`}
+                  >
+                    R$ {number}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* CANVAS DE COBERTURA - POR CIMA DOS NÚMEROS */}
+            <canvas
+              ref={canvasRef}
+              width={300}
+              height={200}
+              className="absolute inset-0 border-2 border-white/30 rounded-lg cursor-pointer"
+              onMouseDown={() => setIsScratching(true)}
+              onMouseUp={() => setIsScratching(false)}
+              onMouseMove={scratch}
+              onMouseLeave={() => setIsScratching(false)}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                setIsScratching(true);
+              }}
+              onTouchEnd={() => setIsScratching(false)}
+              onTouchMove={(e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvasRef.current.getBoundingClientRect();
+                const mockEvent = {
+                  clientX: touch.clientX,
+                  clientY: touch.clientY
+                };
+                scratch(mockEvent);
+              }}
+            />
+            
+            {/* Barra de progresso */}
+            <div className="mt-4 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-cyan-300">Área raspada: {(scratchedArea * 100).toFixed(1)}%</span>
+                <span className="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
+                <div 
+                  className="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
+                  style={{ width: `${Math.min(scratchedArea * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* TABELA DE NÚMEROS REVELADOS - SÓ APARECE APÓS RASPAR TUDO */}
+        {scratchCard && isRevealed && (
+          <div className="bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-4 sm:p-6 mb-6 border border-cyan-400/30 shadow-2xl">
+            <div className="text-center mb-4">
+              <div className="text-lg font-bold text-cyan-300 mb-2">
+                🎯 Números Revelados:
+              </div>
+              <div className="text-sm text-cyan-200">
+                Resultado final da sua cartela
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto mb-4">
+              {scratchCard.numbers.map((number, index) => {
+                // Contar quantas vezes cada número aparece
+                const numberCounts = {};
+                scratchCard.numbers.forEach(num => {
+                  numberCounts[num] = (numberCounts[num] || 0) + 1;
+                });
+                
+                const count = numberCounts[number];
+                const isWinner = scratchCard.isWinner && number === scratchCard.prizeNumber;
+                const isRepeated = count >= 2;
+                
+                return (
+                  <div 
+                    key={index} 
+                    className={`p-3 rounded-lg text-center font-bold text-lg transition-all duration-500 border-2 ${
+                      isWinner 
+                        ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white animate-pulse border-yellow-300 shadow-lg shadow-yellow-400/50 transform scale-105' 
+                        : isRepeated
+                          ? 'bg-gradient-to-br from-yellow-500 to-yellow-600 text-white border-yellow-400 shadow-lg shadow-yellow-500/30'
+                          : 'bg-gradient-to-br from-white to-gray-100 text-gray-800 border-gray-300'
+                    }`}
+                  >
+                    R$ {number}
+                    {count >= 2 && (
+                      <div className="text-xs mt-1 opacity-75">
+                        {count}x
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Resultado final */}
+            <div className="text-center">
+              {prize > 0 ? (
+                <div className="text-xl font-bold text-green-300 animate-bounce bg-green-500/20 rounded-lg p-4 border border-green-400/40">
+                  🎉 PARABÉNS! Você ganhou R$ {prize}! 🎉
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="text-lg font-bold text-orange-300 bg-orange-500/20 rounded-lg p-3 border border-orange-400/40">
+                    😅 Poxa! Passou pertinho! 
+                  </div>
+                  {scratchCard.almostWinNumber && (
+                    <div className="text-sm text-yellow-300 bg-yellow-500/20 rounded-lg p-2 border border-yellow-400/40">
+                      🔥 Você teve 2x R$ {scratchCard.almostWinNumber}! Faltou só mais um! 🔥
+                    </div>
+                  )}
+                  <div className="text-sm text-cyan-300">
+                    🎯 Tente novamente! A sorte pode estar na próxima cartela!
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* BOTÕES DE AÇÃO - MOBILE FIRST */}
+        <div className="w-full max-w-md mx-auto space-y-3">
+          {/* Botão de coletar prêmio - MOBILE OTIMIZADO */}
+          {isRevealed && prize > 0 && (
+            <button
+              onClick={collectPrize}
+              className="w-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 px-4 py-4 rounded-xl font-bold text-lg transition-all transform active:scale-95 shadow-lg animate-bounce border-2 border-green-300"
+            >
+              🎉 Coletar R$ {prize}! 🎉
+            </button>
+          )}
+          
+          {/* Botão principal de navegação - MOBILE OTIMIZADO */}
+          <button
+            onClick={() => {
+              if (selectedPlan?.isPromo && promoCards.length > 0) {
+                if (isRevealed) {
+                  finishCurrentCard();
+                } else {
+                  setSelectedPlan(prev => ({ ...prev, currentCard: null }));
+                  setScratchCard(null);
+                  setRevealedNumbers([]);
+                  setCellRevealStatus([]);
+                }
+              } else {
+                setSelectedPlan(null);
+                setIsRevealed(false);
+                setScratchCard(null);
+                setRevealedNumbers([]);
+                setCellRevealStatus([]);
+              }
+            }}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-4 py-4 rounded-xl font-bold text-lg transition-all transform active:scale-95 shadow-lg border-2 border-blue-300"
+          >
+            {selectedPlan?.isPromo 
+              ? (isRevealed ? '➡️ Próxima Cartela' : '🔙 Escolher Cartela')
+              : (isRevealed ? '🎰 Jogar Novamente' : '🔙 Voltar ao Menu')
             }
+          </button>
 
-            resultArea.classList.remove('hidden');
-        }
+          {/* Botão de emergência - MOBILE OTIMIZADO */}
+          <button
+            onClick={() => {
+              // Reset completo forçado
+              setSelectedPlan(null);
+              setPromoCards([]);
+              setIsRevealed(false);
+              setScratchCard(null);
+              setRevealedNumbers([]);
+              setCellRevealStatus([]);
+              setPrize(0);
+            }}
+            className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 px-4 py-3 rounded-xl font-bold text-base transition-all transform active:scale-95 shadow-lg border-2 border-red-300"
+          >
+            🏠 Menu Principal
+          </button>
+        </div>
 
-        function newGame() {
-            setupGameArea();
-        }
+        {/* Status da raspadinha */}
+        <div className="mt-4 text-center">
+          <div className="text-sm opacity-75 mb-2">
+            {scratchedArea < 0.8 
+              ? 'Clique e arraste para raspar a cartela' 
+              : isRevealed 
+                ? 'Raspadinha completa! Veja o resultado acima.'
+                : 'Quase lá! Continue raspando...'
+            }
+          </div>
+          
+          {/* Instruções dinâmicas */}
+          {!isRevealed ? (
+            <div className="text-xs opacity-50">
+              Raspe para revelar os números e encontre 3 iguais para ganhar!
+            </div>
+          ) : (
+            <div className="text-xs text-green-300 bg-green-500/20 rounded-lg p-2 mt-2 border border-green-400/40">
+              ✅ Todos os números foram revelados! {prize > 0 ? 'Você ganhou!' : 'Tente novamente na próxima cartela!'}
+            </div>
+          )}
+        </div>
+        
 
-        function backToGameSelection() {
-            document.getElementById('game-area').classList.add('hidden');
-            document.getElementById('games-section').classList.remove('hidden');
-            currentGame = null;
-        }
+      </div>
+    </div>
+  );
+};
 
-        function updateDisplay() {
-            document.getElementById('user-balance').textContent = `R$ ${playerBalance.toFixed(2)}`;
-            document.getElementById('games-today').textContent = gameStats.gamesPlayed;
-            document.getElementById('winnings-today').textContent = `R$ ${gameStats.totalWinnings.toFixed(2)}`;
-            document.getElementById('biggest-win').textContent = `R$ ${gameStats.biggestWin.toFixed(2)}`;
-        }
-
-        function scrollToGames() {
-            document.getElementById('games-section').scrollIntoView({ behavior: 'smooth' });
-        }
-    </script>
-</body>
-</html>
+export default SistemaRaspadinha;
