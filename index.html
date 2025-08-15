@@ -1,367 +1,1008 @@
-import React, { useState } from 'react';
-
-export default function RaspaCash() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [balance, setBalance] = useState(0);
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [user, setUser] = useState({ name: '', email: '' });
-  const [showDeposit, setShowDeposit] = useState(false);
-  const [showWithdraw, setShowWithdraw] = useState(false);
-  const [showFeed, setShowFeed] = useState(false);
-  const [depositAmount, setDepositAmount] = useState('');
-  const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [withdrawData, setWithdrawData] = useState({
-    fullName: '',
-    pixKey: '',
-    pixKeyType: 'cpf'
-  });
-
-  const plans = [
-    {
-      id: 1,
-      name: "Plano Clássico",
-      cost: 5,
-      maxPrize: 500,
-      color: "from-green-400 to-green-600",
-      description: "Diversão garantida com prêmios de até R$ 500!"
-    },
-    {
-      id: 2,
-      name: "Plano Premium", 
-      cost: 10,
-      maxPrize: 1000,
-      color: "from-purple-400 to-purple-600",
-      description: "Experiência premium com prêmios de até R$ 1.000!"
-    },
-    {
-      id: 3,
-      name: "Plano VIP",
-      cost: 20,
-      maxPrize: 2000,
-      color: "from-red-400 to-red-600",
-      description: "Exclusividade VIP com prêmios de até R$ 2.000!"
-    }
-  ];
-
-  const fakeWins = [
-    { name: "Maria Silva", prize: 750, plan: "Premium", time: "2 min atrás" },
-    { name: "João Santos", prize: 1200, plan: "VIP", time: "5 min atrás" },
-    { name: "Ana Costa", prize: 450, plan: "Clássico", time: "8 min atrás" },
-    { name: "Pedro Lima", prize: 850, plan: "Premium", time: "12 min atrás" },
-    { name: "Carla Souza", prize: 1800, plan: "VIP", time: "15 min atrás" }
-  ];
-
-  const handleLogin = (name, email) => {
-    setUser({ name, email });
-    setIsLoggedIn(true);
-  };
-
-  const buyCard = (planId) => {
-    const plan = plans.find(p => p.id === planId);
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RaspaCash - Sistema de Raspadinha Online</title>
     
-    if (balance < plan.cost) {
-      alert('Saldo insuficiente! Faça um depósito.');
-      setShowDeposit(true);
-      return;
-    }
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    setBalance(prev => prev - plan.cost);
-    setSelectedPlan(planId);
+    <!-- Meta Tags para SEO -->
+    <meta name="description" content="RaspaCash - O melhor sistema de raspadinha online do Brasil! Ganhe prêmios de até R$ 2.000 raspando cartelas digitais.">
+    <meta name="keywords" content="raspadinha, loteria, prêmios, jogos, Brasil, dinheiro, PIX">
+    <meta property="og:title" content="RaspaCash - Sistema de Raspadinha Online">
+    <meta property="og:description" content="Ganhe prêmios de até R$ 2.000 raspando cartelas digitais!">
+    <meta property="og:url" content="https://raspacashbr.online">
+    <meta property="og:type" content="website">
     
-    // Simular jogo - 10% de chance de ganhar
-    const won = Math.random() < 0.1;
-    if (won) {
-      const prize = Math.floor(Math.random() * (plan.maxPrize - plan.cost * 2)) + plan.cost * 2;
-      setBalance(prev => prev + prize);
-      alert(`🎉 PARABÉNS! Você ganhou R$ ${prize}!`);
-    } else {
-      alert('😔 Que pena! Não foi desta vez. Continue jogando!');
-    }
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white flex items-center justify-center p-4">
-        <div className="bg-gradient-to-br from-purple-900/90 via-blue-900/90 to-cyan-900/90 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full border border-cyan-400/30 shadow-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
-              RaspaCash
-            </h1>
-            <p className="text-cyan-300">Entre para começar a raspar e ganhar!</p>
-          </div>
-          
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Seu nome completo"
-              onChange={(e) => setUser(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
-              required
-            />
-            <input
-              type="email"
-              placeholder="Seu e-mail"
-              onChange={(e) => setUser(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
-              required
-            />
-            <button
-              onClick={() => handleLogin(user.name, user.email)}
-              disabled={!user.name || !user.email}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
-            >
-              🎲 Entrar e Jogar
-            </button>
-          </div>
-          
-          <div className="mt-6 text-center text-sm text-gray-400">
-            <p>Ao entrar, você concorda com nossos termos de uso</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg border-b border-cyan-400/30 shadow-lg">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-            RaspaCash
-          </h1>
-          
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <div className="text-sm text-cyan-300">Saldo</div>
-              <div className="text-xl font-bold text-green-400">R$ {balance.toFixed(2)}</div>
-            </div>
-            
-            <button
-              onClick={() => setShowDeposit(true)}
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-            >
-              💰 Depositar
-            </button>
-            
-            <button
-              onClick={() => setShowWithdraw(true)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-            >
-              💸 Sacar
-            </button>
-            
-            <button
-              onClick={() => setShowFeed(true)}
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-            >
-              🏆 Ganhos
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        {selectedPlan ? (
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold text-yellow-300 mb-4">Jogo Concluído!</h2>
-            <button
-              onClick={() => setSelectedPlan(null)}
-              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-            >
-              🎲 Jogar Novamente
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-yellow-300 mb-2">Escolha seu Plano</h2>
-              <p className="text-cyan-300">Selecione o plano ideal para você!</p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-6">
-              {plans.map(plan => (
-                <div key={plan.id} className={`bg-gradient-to-br ${plan.color} p-1 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300`}>
-                  <div className="bg-gray-900/90 rounded-lg p-6 h-full">
-                    <h3 className="text-xl font-bold text-yellow-300 mb-2">{plan.name}</h3>
-                    <p className="text-gray-300 text-sm mb-4">{plan.description}</p>
-                    
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-cyan-300">Custo:</span>
-                        <span className="text-white font-bold">R$ {plan.cost}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-cyan-300">Prêmio máximo:</span>
-                        <span className="text-green-400 font-bold">R$ {plan.maxPrize}</span>
-                      </div>
-                    </div>
-                    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
+    
+    <style>
+        /* Animações customizadas */
+        @keyframes pulse-gold {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
+            }
+        }
+        
+        .animate-pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+        
+        @keyframes shine {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .animate-shine {
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+            background-size: 200% 200%;
+            animation: shine 2s infinite;
+        }
+        
+        /* Esconder scrollbar mas manter funcionalidade */
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white min-h-screen">
+    <!-- Container Principal -->
+    <div id="app">
+        <!-- Tela de Login -->
+        <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-gradient-to-br from-purple-900/90 via-blue-900/90 to-cyan-900/90 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full border border-cyan-400/30 shadow-2xl">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+                        🎰 RaspaCash
+                    </h1>
+                    <p class="text-cyan-300">Entre para começar a raspar e ganhar!</p>
+                    <p class="text-sm text-gray-400 mt-2">Prêmios de até R$ 2.000!</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <input
+                        type="text"
+                        id="userName"
+                        placeholder="Seu nome completo"
+                        class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                        required
+                    />
+                    <input
+                        type="email"
+                        id="userEmail"
+                        placeholder="Seu e-mail"
+                        class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                        required
+                    />
                     <button
-                      onClick={() => buyCard(plan.id)}
-                      className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300"
+                        onclick="handleLogin()"
+                        id="loginButton"
+                        class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
                     >
-                      🎲 Jogar Agora
+                        🎲 Entrar e Jogar
                     </button>
-                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Modais */}
-      {showDeposit && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 className="text-xl font-bold text-yellow-300 mb-4">💰 Depósito via PIX</h3>
-            
-            <div className="space-y-4">
-              <input
-                type="number"
-                placeholder="Valor (mínimo R$ 10)"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                min="10"
-              />
-              
-              <div className="text-center">
-                <p className="text-cyan-300 mb-2">PIX Copia e Cola:</p>
-                <div className="bg-gray-800 p-3 rounded-lg font-mono text-sm text-green-400 break-all">
-                  00020126580014br.gov.bcb.pix01364adb8d4e-8b5c-4d5f-9e2f-1234567890ab5204000053039865802BR5925RASPACASH LTDA6009SAO PAULO62140510RPX{depositAmount}6304ABCD
+                
+                <div class="mt-6 text-center text-sm text-gray-400">
+                    <p>Ao entrar, você concorda com nossos termos de uso</p>
                 </div>
-              </div>
-              
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => {
-                    if (depositAmount >= 10) {
-                      setBalance(prev => prev + parseFloat(depositAmount));
-                      setDepositAmount('');
-                      setShowDeposit(false);
-                      alert(`Depósito de R$ ${depositAmount} confirmado!`);
-                    }
-                  }}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg"
-                >
-                  ✅ Confirmar
-                </button>
-                <button
-                  onClick={() => setShowDeposit(false)}
-                  className="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
-                >
-                  Cancelar
-                </button>
-              </div>
             </div>
-          </div>
         </div>
-      )}
 
-      {showFeed && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 className="text-xl font-bold text-yellow-300 mb-4">🏆 Últimos Ganhos</h3>
-            
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {fakeWins.map((win, index) => (
-                <div key={index} className="bg-gray-800/50 rounded-lg p-3 border border-green-400/30">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-white font-bold">{win.name}</div>
-                      <div className="text-cyan-300 text-sm">{win.plan}</div>
+        <!-- Tela Principal do Jogo -->
+        <div id="gameScreen" class="hidden">
+            <!-- Header -->
+            <header class="bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg border-b border-cyan-400/30 shadow-lg">
+                <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                        🎰 RaspaCash
+                    </h1>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <div class="text-sm text-cyan-300">Saldo</div>
+                            <div class="text-xl font-bold text-green-400" id="balance">R$ 0,00</div>
+                        </div>
+                        
+                        <button
+                            onclick="showModal('depositModal')"
+                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                        >
+                            💰 Depositar
+                        </button>
+                        
+                        <button
+                            onclick="showModal('withdrawModal')"
+                            class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                        >
+                            💸 Sacar
+                        </button>
+                        
+                        <button
+                            onclick="showModal('feedModal')"
+                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                        >
+                            🏆 Ganhos
+                        </button>
                     </div>
-                    <div className="text-right">
-                      <div className="text-green-400 font-bold">R$ {win.prize}</div>
-                      <div className="text-gray-400 text-xs">{win.time}</div>
-                    </div>
-                  </div>
                 </div>
-              ))}
+            </header>
+
+            <main class="container mx-auto px-4 py-8">
+                <!-- Seleção de Planos -->
+                <div id="planSelection">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-yellow-300 mb-2">Escolha seu Plano</h2>
+                        <p class="text-cyan-300">Selecione o plano ideal para você!</p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 mb-12" id="plansGrid">
+                        <!-- Planos serão inseridos aqui via JavaScript -->
+                    </div>
+                    
+                    <!-- Pacotes Promocionais -->
+                    <div class="bg-gradient-to-br from-orange-900/30 via-red-900/30 to-pink-900/30 backdrop-blur-lg rounded-xl p-6 border border-orange-400/30">
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold text-orange-300 mb-2">🔥 Pacotes Promocionais 🔥</h3>
+                            <p class="text-gray-300">Economize comprando em pacotes!</p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-4" id="promoPacks">
+                            <!-- Pacotes promocionais serão inseridos aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tela do Jogo -->
+                <div id="gameArea" class="hidden max-w-2xl mx-auto">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-yellow-300 mb-2" id="gameTitle">
+                            Plano Selecionado
+                        </h2>
+                        <p class="text-cyan-300">Raspe para revelar os números!</p>
+                        
+                        <button
+                            onclick="backToPlans()"
+                            class="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                        >
+                            ← Voltar aos Planos
+                        </button>
+                    </div>
+
+                    <!-- Cartela de Raspadinha -->
+                    <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
+                        <div class="relative">
+                            <!-- Números da Cartela -->
+                            <div class="grid grid-cols-5 gap-2 w-full max-w-sm mx-auto mb-4" id="numbersGrid">
+                                <!-- Números serão inseridos aqui -->
+                            </div>
+
+                            <!-- Canvas de Cobertura -->
+                            <canvas
+                                id="scratchCanvas"
+                                width="300"
+                                height="200"
+                                class="absolute inset-0 border-2 border-white/30 rounded-lg cursor-pointer"
+                                style="top: 0; left: 50%; transform: translateX(-50%);"
+                            ></canvas>
+                            
+                            <!-- Barra de Progresso -->
+                            <div class="mt-4 text-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyan-300">Área raspada: <span id="scratchProgress">0.0%</span></span>
+                                    <span class="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
+                                    <div 
+                                        id="progressBar"
+                                        class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
+                                        style="width: 0%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resultado -->
+                    <div id="gameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
+                        <div class="text-center mb-4">
+                            <h3 class="text-xl font-bold text-yellow-300 mb-2">🎉 Números Revelados!</h3>
+                            <div id="resultContent">
+                                <!-- Resultado será inserido aqui -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão Nova Cartela -->
+                    <div id="newGameButton" class="hidden text-center mb-6">
+                        <button
+                            onclick="startNewGame()"
+                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+                        >
+                            🎲 Jogar Novamente
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Depósito -->
+    <div id="depositModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
+            <h3 class="text-xl font-bold text-yellow-300 mb-4">💰 Depósito via PIX</h3>
+            
+            <div class="space-y-4">
+                <input
+                    type="number"
+                    id="depositAmount"
+                    placeholder="Valor (mínimo R$ 10)"
+                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                    min="10"
+                />
+                
+                <div class="text-center">
+                    <p class="text-cyan-300 mb-2">PIX Copia e Cola:</p>
+                    <div class="bg-gray-800 p-3 rounded-lg font-mono text-sm text-green-400 break-all" id="pixCode">
+                        00020126580014br.gov.bcb.pix01364adb8d4e-8b5c-4d5f-9e2f-1234567890ab5204000053039865802BR5925RASPACASH LTDA6009SAO PAULO62140510RPX106304ABCD
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button
+                        onclick="confirmDeposit()"
+                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg"
+                    >
+                        ✅ Confirmar
+                    </button>
+                    <button
+                        onclick="hideModal('depositModal')"
+                        class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Feed de Ganhos -->
+    <div id="feedModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
+            <h3 class="text-xl font-bold text-yellow-300 mb-4">🏆 Últimos Ganhos</h3>
+            
+            <div class="space-y-3 max-h-64 overflow-y-auto hide-scrollbar" id="feedContent">
+                <!-- Feed será inserido aqui -->
             </div>
             
             <button
-              onClick={() => setShowFeed(false)}
-              className="w-full mt-4 bg-gray-600 text-white font-bold py-3 rounded-lg"
+                onclick="hideModal('feedModal')"
+                class="w-full mt-4 bg-gray-600 text-white font-bold py-3 rounded-lg"
             >
-              Fechar
+                Fechar
             </button>
-          </div>
         </div>
-      )}
-
-      {showWithdraw && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 className="text-xl font-bold text-yellow-300 mb-4">💸 Saque via PIX</h3>
-            
-            <div className="space-y-4">
-              <input
-                type="number"
-                placeholder="Valor do saque"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                max={balance}
-              />
-              
-              <input
-                type="text"
-                placeholder="Nome completo"
-                value={withdrawData.fullName}
-                onChange={(e) => setWithdrawData(prev => ({ ...prev, fullName: e.target.value }))}
-                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-              />
-              
-              <select
-                value={withdrawData.pixKeyType}
-                onChange={(e) => setWithdrawData(prev => ({ ...prev, pixKeyType: e.target.value }))}
-                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-              >
-                <option value="cpf">CPF</option>
-                <option value="email">E-mail</option>
-                <option value="phone">Telefone</option>
-                <option value="random">Chave Aleatória</option>
-              </select>
-              
-              <input
-                type="text"
-                placeholder="Chave PIX"
-                value={withdrawData.pixKey}
-                onChange={(e) => setWithdrawData(prev => ({ ...prev, pixKey: e.target.value }))}
-                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-              />
-              
-              <div className="flex space-x-3">
-                <button
-                  onClick={() => {
-                    if (withdrawAmount <= balance && withdrawAmount >= 20) {
-                      setBalance(prev => prev - parseFloat(withdrawAmount));
-                      setWithdrawAmount('');
-                      setWithdrawData({ fullName: '', pixKey: '', pixKeyType: 'cpf' });
-                      setShowWithdraw(false);
-                      alert(`Saque de R$ ${withdrawAmount} processado! Aguarde até 24h úteis.`);
-                    } else {
-                      alert('Valor inválido ou saldo insuficiente!');
-                    }
-                  }}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 rounded-lg"
-                >
-                  💸 Sacar
-                </button>
-                <button
-                  onClick={() => setShowWithdraw(false)}
-                  className="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  );
-}
+
+    <!-- Modal de Saque -->
+    <div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
+            <h3 class="text-xl font-bold text-yellow-300 mb-4">💸 Saque via PIX</h3>
+            
+            <div class="space-y-4">
+                <input
+                    type="number"
+                    id="withdrawAmount"
+                    placeholder="Valor do saque"
+                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                />
+                
+                <input
+                    type="text"
+                    id="withdrawName"
+                    placeholder="Nome completo"
+                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                />
+                
+                <select
+                    id="pixKeyType"
+                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                >
+                    <option value="cpf">CPF</option>
+                    <option value="email">E-mail</option>
+                    <option value="phone">Telefone</option>
+                    <option value="random">Chave Aleatória</option>
+                </select>
+                
+                <input
+                    type="text"
+                    id="pixKey"
+                    placeholder="Chave PIX"
+                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                />
+                
+                <div class="flex space-x-3">
+                    <button
+                        onclick="confirmWithdraw()"
+                        class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 rounded-lg"
+                    >
+                        💸 Sacar
+                    </button>
+                    <button
+                        onclick="hideModal('withdrawModal')"
+                        class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado global da aplicação
+        let gameState = {
+            isLoggedIn: false,
+            user: { name: '', email: '' },
+            balance: 0,
+            selectedPlan: null,
+            scratchCard: null,
+            isScratching: false,
+            isRevealed: false,
+            scratchedArea: 0,
+            prize: 0,
+            loyaltySequences: {
+                1: { spent: 0, games: 0 },
+                2: { spent: 0, games: 0 },
+                3: { spent: 0, games: 0 }
+            }
+        };
+
+        // Dados dos planos
+        const plans = [
+            {
+                id: 1,
+                name: "Plano Clássico",
+                cost: 5,
+                maxPrize: 500,
+                color: "from-green-400 to-green-600",
+                description: "Diversão garantida com prêmios de até R$ 500!"
+            },
+            {
+                id: 2,
+                name: "Plano Premium",
+                cost: 10,
+                maxPrize: 1000,
+                color: "from-purple-400 to-purple-600",
+                description: "Experiência premium com prêmios de até R$ 1.000!"
+            },
+            {
+                id: 3,
+                name: "Plano VIP",
+                cost: 20,
+                maxPrize: 2000,
+                color: "from-red-400 to-red-600",
+                description: "Exclusividade VIP com prêmios de até R$ 2.000!"
+            }
+        ];
+
+        // Pacotes promocionais
+        const promotionalPacks = [
+            {
+                id: 'promo-1',
+                planId: 1,
+                name: "Pacote Clássico",
+                quantity: 5,
+                originalPrice: 25,
+                promoPrice: 15,
+                discount: 40,
+                color: "from-green-400 to-green-600"
+            },
+            {
+                id: 'promo-2',
+                planId: 2,
+                name: "Pacote Premium",
+                quantity: 5,
+                originalPrice: 50,
+                promoPrice: 40,
+                discount: 20,
+                color: "from-purple-400 to-purple-600"
+            },
+            {
+                id: 'promo-3',
+                planId: 3,
+                name: "Pacote VIP",
+                quantity: 5,
+                originalPrice: 100,
+                promoPrice: 80,
+                discount: 20,
+                color: "from-red-400 to-red-600"
+            }
+        ];
+
+        // Feed de ganhos falsos
+        const fakeWins = [
+            { name: "Maria Silva", prize: 750, plan: "Premium", time: "2 min atrás" },
+            { name: "João Santos", prize: 1200, plan: "VIP", time: "5 min atrás" },
+            { name: "Ana Costa", prize: 450, plan: "Clássico", time: "8 min atrás" },
+            { name: "Pedro Lima", prize: 850, plan: "Premium", time: "12 min atrás" },
+            { name: "Carla Souza", prize: 1800, plan: "VIP", time: "15 min atrás" },
+            { name: "Roberto Oliveira", prize: 320, plan: "Clássico", time: "18 min atrás" }
+        ];
+
+        // Funções de utilidade
+        function saveGameState() {
+            localStorage.setItem('raspacash_gamestate', JSON.stringify(gameState));
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('raspacash_gamestate');
+            if (saved) {
+                gameState = { ...gameState, ...JSON.parse(saved) };
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById('balance').textContent = `R$ ${gameState.balance.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Algoritmo para determinar vitória
+        function shouldWin(planId) {
+            const loyalty = gameState.loyaltySequences[planId];
+            const plan = plans.find(p => p.id === planId);
+            const loyaltyThreshold = plan.cost * 10;
+            
+            if (loyalty.spent >= loyaltyThreshold) {
+                const bonusGames = loyalty.games - (loyaltyThreshold / plan.cost);
+                const winChance = Math.min(0.1 + (bonusGames * 0.02), 0.3);
+                return Math.random() < winChance;
+            }
+            
+            return false;
+        }
+
+        function calculatePrize(planId) {
+            const plan = plans.find(p => p.id === planId);
+            const minPrize = plan.cost * 2;
+            const maxPrize = plan.maxPrize;
+            return Math.floor(Math.random() * (maxPrize - minPrize + 1)) + minPrize;
+        }
+
+        function generateScratchCard(planId) {
+            const numbers = [];
+            const winningNumbers = [];
+            
+            while (numbers.length < 15) {
+                const num = Math.floor(Math.random() * 50) + 1;
+                if (!numbers.includes(num)) {
+                    numbers.push(num);
+                }
+            }
+            
+            const willWin = shouldWin(planId);
+            if (willWin) {
+                const winCount = Math.floor(Math.random() * 3) + 3;
+                const shuffled = [...numbers].sort(() => 0.5 - Math.random());
+                winningNumbers.push(...shuffled.slice(0, winCount));
+            }
+            
+            return {
+                id: Date.now(),
+                planId,
+                numbers: numbers.sort((a, b) => a - b),
+                winningNumbers,
+                willWin,
+                prize: willWin ? calculatePrize(planId) : 0
+            };
+        }
+
+        // Funções de interface
+        function handleLogin() {
+            const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
+            
+            if (!name || !email) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            gameState.user = { name, email };
+            gameState.isLoggedIn = true;
+            
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            initializeGame();
+            saveGameState();
+        }
+
+        function initializeGame() {
+            renderPlans();
+            renderPromoPacks();
+            renderFeed();
+            updateBalance();
+        }
+
+        function renderPlans() {
+            const grid = document.getElementById('plansGrid');
+            grid.innerHTML = '';
+            
+            plans.forEach(plan => {
+                const loyalty = gameState.loyaltySequences[plan.id];
+                const loyaltyProgress = (loyalty.spent / (plan.cost * 10)) * 100;
+                
+                const planElement = document.createElement('div');
+                planElement.className = `bg-gradient-to-br ${plan.color} p-1 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300`;
+                
+                planElement.innerHTML = `
+                    <div class="bg-gray-900/90 rounded-lg p-6 h-full">
+                        <h3 class="text-xl font-bold text-yellow-300 mb-2">${plan.name}</h3>
+                        <p class="text-gray-300 text-sm mb-4">${plan.description}</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-cyan-300">Custo:</span>
+                                <span class="text-white font-bold">R$ ${plan.cost}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cyan-300">Prêmio máximo:</span>
+                                <span class="text-green-400 font-bold">R$ ${plan.maxPrize}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cyan-300">Jogos:</span>
+                                <span class="text-white">${loyalty.games}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cyan-300">Investido:</span>
+                                <span class="text-white">R$ ${loyalty.spent}</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-cyan-300">Fidelidade</span>
+                                <span class="text-yellow-300">${loyaltyProgress.toFixed(1)}%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div 
+                                    class="bg-gradient-to-r from-green-400 to-yellow-400 h-2 rounded-full transition-all duration-300"
+                                    style="width: ${Math.min(loyaltyProgress, 100)}%"
+                                ></div>
+                            </div>
+                            ${loyaltyProgress < 100 ? 
+                                `<p class="text-xs text-gray-400 mt-1">
+                                    Invista R$ ${(plan.cost * 10 - loyalty.spent).toFixed(0)} para desbloquear bônus!
+                                </p>` :
+                                `<p class="text-xs text-green-400 mt-1">
+                                    ✅ Bônus desbloqueado! Suas chances aumentaram!
+                                </p>`
+                            }
+                        </div>
+                        
+                        <button
+                            onclick="buyCard(${plan.id})"
+                            class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300"
+                        >
+                            🎲 Jogar Agora
+                        </button>
+                    </div>
+                `;
+                
+                grid.appendChild(planElement);
+            });
+        }
+
+        function renderPromoPacks() {
+            const grid = document.getElementById('promoPacks');
+            grid.innerHTML = '';
+            
+            promotionalPacks.forEach(pack => {
+                const packElement = document.createElement('div');
+                packElement.className = `bg-gradient-to-br ${pack.color} p-1 rounded-lg`;
+                
+                packElement.innerHTML = `
+                    <div class="bg-gray-900/90 rounded-md p-4">
+                        <div class="text-center mb-3">
+                            <h4 class="font-bold text-yellow-300">${pack.name}</h4>
+                            <p class="text-sm text-gray-300">${pack.quantity} cartelas</p>
+                        </div>
+                        
+                        <div class="text-center mb-3">
+                            <div class="text-gray-400 line-through">R$ ${pack.originalPrice}</div>
+                            <div class="text-2xl font-bold text-green-400">R$ ${pack.promoPrice}</div>
+                            <div class="text-sm text-orange-300">-${pack.discount}% OFF</div>
+                        </div>
+                        
+                        <button
+                            onclick="buyPromoCard(${pack.planId}, '${pack.id}')"
+                            class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 rounded transition-all duration-300"
+                        >
+                            🛒 Comprar Pacote
+                        </button>
+                    </div>
+                `;
+                
+                grid.appendChild(packElement);
+            });
+        }
+
+        function renderFeed() {
+            const feedContent = document.getElementById('feedContent');
+            feedContent.innerHTML = '';
+            
+            fakeWins.forEach((win, index) => {
+                const winElement = document.createElement('div');
+                winElement.className = 'bg-gray-800/50 rounded-lg p-3 border border-green-400/30';
+                
+                winElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-white font-bold">${win.name}</div>
+                            <div class="text-cyan-300 text-sm">${win.plan}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-green-400 font-bold">R$ ${win.prize}</div>
+                            <div class="text-gray-400 text-xs">${win.time}</div>
+                        </div>
+                    </div>
+                `;
+                
+                feedContent.appendChild(winElement);
+            });
+        }
+
+        function buyCard(planId) {
+            const plan = plans.find(p => p.id === planId);
+            
+            if (gameState.balance < plan.cost) {
+                alert('Saldo insuficiente! Faça um depósito para continuar.');
+                showModal('depositModal');
+                return;
+            }
+            
+            // Atualizar fidelidade
+            gameState.loyaltySequences[planId].spent += plan.cost;
+            gameState.loyaltySequences[planId].games += 1;
+            
+            // Debitar saldo
+            gameState.balance -= plan.cost;
+            updateBalance();
+            
+            // Gerar cartela
+            gameState.scratchCard = generateScratchCard(planId);
+            gameState.selectedPlan = planId;
+            
+            // Mostrar tela do jogo
+            document.getElementById('planSelection').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            document.getElementById('gameTitle').textContent = `${plan.name} - R$ ${plan.cost}`;
+            
+            // Inicializar jogo
+            initializeScratchGame();
+            saveGameState();
+        }
+
+        function buyPromoCard(planId, promoId) {
+            const pack = promotionalPacks.find(p => p.id === promoId);
+            
+            if (gameState.balance < pack.promoPrice) {
+                alert('Saldo insuficiente! Faça um depósito para continuar.');
+                showModal('depositModal');
+                return;
+            }
+            
+            // Atualizar fidelidade
+            gameState.loyaltySequences[planId].spent += pack.promoPrice;
+            gameState.loyaltySequences[planId].games += pack.quantity;
+            
+            // Debitar saldo
+            gameState.balance -= pack.promoPrice;
+            updateBalance();
+            
+            // Simular múltiplas cartelas
+            let totalPrize = 0;
+            let wins = 0;
+            
+            for (let i = 0; i < pack.quantity; i++) {
+                const card = generateScratchCard(planId);
+                if (card.willWin) {
+                    totalPrize += card.prize;
+                    wins++;
+                }
+            }
+            
+            if (totalPrize > 0) {
+                gameState.balance += totalPrize;
+                updateBalance();
+                alert(`🎉 PACOTE PROMOCIONAL! 🎉\n\nVocê ganhou ${wins} prêmios de ${pack.quantity} cartelas!\nTotal ganho: R$ ${totalPrize.toFixed(2)}`);
+            } else {
+                alert(`😔 Pacote jogado!\n\nNenhuma das ${pack.quantity} cartelas foi premiada desta vez.\nContinue jogando para aumentar suas chances!`);
+            }
+            
+            renderPlans();
+            saveGameState();
+        }
+
+        function initializeScratchGame() {
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Renderizar números
+            renderNumbers();
+            
+            // Inicializar cobertura
+            const gradient = ctx.createLinearGradient(0, 0, 300, 200);
+            gradient.addColorStop(0, '#C0C0C0');
+            gradient.addColorStop(0.5, '#E5E5E5');
+            gradient.addColorStop(1, '#A0A0A0');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 300, 200);
+            
+            // Adicionar textura
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 50; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * 300, Math.random() * 200, Math.random() * 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Texto de instrução
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🪙 RASPE AQUI 🪙', 150, 100);
+            
+            // Reset estado
+            gameState.scratchedArea = 0;
+            gameState.isRevealed = false;
+            
+            // Adicionar eventos
+            setupScratchEvents();
+        }
+
+        function renderNumbers() {
+            const grid = document.getElementById('numbersGrid');
+            grid.innerHTML = '';
+            
+            if (!gameState.scratchCard) return;
+            
+            gameState.scratchCard.numbers.forEach((number, index) => {
+                const numberElement = document.createElement('div');
+                const isWinning = gameState.scratchCard.winningNumbers.includes(number);
+                
+                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
+                    isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
+                }`;
+                
+                numberElement.textContent = number;
+                grid.appendChild(numberElement);
+            });
+        }
+
+        function setupScratchEvents() {
+            const canvas = document.getElementById('scratchCanvas');
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', () => {
+                gameState.isScratching = true;
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                gameState.isScratching = false;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (gameState.isScratching && !gameState.isRevealed) {
+                    scratch(e);
+                }
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                gameState.isScratching = false;
+            });
+            
+            // Touch events
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.isScratching = true;
+            });
+            
+            canvas.addEventListener('touchend', () => {
+                gameState.isScratching = false;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (gameState.isScratching && !gameState.isRevealed) {
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const mockEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    scratch(mockEvent);
+                }
+            });
+        }
+
+        function scratch(e) {
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Raspar área circular
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Calcular área raspada
+            const imageData = ctx.getImageData(0, 0, 300, 200);
+            const pixels = imageData.data;
+            let transparent = 0;
+            
+            for (let i = 3; i < pixels.length; i += 4) {
+                if (pixels[i] < 128) transparent++;
+            }
+            
+            const area = transparent / (300 * 200);
+            gameState.scratchedArea = area;
+            
+            // Atualizar UI
+            document.getElementById('scratchProgress').textContent = `${(area * 100).toFixed(1)}%`;
+            document.getElementById('progressBar').style.width = `${Math.min(area * 100, 100)}%`;
+            
+            // Revelar se 70% raspado
+            if (area > 0.7 && !gameState.isRevealed) {
+                revealResult();
+            }
+        }
+
+        function revealResult() {
+            gameState.isRevealed = true;
+            
+            // Limpar canvas
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 300, 200);
+            
+            // Mostrar resultado
+            const resultDiv = document.getElementById('gameResult');
+            const resultContent = document.getElementById('resultContent');
+            
+            if (gameState.scratchCard.willWin) {
+                gameState.prize = gameState.scratchCard.prize;
+                gameState.balance += gameState.prize;
+                updateBalance();
+                
+                resultContent.innerHTML = `
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 mx-auto max-w-sm">
+                        <div class="text-yellow-300 text-2xl font-bold mb-2">🏆 PARABÉNS! 🏆</div>
+                        <div class="text-white text-3xl font-bold">R$ ${gameState.prize.toFixed(2)}</div>
+                        <div class="text-green-100 text-sm mt-2">Prêmio creditado na sua conta!</div>
+                    </div>
+                `;
+            } else {
+                resultContent.innerHTML = `
+                    <div class="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-4 mx-auto max-w-sm">
+                        <div class="text-yellow-300 text-xl font-bold mb-2">😔 Que pena!</div>
+                        <div class="text-white text-lg">Não foi dessa vez</div>
+                        <div class="text-gray-300 text-sm mt-2">Continue jogando para aumentar suas chances!</div>
+                    </div>
+                `;
+            }
+            
+            resultDiv.classList.remove('hidden');
+            document.getElementById('newGameButton').classList.remove('hidden');
+            
+            saveGameState();
+        }
+
+        function startNewGame() {
+            gameState.scratchCard = null;
+            gameState.selectedPlan = null;
+            gameState.isRevealed = false;
+            gameState.prize = 0;
+            gameState.scratchedArea = 0;
+            
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('planSelection').classList.remove('hidden');
+            document.getElementById('gameResult').classList.add('hidden');
+            document.getElementById('newGameButton').classList.add('hidden');
+            
+            renderPlans();
+            saveGameState();
+        }
+
+        function backToPlans() {
+            startNewGame();
+        }
+
+        // Funções de modal
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function confirmDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            
+            if (amount < 10) {
+                alert('Valor mínimo para depósito é R$ 10,00');
+                return;
+            }
+            
+            gameState.balance += amount;
+            updateBalance();
+            
+            document.getElementById('depositAmount').value = '';
+            hideModal('depositModal');
+            
+            alert(`Depósito de R$ ${amount.toFixed(2)} confirmado!`);
+            saveGameState();
+        }
+
+        function confirmWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const name = document.getElementById('withdrawName').value;
+            const pixKey = document.getElementById('pixKey').value;
+            
+            if (!amount || !name || !pixKey) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            
+            if (amount < 20) {
+                alert('Valor mínimo para saque é R$ 20,00');
+                return;
+            }
+            
+            if (amount > gameState.balance) {
+                alert('Saldo insuficiente!');
+                return;
+            }
+            
+            gameState.balance -= amount;
+            updateBalance();
+            
+            // Limpar campos
+            document.getElementById('withdrawAmount').value = '';
+            document.getElementById('withdrawName').value = '';
+            document.getElementById('pixKey').value = '';
+            
+            hideModal('withdrawModal');
+            
+            alert(`Saque de R$ ${amount.toFixed(2)} processado! Aguarde até 24h úteis.`);
+            saveGameState();
+        }
+
+        // Inicialização
+        window.addEventListener('load', () => {
+            loadGameState();
+            
+            if (gameState.isLoggedIn) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('gameScreen').classList.remove('hidden');
+                initializeGame();
+            }
+        });
+    </script>
+</body>
+</html>
