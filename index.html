@@ -366,7 +366,11 @@
                 1: { spent: 0, games: 0 },
                 2: { spent: 0, games: 0 },
                 3: { spent: 0, games: 0 }
-            }
+            },
+            // Novo: controle de pacotes promocionais
+            currentPromoPackage: null,
+            promoCardsRemaining: [],
+            currentPromoCard: 0
         };
 
         // Dados dos planos
@@ -431,25 +435,112 @@
             }
         ];
 
-        // Feed de ganhos falsos
-        const fakeWins = [
-            { name: "Maria Silva", prize: 750, plan: "Premium", time: "2 min atrás" },
-            { name: "João Santos", prize: 1200, plan: "VIP", time: "5 min atrás" },
-            { name: "Ana Costa", prize: 450, plan: "Clássico", time: "8 min atrás" },
-            { name: "Pedro Lima", prize: 850, plan: "Premium", time: "12 min atrás" },
-            { name: "Carla Souza", prize: 1800, plan: "VIP", time: "15 min atrás" },
-            { name: "Roberto Oliveira", prize: 320, plan: "Clássico", time: "18 min atrás" }
+        // Listas para gerar feed dinâmico de ganhos
+        const firstNames = [
+            "Maria", "João", "Ana", "Pedro", "Carla", "Roberto", "Fernanda", "Carlos", 
+            "Juliana", "Ricardo", "Patricia", "Marcos", "Luciana", "Rafael", "Claudia",
+            "Daniel", "Mariana", "Gustavo", "Renata", "Bruno", "Gabriela", "Felipe",
+            "Vanessa carme", "André", "Camila", "Rodrigo", "Beatriz", "Leonardo", "Isabela",
+            "Thiago", "Amanda", "Vinicius", "Larissa", "Fabio", "Natalia", "Diego",
+            "Caroline", "Eduardo", "Priscila", "Henrique", "Tatiane", "Leandro"
         ];
+        
+        const lastNames = [
+            "Silva", "Santos", "Costa", "Lima", "Souza", "Oliveira", "Pereira", "Rodrigues",
+            "Almeida", "Nascimento", "Ferreira", "Araújo", "Ribeiro", "Rocha", "Martins",
+            "Carvalho", "Barbosa", "Gomes", "Dias", "Mendes", "Cardoso", "Moreira",
+            "Fernandes", "Campos", "Vieira", "Castro", "Ramos", "Pinto", "Freitas",
+            "Teixeira", "Correia", "Monteiro", "Neves", "Machado", "Cavalcante"
+        ];
+        
+        function generateRandomWins() {
+            const wins = [];
+            const planNames = ["Clássico", "Premium", "VIP"];
+            const maxPrizes = [500, 1000, 2000];
+            
+            for (let i = 0; i < 8; i++) {
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                const planIndex = Math.floor(Math.random() * planNames.length);
+                const minPrize = [10, 20, 40][planIndex];
+                const prize = Math.floor(Math.random() * (maxPrizes[planIndex] - minPrize + 1)) + minPrize;
+                const timeAgo = Math.floor(Math.random() * 60) + 1;
+                
+                wins.push({
+                    name: `${firstName} ${lastName}`,
+                    prize: prize,
+                    plan: planNames[planIndex],
+                    time: `${timeAgo} min atrás`
+                });
+            }
+            
+            // Ordenar por tempo (mais recente primeiro)
+            return wins.sort((a, b) => parseInt(a.time) - parseInt(b.time));
+        }
 
-        // Funções de utilidade
+        // Funções de utilidade - Sistema de Login Persistente
         function saveGameState() {
-            localStorage.setItem('raspacash_gamestate', JSON.stringify(gameState));
+            // Salvar estado do usuário baseado no email como chave única
+            const userKey = `raspacash_user_${gameState.user.email}`;
+            const userData = {
+                name: gameState.user.name,
+                email: gameState.user.email,
+                balance: gameState.balance,
+                loyaltySequences: gameState.loyaltySequences,
+                lastLogin: new Date().toISOString()
+            };
+            localStorage.setItem(userKey, JSON.stringify(userData));
+            localStorage.setItem('raspacash_last_user', gameState.user.email);
         }
 
         function loadGameState() {
-            const saved = localStorage.getItem('raspacash_gamestate');
-            if (saved) {
-                gameState = { ...gameState, ...JSON.parse(saved) };
+            const lastUserEmail = localStorage.getItem('raspacash_last_user');
+            if (lastUserEmail) {
+                const userKey = `raspacash_user_${lastUserEmail}`;
+                const saved = localStorage.getItem(userKey);
+                if (saved) {
+                    const userData = JSON.parse(saved);
+                    gameState.user = { name: userData.name, email: userData.email };
+                    gameState.balance = userData.balance || 0;
+                    gameState.loyaltySequences = userData.loyaltySequences || {
+                        1: { spent: 0, games: 0 },
+                        2: { spent: 0, games: 0 },
+                        3: { spent: 0, games: 0 }
+                    };
+                    gameState.isLoggedIn = true;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function createUserAccount(name, email) {
+            // Verificar se usuário já existe
+            const userKey = `raspacash_user_${email}`;
+            const existingUser = localStorage.getItem(userKey);
+            
+            if (existingUser) {
+                // Usuário existe, carregar dados
+                const userData = JSON.parse(existingUser);
+                gameState.user = { name: userData.name, email: userData.email };
+                gameState.balance = userData.balance || 0;
+                gameState.loyaltySequences = userData.loyaltySequences || {
+                    1: { spent: 0, games: 0 },
+                    2: { spent: 0, games: 0 },
+                    3: { spent: 0, games: 0 }
+                };
+                return true;
+            } else {
+                // Novo usuário, criar conta
+                gameState.user = { name, email };
+                gameState.balance = 0;
+                gameState.loyaltySequences = {
+                    1: { spent: 0, games: 0 },
+                    2: { spent: 0, games: 0 },
+                    3: { spent: 0, games: 0 }
+                };
+                saveGameState();
+                return false; // Indica que é um novo usuário
             }
         }
 
@@ -483,8 +574,9 @@
             const numbers = [];
             const winningNumbers = [];
             
+            // Gerar 15 números únicos e aleatórios para cada cartela
             while (numbers.length < 15) {
-                const num = Math.floor(Math.random() * 50) + 1;
+                const num = Math.floor(Math.random() * 99) + 1; // Números de 1 a 99 para mais variedade
                 if (!numbers.includes(num)) {
                     numbers.push(num);
                 }
@@ -492,19 +584,29 @@
             
             const willWin = shouldWin(planId);
             if (willWin) {
-                const winCount = Math.floor(Math.random() * 3) + 3;
+                const winCount = Math.floor(Math.random() * 3) + 3; // 3 a 5 números vencedores
                 const shuffled = [...numbers].sort(() => 0.5 - Math.random());
                 winningNumbers.push(...shuffled.slice(0, winCount));
             }
             
             return {
-                id: Date.now(),
+                id: Date.now() + Math.random(), // ID único para cada cartela
                 planId,
                 numbers: numbers.sort((a, b) => a - b),
                 winningNumbers,
                 willWin,
                 prize: willWin ? calculatePrize(planId) : 0
             };
+        }
+
+        function generateMultipleCards(planId, quantity) {
+            const cards = [];
+            for (let i = 0; i < quantity; i++) {
+                // Pequeno delay para garantir IDs únicos
+                setTimeout(() => {}, i);
+                cards.push(generateScratchCard(planId));
+            }
+            return cards;
         }
 
         // Funções de interface
@@ -517,14 +619,32 @@
                 return;
             }
             
-            gameState.user = { name, email };
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Por favor, insira um e-mail válido!');
+                return;
+            }
+            
+            // Criar ou carregar conta do usuário
+            const isExistingUser = createUserAccount(name, email);
             gameState.isLoggedIn = true;
             
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('gameScreen').classList.remove('hidden');
             
             initializeGame();
-            saveGameState();
+            
+            // Mostrar mensagem de boas-vindas
+            if (isExistingUser) {
+                setTimeout(() => {
+                    alert(`Bem-vindo de volta, ${name}! Seu saldo atual é R$ ${gameState.balance.toFixed(2)}`);
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    alert(`Bem-vindo ao RaspaCash, ${name}! Faça um depósito para começar a jogar.`);
+                }, 500);
+            }
         }
 
         function initializeGame() {
@@ -641,7 +761,10 @@
             const feedContent = document.getElementById('feedContent');
             feedContent.innerHTML = '';
             
-            fakeWins.forEach((win, index) => {
+            // Gerar novos ganhos dinâmicos a cada abertura
+            const currentWins = generateRandomWins();
+            
+            currentWins.forEach((win, index) => {
                 const winElement = document.createElement('div');
                 winElement.className = 'bg-gray-800/50 rounded-lg p-3 border border-green-400/30';
                 
@@ -710,36 +833,462 @@
             gameState.balance -= pack.promoPrice;
             updateBalance();
             
-            // Simular múltiplas cartelas
-            let totalPrize = 0;
-            let wins = 0;
+            // Gerar cartelas do pacote promocional
+            const promoCards = generateMultipleCards(planId, pack.quantity);
             
-            for (let i = 0; i < pack.quantity; i++) {
-                const card = generateScratchCard(planId);
-                if (card.willWin) {
-                    totalPrize += card.prize;
-                    wins++;
+            // Configurar estado do pacote promocional
+            gameState.currentPromoPackage = {
+                pack: pack,
+                cards: promoCards,
+                currentCard: 0,
+                totalCards: pack.quantity,
+                planId: planId
+            };
+            
+            // Mostrar interface de pacote promocional
+            showPromoPackageInterface();
+            
+            saveGameState();
+        }
+        
+        function showPromoPackageInterface() {
+            // Esconder seleção de planos
+            document.getElementById('planSelection').classList.add('hidden');
+            
+            // Mostrar interface do pacote promocional
+            let promoInterface = document.getElementById('promoPackageInterface');
+            if (!promoInterface) {
+                // Criar interface do pacote promocional
+                promoInterface = document.createElement('div');
+                promoInterface.id = 'promoPackageInterface';
+                promoInterface.className = 'max-w-4xl mx-auto';
+                
+                promoInterface.innerHTML = `
+                    <div class="text-center mb-6">
+                        <h2 class="text-3xl font-bold text-orange-300 mb-2">🔥 Pacote Promocional 🔥</h2>
+                        <p class="text-cyan-300" id="promoPackageTitle"></p>
+                        <p class="text-yellow-300" id="promoPackageProgress"></p>
+                        
+                        <button
+                            onclick="backToPlansFromPromo()"
+                            class="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                        >
+                            ← Voltar aos Planos
+                        </button>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" id="promoCardsGrid">
+                        <!-- Cartelas do pacote serão inseridas aqui -->
+                    </div>
+                    
+                    <div id="promoGameArea" class="hidden">
+                        <!-- Área de jogo para cartela individual -->
+                    </div>
+                `;
+                
+                document.querySelector('main').appendChild(promoInterface);
+            }
+            
+            promoInterface.classList.remove('hidden');
+            renderPromoPackage();
+        }
+        
+        function renderPromoPackage() {
+            const pack = gameState.currentPromoPackage;
+            if (!pack) return;
+            
+            const plan = plans.find(p => p.id === pack.planId);
+            
+            // Atualizar título e progresso
+            document.getElementById('promoPackageTitle').textContent = 
+                `${pack.pack.name} - ${pack.totalCards} cartelas do ${plan.name}`;
+            document.getElementById('promoPackageProgress').textContent = 
+                `Cartelas restantes: ${pack.totalCards - pack.currentCard}`;
+            
+            // Renderizar grade de cartelas
+            const grid = document.getElementById('promoCardsGrid');
+            grid.innerHTML = '';
+            
+            pack.cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                const isPlayed = index < pack.currentCard;
+                const isNext = index === pack.currentCard;
+                
+                cardElement.className = `p-4 rounded-xl border-2 transition-all duration-300 ${
+                    isPlayed ? 'bg-gray-800 border-gray-600 opacity-50' :
+                    isNext ? 'bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border-yellow-400 animate-pulse-gold' :
+                    'bg-gradient-to-br from-purple-900/30 to-blue-900/30 border-cyan-400/30'
+                }`;
+                
+                cardElement.innerHTML = `
+                    <div class="text-center">
+                        <h3 class="text-lg font-bold ${isPlayed ? 'text-gray-500' : 'text-yellow-300'} mb-2">
+                            Cartela ${index + 1}
+                        </h3>
+                        
+                        ${isPlayed ? 
+                            `<div class="text-gray-500 mb-4">✅ Jogada</div>
+                             <div class="text-sm ${card.willWin ? 'text-green-400' : 'text-red-400'}">
+                                ${card.willWin ? `Prêmio: R$ ${card.prize}` : 'Sem prêmio'}
+                             </div>` :
+                        isNext ?
+                            `<div class="text-orange-300 mb-4 font-bold animate-pulse">🎯 Próxima</div>
+                             <button onclick="playPromoCard(${index})" 
+                                     class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                🎲 Raspar Agora
+                             </button>` :
+                            `<div class="text-cyan-300 mb-4">⏳ Aguardando</div>
+                             <button disabled class="bg-gray-600 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">
+                                Aguarde sua vez
+                             </button>`
+                        }
+                    </div>
+                `;
+                
+                grid.appendChild(cardElement);
+            });
+        }
+        
+        function playPromoCard(cardIndex) {
+            const pack = gameState.currentPromoPackage;
+            if (!pack || cardIndex !== pack.currentCard) return;
+            
+            // Configurar cartela atual
+            gameState.scratchCard = pack.cards[cardIndex];
+            gameState.selectedPlan = pack.planId;
+            
+            // Esconder grid de cartelas e mostrar área de jogo
+            document.getElementById('promoCardsGrid').classList.add('hidden');
+            
+            let gameArea = document.getElementById('promoGameArea');
+            gameArea.innerHTML = `
+                <div class="max-w-2xl mx-auto">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-yellow-300 mb-2">
+                            Cartela ${cardIndex + 1} de ${pack.totalCards}
+                        </h3>
+                        <p class="text-cyan-300">Raspe para revelar os números!</p>
+                    </div>
+
+                    <!-- Cartela de Raspadinha -->
+                    <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
+                        <div class="relative">
+                            <!-- Números da Cartela -->
+                            <div class="grid grid-cols-5 gap-2 w-full max-w-sm mx-auto mb-4" id="promoNumbersGrid">
+                                <!-- Números serão inseridos aqui -->
+                            </div>
+
+                            <!-- Canvas de Cobertura -->
+                            <canvas
+                                id="promoScratchCanvas"
+                                width="300"
+                                height="200"
+                                class="absolute inset-0 border-2 border-white/30 rounded-lg cursor-pointer"
+                                style="top: 0; left: 50%; transform: translateX(-50%);"
+                            ></canvas>
+                            
+                            <!-- Barra de Progresso -->
+                            <div class="mt-4 text-sm">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyan-300">Área raspada: <span id="promoScratchProgress">0.0%</span></span>
+                                    <span class="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
+                                    <div 
+                                        id="promoProgressBar"
+                                        class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
+                                        style="width: 0%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resultado -->
+                    <div id="promoGameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
+                        <div class="text-center mb-4">
+                            <h4 class="text-xl font-bold text-yellow-300 mb-2">🎉 Números Revelados!</h4>
+                            <div id="promoResultContent">
+                                <!-- Resultado será inserido aqui -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botão Próxima Cartela -->
+                    <div id="promoNextButton" class="hidden text-center mb-6">
+                        <button
+                            onclick="finishPromoCard()"
+                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+                        >
+                            🎲 Próxima Cartela
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            gameArea.classList.remove('hidden');
+            
+            // Inicializar jogo da cartela promocional
+            initializePromoScratchGame();
+        }
+        
+        function initializePromoScratchGame() {
+            const canvas = document.getElementById('promoScratchCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Renderizar números
+            renderPromoNumbers();
+            
+            // Inicializar cobertura (mesmo código do jogo normal)
+            const gradient = ctx.createLinearGradient(0, 0, 300, 200);
+            gradient.addColorStop(0, '#C0C0C0');
+            gradient.addColorStop(0.5, '#E5E5E5');
+            gradient.addColorStop(1, '#A0A0A0');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 300, 200);
+            
+            // Adicionar textura
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 50; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * 300, Math.random() * 200, Math.random() * 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Texto de instrução
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🪙 RASPE AQUI 🪙', 150, 100);
+            
+            // Reset estado
+            gameState.scratchedArea = 0;
+            gameState.isRevealed = false;
+            
+            // Adicionar eventos específicos para o canvas promocional
+            setupPromoScratchEvents();
+        }
+        
+        function renderPromoNumbers() {
+            const grid = document.getElementById('promoNumbersGrid');
+            grid.innerHTML = '';
+            
+            if (!gameState.scratchCard) return;
+            
+            gameState.scratchCard.numbers.forEach((number, index) => {
+                const numberElement = document.createElement('div');
+                const isWinning = gameState.scratchCard.winningNumbers.includes(number);
+                
+                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
+                    isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
+                }`;
+                
+                numberElement.textContent = number;
+                grid.appendChild(numberElement);
+            });
+        }
+        
+        function setupPromoScratchEvents() {
+            const canvas = document.getElementById('promoScratchCanvas');
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', () => {
+                gameState.isScratching = true;
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                gameState.isScratching = false;
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (gameState.isScratching && !gameState.isRevealed) {
+                    scratchPromo(e);
                 }
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                gameState.isScratching = false;
+            });
+            
+            // Touch events
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                gameState.isScratching = true;
+            });
+            
+            canvas.addEventListener('touchend', () => {
+                gameState.isScratching = false;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (gameState.isScratching && !gameState.isRevealed) {
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const mockEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    scratchPromo(mockEvent);
+                }
+            });
+        }
+        
+        function scratchPromo(e) {
+            const canvas = document.getElementById('promoScratchCanvas');
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Raspar área circular
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Calcular área raspada
+            const imageData = ctx.getImageData(0, 0, 300, 200);
+            const pixels = imageData.data;
+            let transparent = 0;
+            
+            for (let i = 3; i < pixels.length; i += 4) {
+                if (pixels[i] < 128) transparent++;
             }
             
-            if (totalPrize > 0) {
-                gameState.balance += totalPrize;
+            const area = transparent / (300 * 200);
+            gameState.scratchedArea = area;
+            
+            // Atualizar UI
+            document.getElementById('promoScratchProgress').textContent = `${(area * 100).toFixed(1)}%`;
+            document.getElementById('promoProgressBar').style.width = `${Math.min(area * 100, 100)}%`;
+            
+            // Revelar se 70% raspado
+            if (area > 0.7 && !gameState.isRevealed) {
+                revealPromoResult();
+            }
+        }
+        
+        function revealPromoResult() {
+            gameState.isRevealed = true;
+            
+            // Limpar canvas
+            const canvas = document.getElementById('promoScratchCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 300, 200);
+            
+            // Mostrar resultado
+            const resultDiv = document.getElementById('promoGameResult');
+            const resultContent = document.getElementById('promoResultContent');
+            
+            if (gameState.scratchCard.willWin) {
+                gameState.prize = gameState.scratchCard.prize;
+                gameState.balance += gameState.prize;
                 updateBalance();
-                alert(`🎉 PACOTE PROMOCIONAL! 🎉\n\nVocê ganhou ${wins} prêmios de ${pack.quantity} cartelas!\nTotal ganho: R$ ${totalPrize.toFixed(2)}`);
+                
+                resultContent.innerHTML = `
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 mx-auto max-w-sm">
+                        <div class="text-yellow-300 text-2xl font-bold mb-2">🏆 PARABÉNS! 🏆</div>
+                        <div class="text-white text-3xl font-bold">R$ ${gameState.prize.toFixed(2)}</div>
+                        <div class="text-green-100 text-sm mt-2">Prêmio creditado na sua conta!</div>
+                    </div>
+                `;
             } else {
-                alert(`😔 Pacote jogado!\n\nNenhuma das ${pack.quantity} cartelas foi premiada desta vez.\nContinue jogando para aumentar suas chances!`);
+                resultContent.innerHTML = `
+                    <div class="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-4 mx-auto max-w-sm">
+                        <div class="text-yellow-300 text-xl font-bold mb-2">😔 Que pena!</div>
+                        <div class="text-white text-lg">Não foi dessa vez</div>
+                        <div class="text-gray-300 text-sm mt-2">Continue com as próximas cartelas!</div>
+                    </div>
+                `;
             }
             
+            resultDiv.classList.remove('hidden');
+            document.getElementById('promoNextButton').classList.remove('hidden');
+            
+            saveGameState();
+        }
+        
+        function finishPromoCard() {
+            const pack = gameState.currentPromoPackage;
+            
+            // Avançar para próxima cartela
+            pack.currentCard++;
+            
+            // Verificar se há mais cartelas
+            if (pack.currentCard < pack.totalCards) {
+                // Voltar para grid de cartelas
+                document.getElementById('promoGameArea').classList.add('hidden');
+                document.getElementById('promoCardsGrid').classList.remove('hidden');
+                renderPromoPackage();
+            } else {
+                // Todas as cartelas foram jogadas, voltar para planos
+                finishPromoPackage();
+            }
+        }
+        
+        function finishPromoPackage() {
+            const pack = gameState.currentPromoPackage;
+            
+            // Calcular estatísticas finais
+            let totalWins = 0;
+            let totalPrize = 0;
+            
+            pack.cards.forEach(card => {
+                if (card.willWin) {
+                    totalWins++;
+                    totalPrize += card.prize;
+                }
+            });
+            
+            // Mostrar resumo final
+            alert(`🎉 PACOTE PROMOCIONAL CONCLUÍDO! 🎉\n\nCartelas jogadas: ${pack.totalCards}\nCartelas premiadas: ${totalWins}\nTotal de prêmios: R$ ${totalPrize.toFixed(2)}\n\nObrigado por jogar!`);
+            
+            // Limpar estado do pacote promocional
+            gameState.currentPromoPackage = null;
+            
+            // Voltar para seleção de planos
+            backToPlansFromPromo();
+        }
+        
+        function backToPlansFromPromo() {
+            // Esconder interface de pacote promocional
+            const promoInterface = document.getElementById('promoPackageInterface');
+            if (promoInterface) {
+                promoInterface.classList.add('hidden');
+            }
+            
+            // Mostrar seleção de planos
+            document.getElementById('planSelection').classList.remove('hidden');
+            
+            // Limpar estado
+            gameState.currentPromoPackage = null;
+            gameState.scratchCard = null;
+            gameState.selectedPlan = null;
+            gameState.isRevealed = false;
+            gameState.prize = 0;
+            gameState.scratchedArea = 0;
+            
+            // Atualizar planos
             renderPlans();
             saveGameState();
         }
 
         function initializeScratchGame() {
             const canvas = document.getElementById('scratchCanvas');
+            if (!canvas) return;
+            
             const ctx = canvas.getContext('2d');
             
             // Renderizar números
             renderNumbers();
+            
+            // Limpar canvas completamente antes de desenhar nova cobertura
+            ctx.clearRect(0, 0, 300, 200);
+            
+            // Resetar composite operation
+            ctx.globalCompositeOperation = 'source-over';
             
             // Inicializar cobertura
             const gradient = ctx.createLinearGradient(0, 0, 300, 200);
@@ -767,8 +1316,19 @@
             // Reset estado
             gameState.scratchedArea = 0;
             gameState.isRevealed = false;
+            gameState.isScratching = false;
             
-            // Adicionar eventos
+            // Atualizar UI
+            document.getElementById('scratchProgress').textContent = '0.0%';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('gameResult').classList.add('hidden');
+            document.getElementById('newGameButton').classList.add('hidden');
+            
+            // Remover eventos antigos e adicionar novos
+            const newCanvas = canvas.cloneNode(true);
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            
+            // Adicionar eventos no novo canvas
             setupScratchEvents();
         }
 
@@ -993,14 +1553,43 @@
             saveGameState();
         }
 
+        // Adicionar botão de logout no header
+        function addLogoutButton() {
+            const header = document.querySelector('header .flex.items-center.space-x-4');
+            
+            // Verificar se botão já existe
+            if (!document.getElementById('logoutButton')) {
+                const logoutButton = document.createElement('button');
+                logoutButton.id = 'logoutButton';
+                logoutButton.onclick = logout;
+                logoutButton.className = 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300';
+                logoutButton.innerHTML = '🚪 Sair';
+                
+                header.appendChild(logoutButton);
+            }
+        }
+        
+        function logout() {
+            if (confirm('Tem certeza que deseja sair? Seus dados serão salvos automaticamente.')) {
+                gameState.isLoggedIn = false;
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('gameScreen').classList.add('hidden');
+                
+                // Limpar campos de login
+                document.getElementById('userName').value = '';
+                document.getElementById('userEmail').value = '';
+            }
+        }
+
         // Inicialização
         window.addEventListener('load', () => {
-            loadGameState();
+            const hasUser = loadGameState();
             
-            if (gameState.isLoggedIn) {
+            if (hasUser && gameState.isLoggedIn) {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('gameScreen').classList.remove('hidden');
                 initializeGame();
+                addLogoutButton();
             }
         });
     </script>
