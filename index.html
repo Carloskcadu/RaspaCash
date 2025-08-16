@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>RaspaCash - Sistema de Raspadinha Online</title>
     
     <!-- Tailwind CSS -->
@@ -56,7 +56,7 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white min-h-screen">
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white min-h-screen min-h-[100dvh] overflow-x-hidden">
     <!-- Container Principal -->
     <div id="app">
         <!-- Tela de Login -->
@@ -104,42 +104,56 @@
         <div id="gameScreen" class="hidden">
             <!-- Header -->
             <header class="bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg border-b border-cyan-400/30 shadow-lg">
-                <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <h1 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                        🎰 RaspaCash
-                    </h1>
-                    
-                    <div class="flex items-center space-x-4">
-                        <div class="text-right">
-                            <div class="text-sm text-cyan-300">Saldo</div>
-                            <div class="text-xl font-bold text-green-400" id="balance">R$ 0,00</div>
-                        </div>
+                <div class="container mx-auto px-4 py-4">
+                    <!-- Logo e Saldo -->
+                    <div class="flex justify-between items-center mb-4 sm:mb-0">
+                        <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                            🎰 RaspaCash
+                        </h1>
                         
+                        <div class="text-right">
+                            <div class="text-xs sm:text-sm text-cyan-300">Saldo</div>
+                            <div class="text-lg sm:text-xl font-bold text-green-400" id="balance">R$ 0,00</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botões - Layout responsivo -->
+                    <div class="grid grid-cols-3 gap-2 sm:flex sm:justify-end sm:space-x-4">
                         <button
                             onclick="showModal('depositModal')"
-                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
                         >
-                            💰 Depositar
+                            <span class="hidden sm:inline">💰 Depositar</span>
+                            <span class="sm:hidden">💰</span>
                         </button>
                         
                         <button
                             onclick="showModal('withdrawModal')"
-                            class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                            class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
                         >
-                            💸 Sacar
+                            <span class="hidden sm:inline">💸 Sacar</span>
+                            <span class="sm:hidden">💸</span>
                         </button>
                         
                         <button
                             onclick="showModal('feedModal')"
-                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
                         >
-                            🏆 Ganhos
+                            <span class="hidden sm:inline">🏆 Ganhos</span>
+                            <span class="sm:hidden">🏆</span>
+                        </button>
+                        
+                        <button
+                            onclick="logout()"
+                            class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-2 rounded-lg transition-all duration-300 text-xs sm:text-sm col-span-3 sm:col-span-1 mt-2 sm:mt-0"
+                        >
+                            🚪 Sair
                         </button>
                     </div>
                 </div>
             </header>
 
-            <main class="container mx-auto px-4 py-8">
+            <main class="container mx-auto px-4 py-4 sm:py-8 min-h-[calc(100vh-120px)]">
                 <!-- Seleção de Planos -->
                 <div id="planSelection">
                     <div class="text-center mb-8">
@@ -147,7 +161,7 @@
                         <p class="text-cyan-300">Selecione o plano ideal para você!</p>
                     </div>
                     
-                    <div class="grid md:grid-cols-3 gap-6 mb-12" id="plansGrid">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12" id="plansGrid">
                         <!-- Planos serão inseridos aqui via JavaScript -->
                     </div>
                     
@@ -158,7 +172,7 @@
                             <p class="text-gray-300">Economize comprando em pacotes!</p>
                         </div>
                         
-                        <div class="grid md:grid-cols-3 gap-4" id="promoPacks">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="promoPacks">
                             <!-- Pacotes promocionais serão inseridos aqui -->
                         </div>
                     </div>
