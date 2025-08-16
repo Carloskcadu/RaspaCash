@@ -202,19 +202,15 @@
                                 <!-- Números serão inseridos aqui -->
                             </div>
 
-                            <!-- Área de Raspadinha Simplificada -->
-                            <div id="scratchArea" class="relative w-full max-w-sm mx-auto h-48 rounded-lg cursor-pointer border-2 border-white/30 overflow-hidden">
-                                <!-- Overlay de Cobertura -->
-                                <div 
-                                    id="scratchOverlay" 
-                                    class="absolute inset-0 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 flex items-center justify-center transition-opacity duration-500"
-                                    style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"
-                                >
-                                    <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-700 mb-2">🪙 RASPE AQUI 🪙</div>
-                                        <div class="text-sm text-gray-600 animate-pulse">Clique 5 vezes para revelar</div>
-                                    </div>
-                                </div>
+                            <!-- Canvas de Raspadinha -->
+                            <div class="relative bg-gradient-to-br from-yellow-100 to-orange-100 rounded-lg p-4 mb-4 shadow-lg">
+                                <canvas 
+                                    id="scratchCanvas" 
+                                    width="320" 
+                                    height="220"
+                                    class="scratch-canvas w-full h-full rounded-lg cursor-crosshair"
+                                    style="max-width: 320px; max-height: 220px; user-select: none; touch-action: none;"
+                                ></canvas>
                             </div>
                             
                             <!-- Barra de Progresso -->
@@ -1521,40 +1517,8 @@
         }
 
         function setupSimpleScratch() {
-            const scratchArea = document.getElementById('scratchArea');
-            if (!scratchArea) return;
-            
-            let clickCount = 0;
-            const totalClicks = 5; // Requer 5 cliques para revelar
-            
-            function handleScratch() {
-                if (gameState.isRevealed) return;
-                
-                clickCount++;
-                const progress = (clickCount / totalClicks) * 100;
-                
-                // Atualizar progresso
-                document.getElementById('scratchProgress').textContent = `${progress.toFixed(1)}%`;
-                document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
-                
-                // Atualizar opacidade da cobertura
-                const overlay = document.getElementById('scratchOverlay');
-                if (overlay) {
-                    overlay.style.opacity = Math.max(0, 1 - (clickCount / totalClicks));
-                }
-                
-                // Revelar após 5 cliques
-                if (clickCount >= totalClicks) {
-                    revealResult();
-                }
-            }
-            
-            // Eventos de clique/toque
-            scratchArea.addEventListener('click', handleScratch);
-            scratchArea.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handleScratch();
-            });
+            // Usar o sistema de canvas emocional em vez do sistema de cliques
+            setupEmotionalScratch();
         }
 
         // Sistema Emocional de Raspadinha - Experiência Real
