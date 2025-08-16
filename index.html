@@ -202,14 +202,20 @@
                                 <!-- Números serão inseridos aqui -->
                             </div>
 
-                            <!-- Canvas de Cobertura -->
-                            <canvas
-                                id="scratchCanvas"
-                                width="300"
-                                height="200"
-                                class="absolute inset-0 border-2 border-white/30 rounded-lg cursor-pointer"
-                                style="top: 0; left: 50%; transform: translateX(-50%);"
-                            ></canvas>
+                            <!-- Área de Raspadinha Simplificada -->
+                            <div id="scratchArea" class="relative w-full max-w-sm mx-auto h-48 rounded-lg cursor-pointer border-2 border-white/30 overflow-hidden">
+                                <!-- Overlay de Cobertura -->
+                                <div 
+                                    id="scratchOverlay" 
+                                    class="absolute inset-0 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 flex items-center justify-center transition-opacity duration-500"
+                                    style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"
+                                >
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-gray-700 mb-2">🪙 RASPE AQUI 🪙</div>
+                                        <div class="text-sm text-gray-600 animate-pulse">Clique 5 vezes para revelar</div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Barra de Progresso -->
                             <div class="mt-4 text-sm">
@@ -992,14 +998,20 @@
                                 <!-- Números serão inseridos aqui -->
                             </div>
 
-                            <!-- Canvas de Cobertura -->
-                            <canvas
-                                id="promoScratchCanvas"
-                                width="300"
-                                height="200"
-                                class="absolute inset-0 border-2 border-white/30 rounded-lg cursor-pointer"
-                                style="top: 0; left: 50%; transform: translateX(-50%);"
-                            ></canvas>
+                            <!-- Área de Raspadinha Promocional Simplificada -->
+                            <div id="promoScratchArea" class="relative w-full max-w-sm mx-auto h-48 rounded-lg cursor-pointer border-2 border-white/30 overflow-hidden">
+                                <!-- Overlay de Cobertura Promocional -->
+                                <div 
+                                    id="promoScratchOverlay" 
+                                    class="absolute inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-red-500 flex items-center justify-center transition-opacity duration-500"
+                                    style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"
+                                >
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-white mb-2">🔥 RASPE AQUI 🔥</div>
+                                        <div class="text-sm text-orange-100 animate-pulse">Clique 5 vezes para revelar</div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Barra de Progresso -->
                             <div class="mt-4 text-sm">
@@ -1103,67 +1115,191 @@
             });
         }
         
-        function setupPromoScratchEvents() {
-            const canvas = document.getElementById('promoScratchCanvas');
+        function setupPromoSimpleScratch() {
+            const scratchArea = document.getElementById('promoScratchArea');
+            if (!scratchArea) return;
             
-            // Mouse events
-            canvas.addEventListener('mousedown', () => {
-                gameState.isScratching = true;
+            let clickCount = 0;
+            const totalClicks = 5; // Requer 5 cliques para revelar
+            
+            function handlePromoScratch() {
+                if (gameState.isRevealed) return;
+                
+                clickCount++;
+                const progress = (clickCount / totalClicks) * 100;
+                
+                // Atualizar progresso
+                document.getElementById('promoScratchProgress').textContent = `${progress.toFixed(1)}%`;
+                document.getElementById('promoProgressBar').style.width = `${Math.min(progress, 100)}%`;
+                
+                // Atualizar opacidade da cobertura
+                const overlay = document.getElementById('promoScratchOverlay');
+                if (overlay) {
+                    overlay.style.opacity = Math.max(0, 1 - (clickCount / totalClicks));
+                }
+                
+                // Revelar após 5 cliques
+                if (clickCount >= totalClicks) {
+                    revealPromoResult();
+                }
+            }
+            
+            // Eventos de clique/toque
+            scratchArea.addEventListener('click', handlePromoScratch);
+            scratchArea.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handlePromoScratch();
             });
+        }
+        
+        // Sistema Promocional Emocional
+        function createPromoScratchSurface(ctx, width, height) {
+            // Base com gradiente promocional
+            const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
+            gradient.addColorStop(0, '#FF6B35');
+            gradient.addColorStop(0.4, '#F7931E');
+            gradient.addColorStop(0.8, '#FFD700');
+            gradient.addColorStop(1, '#FFA500');
             
-            canvas.addEventListener('mouseup', () => {
-                gameState.isScratching = false;
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+            
+            // Efeitos de fogo
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            for (let i = 0; i < 40; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 3 + 1;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Texto promocional com sombra
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+            ctx.shadowBlur = 3;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            ctx.fillStyle = '#FFF';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🔥 RASPE COM O DEDO 🔥', width/2, height/2 - 10);
+            
+            ctx.fillStyle = '#FFE4B5';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('PACOTE PROMOCIONAL!', width/2, height/2 + 15);
+            
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+        
+        function setupPromoEmotionalScratch() {
+            const canvas = document.getElementById('promoScratchCanvas');
+            if (!canvas) return;
+            
+            let isScratching = false;
+            let lastPoint = null;
+            
+            function performPromoScratch(x, y) {
+                const ctx = canvas.getContext('2d');
+                
+                ctx.globalCompositeOperation = 'destination-out';
+                
+                const brushSize = 25; // Brush maior para promoção
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
+                gradient.addColorStop(0, 'rgba(0,0,0,1)');
+                gradient.addColorStop(0.6, 'rgba(0,0,0,0.9)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                if (lastPoint) {
+                    ctx.lineWidth = brushSize * 1.8;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = 'rgba(0,0,0,1)';
+                    ctx.beginPath();
+                    ctx.moveTo(lastPoint.x, lastPoint.y);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+                
+                lastPoint = { x, y };
+                
+                if (Math.random() > 0.8) {
+                    updatePromoScratchProgress();
+                }
+            }
+            
+            // Events idênticos ao sistema normal
+            canvas.addEventListener('mousedown', (e) => {
+                isScratching = true;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+                performPromoScratch(x, y);
             });
             
             canvas.addEventListener('mousemove', (e) => {
-                if (gameState.isScratching && !gameState.isRevealed) {
-                    scratchPromo(e);
-                }
+                if (!isScratching || gameState.isRevealed) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+                performPromoScratch(x, y);
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isScratching = false;
+                lastPoint = null;
+                updatePromoScratchProgress();
             });
             
             canvas.addEventListener('mouseleave', () => {
-                gameState.isScratching = false;
+                isScratching = false;
+                lastPoint = null;
             });
             
             // Touch events
             canvas.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                gameState.isScratching = true;
-            });
-            
-            canvas.addEventListener('touchend', () => {
-                gameState.isScratching = false;
-            });
+                isScratching = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+                performPromoScratch(x, y);
+            }, { passive: false });
             
             canvas.addEventListener('touchmove', (e) => {
                 e.preventDefault();
-                if (gameState.isScratching && !gameState.isRevealed) {
-                    const touch = e.touches[0];
-                    const rect = canvas.getBoundingClientRect();
-                    const mockEvent = {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY
-                    };
-                    scratchPromo(mockEvent);
-                }
-            });
+                if (!isScratching || gameState.isRevealed) return;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+                performPromoScratch(x, y);
+            }, { passive: false });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isScratching = false;
+                lastPoint = null;
+                updatePromoScratchProgress();
+            }, { passive: false });
         }
         
-        function scratchPromo(e) {
+        function updatePromoScratchProgress() {
+            if (gameState.isRevealed) return;
+            
             const canvas = document.getElementById('promoScratchCanvas');
             const ctx = canvas.getContext('2d');
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
             
-            // Raspar área circular
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(x, y, 15, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            // Calcular área raspada
-            const imageData = ctx.getImageData(0, 0, 300, 200);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const pixels = imageData.data;
             let transparent = 0;
             
@@ -1171,26 +1307,29 @@
                 if (pixels[i] < 128) transparent++;
             }
             
-            const area = transparent / (300 * 200);
+            const area = transparent / (canvas.width * canvas.height);
             gameState.scratchedArea = area;
             
-            // Atualizar UI
-            document.getElementById('promoScratchProgress').textContent = `${(area * 100).toFixed(1)}%`;
-            document.getElementById('promoProgressBar').style.width = `${Math.min(area * 100, 100)}%`;
+            const progress = Math.min(area * 100, 100);
+            document.getElementById('promoScratchProgress').textContent = `${progress.toFixed(1)}%`;
+            document.getElementById('promoProgressBar').style.width = `${progress}%`;
             
-            // Revelar se 70% raspado
-            if (area > 0.7 && !gameState.isRevealed) {
-                revealPromoResult();
+            if (area > 0.6 && !gameState.isRevealed) {
+                setTimeout(() => {
+                    revealPromoResult();
+                }, 300);
             }
         }
         
         function revealPromoResult() {
             gameState.isRevealed = true;
             
-            // Limpar canvas
+            // Limpar canvas promocional completamente
             const canvas = document.getElementById('promoScratchCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, 300, 200);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
             
             // Mostrar resultado
             const resultDiv = document.getElementById('promoGameResult');
@@ -1295,37 +1434,14 @@
             
             const ctx = canvas.getContext('2d');
             
-            // Renderizar números
+            // Renderizar números primeiro
             renderNumbers();
             
-            // Limpar canvas completamente antes de desenhar nova cobertura
-            ctx.clearRect(0, 0, 300, 200);
+            // Limpar canvas completamente
+            ctx.clearRect(0, 0, 320, 220);
             
-            // Resetar composite operation
-            ctx.globalCompositeOperation = 'source-over';
-            
-            // Inicializar cobertura
-            const gradient = ctx.createLinearGradient(0, 0, 300, 200);
-            gradient.addColorStop(0, '#C0C0C0');
-            gradient.addColorStop(0.5, '#E5E5E5');
-            gradient.addColorStop(1, '#A0A0A0');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 300, 200);
-            
-            // Adicionar textura
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 50; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * 300, Math.random() * 200, Math.random() * 3, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Texto de instrução
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🪙 RASPE AQUI 🪙', 150, 100);
+            // Criar cobertura metálica realística
+            createScratchSurface(ctx, 320, 220);
             
             // Reset estado
             gameState.scratchedArea = 0;
@@ -1338,12 +1454,8 @@
             document.getElementById('gameResult').classList.add('hidden');
             document.getElementById('newGameButton').classList.add('hidden');
             
-            // Remover eventos antigos e adicionar novos
-            const newCanvas = canvas.cloneNode(true);
-            canvas.parentNode.replaceChild(newCanvas, canvas);
-            
-            // Adicionar eventos no novo canvas
-            setupScratchEvents();
+            // Configurar eventos otimizados
+            setupEmotionalScratch();
         }
 
         function renderNumbers() {
@@ -1365,67 +1477,214 @@
             });
         }
 
-        function setupScratchEvents() {
-            const canvas = document.getElementById('scratchCanvas');
+        function setupSimpleScratch() {
+            const scratchArea = document.getElementById('scratchArea');
+            if (!scratchArea) return;
             
-            // Mouse events
-            canvas.addEventListener('mousedown', () => {
-                gameState.isScratching = true;
-            });
+            let clickCount = 0;
+            const totalClicks = 5; // Requer 5 cliques para revelar
             
-            canvas.addEventListener('mouseup', () => {
-                gameState.isScratching = false;
-            });
-            
-            canvas.addEventListener('mousemove', (e) => {
-                if (gameState.isScratching && !gameState.isRevealed) {
-                    scratch(e);
+            function handleScratch() {
+                if (gameState.isRevealed) return;
+                
+                clickCount++;
+                const progress = (clickCount / totalClicks) * 100;
+                
+                // Atualizar progresso
+                document.getElementById('scratchProgress').textContent = `${progress.toFixed(1)}%`;
+                document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
+                
+                // Atualizar opacidade da cobertura
+                const overlay = document.getElementById('scratchOverlay');
+                if (overlay) {
+                    overlay.style.opacity = Math.max(0, 1 - (clickCount / totalClicks));
                 }
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                gameState.isScratching = false;
-            });
-            
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                gameState.isScratching = true;
-            });
-            
-            canvas.addEventListener('touchend', () => {
-                gameState.isScratching = false;
-            });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (gameState.isScratching && !gameState.isRevealed) {
-                    const touch = e.touches[0];
-                    const rect = canvas.getBoundingClientRect();
-                    const mockEvent = {
-                        clientX: touch.clientX,
-                        clientY: touch.clientY
-                    };
-                    scratch(mockEvent);
+                
+                // Revelar após 5 cliques
+                if (clickCount >= totalClicks) {
+                    revealResult();
                 }
+            }
+            
+            // Eventos de clique/toque
+            scratchArea.addEventListener('click', handleScratch);
+            scratchArea.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleScratch();
             });
         }
 
-        function scratch(e) {
+        // Sistema Emocional de Raspadinha - Experiência Real
+        function createScratchSurface(ctx, width, height) {
+            // Resetar composite operation
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Base metálica com gradiente
+            const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
+            gradient.addColorStop(0, '#E8E8E8');
+            gradient.addColorStop(0.3, '#D0D0D0');
+            gradient.addColorStop(0.6, '#B8B8B8');
+            gradient.addColorStop(1, '#A0A0A0');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+            
+            // Textura metálica com pontos brilhantes
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let i = 0; i < 80; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 2 + 0.5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Reflexos metálicos
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 4 + 1, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Sombras para profundidade
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            for (let i = 0; i < 30; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Texto de instrução com sombra
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 2;
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 1;
+            
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🪙 RASPE COM O DEDO 🪙', width/2, height/2 - 10);
+            
+            ctx.fillStyle = '#888';
+            ctx.font = '12px Arial';
+            ctx.fillText('Arraste para revelar os números', width/2, height/2 + 15);
+            
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+        
+        function setupEmotionalScratch() {
+            const canvas = document.getElementById('scratchCanvas');
+            if (!canvas) return;
+            
+            let isScratching = false;
+            let lastPoint = null;
+            
+            // Função otimizada de scratch
+            function performScratch(x, y) {
+                const ctx = canvas.getContext('2d');
+                
+                // Configurar para remover pixels
+                ctx.globalCompositeOperation = 'destination-out';
+                
+                // Criar brush mais natural
+                const brushSize = 20;
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
+                gradient.addColorStop(0, 'rgba(0,0,0,1)');
+                gradient.addColorStop(0.7, 'rgba(0,0,0,0.8)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Conectar pontos para linha contínua
+                if (lastPoint) {
+                    ctx.lineWidth = brushSize * 1.5;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = 'rgba(0,0,0,1)';
+                    ctx.beginPath();
+                    ctx.moveTo(lastPoint.x, lastPoint.y);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+                
+                lastPoint = { x, y };
+                
+                // Calcular progresso de forma otimizada (a cada 5 scratches)
+                if (Math.random() > 0.8) {
+                    updateScratchProgress();
+                }
+            }
+            
+            // Mouse Events
+            canvas.addEventListener('mousedown', (e) => {
+                isScratching = true;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+                performScratch(x, y);
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isScratching || gameState.isRevealed) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+                performScratch(x, y);
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isScratching = false;
+                lastPoint = null;
+                updateScratchProgress();
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                isScratching = false;
+                lastPoint = null;
+            });
+            
+            // Touch Events - Otimizados para mobile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isScratching = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+                performScratch(x, y);
+            }, { passive: false });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isScratching || gameState.isRevealed) return;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+                performScratch(x, y);
+            }, { passive: false });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isScratching = false;
+                lastPoint = null;
+                updateScratchProgress();
+            }, { passive: false });
+        }
+        
+        function updateScratchProgress() {
+            if (gameState.isRevealed) return;
+            
             const canvas = document.getElementById('scratchCanvas');
             const ctx = canvas.getContext('2d');
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Raspar área circular
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(x, y, 15, 0, 2 * Math.PI);
-            ctx.fill();
             
             // Calcular área raspada
-            const imageData = ctx.getImageData(0, 0, 300, 200);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const pixels = imageData.data;
             let transparent = 0;
             
@@ -1433,26 +1692,30 @@
                 if (pixels[i] < 128) transparent++;
             }
             
-            const area = transparent / (300 * 200);
+            const area = transparent / (canvas.width * canvas.height);
             gameState.scratchedArea = area;
             
             // Atualizar UI
-            document.getElementById('scratchProgress').textContent = `${(area * 100).toFixed(1)}%`;
-            document.getElementById('progressBar').style.width = `${Math.min(area * 100, 100)}%`;
+            const progress = Math.min(area * 100, 100);
+            document.getElementById('scratchProgress').textContent = `${progress.toFixed(1)}%`;
+            document.getElementById('progressBar').style.width = `${progress}%`;
             
-            // Revelar se 70% raspado
-            if (area > 0.7 && !gameState.isRevealed) {
-                revealResult();
+            // Revelar quando 60% raspado (mais emocionante)
+            if (area > 0.6 && !gameState.isRevealed) {
+                setTimeout(() => {
+                    revealResult();
+                }, 300); // Pequeno delay para build up da emoção
             }
         }
 
         function revealResult() {
             gameState.isRevealed = true;
             
-            // Limpar canvas
-            const canvas = document.getElementById('scratchCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, 300, 200);
+            // Esconder overlay de cobertura
+            const overlay = document.getElementById('scratchOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
             
             // Mostrar resultado
             const resultDiv = document.getElementById('gameResult');
