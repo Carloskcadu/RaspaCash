@@ -197,18 +197,18 @@
                     <!-- Cartela de Raspadinha -->
                     <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
                         <div class="relative">
-                            <!-- Números da Cartela -->
-                            <div class="grid grid-cols-5 gap-2 w-full max-w-sm mx-auto mb-4" id="numbersGrid">
-                                <!-- Números serão inseridos aqui -->
-                            </div>
-
                             <!-- Canvas de Raspadinha -->
                             <div class="relative bg-gradient-to-br from-yellow-100 to-orange-100 rounded-lg p-4 mb-4 shadow-lg">
+                                <!-- Grid de Números (por trás do canvas) -->
+                                <div id="numbersGrid" class="absolute inset-4 grid grid-cols-3 gap-2 z-0">
+                                    <!-- Os números serão gerados dinamicamente -->
+                                </div>
+                                
                                 <canvas 
                                     id="scratchCanvas" 
                                     width="320" 
                                     height="220"
-                                    class="scratch-canvas w-full h-full rounded-lg cursor-crosshair"
+                                    class="scratch-canvas relative z-10 w-full h-full rounded-lg cursor-crosshair"
                                     style="max-width: 320px; max-height: 220px; user-select: none; touch-action: none;"
                                 ></canvas>
                             </div>
@@ -1505,7 +1505,13 @@
             
             gameState.scratchCard.numbers.forEach((number, index) => {
                 const numberElement = document.createElement('div');
-                const isWinning = gameState.scratchCard.winningNumbers.includes(number);
+                
+                // Verificar se é triple match
+                const numberCounts = {};
+                gameState.scratchCard.numbers.forEach(num => {
+                    numberCounts[num] = (numberCounts[num] || 0) + 1;
+                });
+                const isWinning = numberCounts[number] >= 3;
                 
                 numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
                     isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
