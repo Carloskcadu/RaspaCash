@@ -9,10 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Meta Tags para SEO -->
-    <meta name="description" content="RaspaCash - O melhor sistema de raspadinha online do Brasil! Ganhe prêmios de até R$ 2.000 raspando cartelas digitais.">
+    <meta name="description" content="RaspaCash - O melhor sistema de raspadinha online do Brasil! Ganhe prêmios encontrando 3 números iguais!">
     <meta name="keywords" content="raspadinha, loteria, prêmios, jogos, Brasil, dinheiro, PIX">
     <meta property="og:title" content="RaspaCash - Sistema de Raspadinha Online">
-    <meta property="og:description" content="Ganhe prêmios de até R$ 2.000 raspando cartelas digitais!">
+    <meta property="og:description" content="Encontre 3 números iguais e ganhe o valor em reais!">
     <meta property="og:url" content="https://raspacashbr.online">
     <meta property="og:type" content="website">
     
@@ -45,6 +45,14 @@
             animation: shine 2s infinite;
         }
         
+        /* Canvas para raspadinha */
+        .scratch-canvas {
+            cursor: crosshair;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        
         /* Esconder scrollbar mas manter funcionalidade */
         .hide-scrollbar {
             -ms-overflow-style: none;
@@ -53,6 +61,22 @@
         
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
+        }
+        
+        /* Números ganhadores destacados */
+        .winning-number {
+            animation: winning-glow 1s infinite alternate;
+        }
+        
+        @keyframes winning-glow {
+            0% { 
+                box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+                transform: scale(1);
+            }
+            100% { 
+                box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+                transform: scale(1.05);
+            }
         }
     </style>
 </head>
@@ -67,7 +91,7 @@
                         🎰 RaspaCash
                     </h1>
                     <p class="text-cyan-300">Entre para começar a raspar e ganhar!</p>
-                    <p class="text-sm text-gray-400 mt-2">Prêmios de até R$ 2.000!</p>
+                    <p class="text-sm text-gray-400 mt-2">Encontre 3 números iguais e ganhe!</p>
                 </div>
                 
                 <div class="space-y-4">
@@ -95,275 +119,165 @@
                 </div>
                 
                 <div class="mt-6 text-center text-sm text-gray-400">
-                    <p>Ao entrar, você concorda com nossos termos de uso</p>
+                    <p>🎯 Regra: Encontre 3 números iguais para ganhar o valor em R$!</p>
+                    <p class="mt-2">Ao entrar, você concorda com nossos termos de uso</p>
                 </div>
             </div>
         </div>
 
-        <!-- Tela Principal do Jogo -->
-        <div id="gameScreen" class="hidden">
+        <!-- Área Principal do Jogo -->
+        <div id="gameArea" class="hidden min-h-screen p-4">
             <!-- Header -->
-            <header class="bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg border-b border-cyan-400/30 shadow-lg">
-                <div class="container mx-auto px-4 py-4">
-                    <!-- Logo e Saldo -->
-                    <div class="flex justify-between items-center mb-4 sm:mb-0">
-                        <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                            🎰 RaspaCash
-                        </h1>
-                        
-                        <div class="text-right">
-                            <div class="text-xs sm:text-sm text-cyan-300">Saldo</div>
-                            <div class="text-lg sm:text-xl font-bold text-green-400" id="balance">R$ 0,00</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Botões - Layout responsivo -->
-                    <div class="grid grid-cols-3 gap-2 sm:flex sm:justify-end sm:space-x-4">
-                        <button
-                            onclick="showModal('depositModal')"
-                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
-                        >
-                            <span class="hidden sm:inline">💰 Depositar</span>
-                            <span class="sm:hidden">💰</span>
-                        </button>
-                        
-                        <button
-                            onclick="showModal('withdrawModal')"
-                            class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
-                        >
-                            <span class="hidden sm:inline">💸 Sacar</span>
-                            <span class="sm:hidden">💸</span>
-                        </button>
-                        
-                        <button
-                            onclick="showModal('feedModal')"
-                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
-                        >
-                            <span class="hidden sm:inline">🏆 Ganhos</span>
-                            <span class="sm:hidden">🏆</span>
-                        </button>
-                        
-                        <button
-                            onclick="logout()"
-                            class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-2 rounded-lg transition-all duration-300 text-xs sm:text-sm col-span-3 sm:col-span-1 mt-2 sm:mt-0"
-                        >
-                            🚪 Sair
-                        </button>
-                    </div>
+            <header class="flex justify-between items-center mb-6 bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-lg rounded-xl p-4 border border-cyan-400/20">
+                <div class="flex items-center space-x-3">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                        🎰 RaspaCash
+                    </h1>
+                    <span class="text-sm text-cyan-300" id="userWelcome"></span>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-400">Saldo:</div>
+                    <div class="text-xl font-bold text-green-400" id="userBalance">R$ 0,00</div>
                 </div>
             </header>
 
-            <main class="container mx-auto px-4 py-4 sm:py-8 min-h-[calc(100vh-120px)]">
-                <!-- Seleção de Planos -->
-                <div id="planSelection">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-yellow-300 mb-2">Escolha seu Plano</h2>
-                        <p class="text-cyan-300">Selecione o plano ideal para você!</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12" id="plansGrid">
-                        <!-- Planos serão inseridos aqui via JavaScript -->
-                    </div>
-                    
-                    <!-- Pacotes Promocionais -->
-                    <div class="bg-gradient-to-br from-orange-900/30 via-red-900/30 to-pink-900/30 backdrop-blur-lg rounded-xl p-6 border border-orange-400/30">
-                        <div class="text-center mb-6">
-                            <h3 class="text-2xl font-bold text-orange-300 mb-2">🔥 Pacotes Promocionais 🔥</h3>
-                            <p class="text-gray-300">Economize comprando em pacotes!</p>
+            <!-- Regras do Jogo -->
+            <div class="bg-gradient-to-r from-blue-900/50 to-purple-900/50 backdrop-blur-lg rounded-xl p-4 mb-6 border border-blue-400/20">
+                <h2 class="text-lg font-bold text-yellow-300 mb-2">🎯 Como Ganhar:</h2>
+                <p class="text-cyan-200 text-sm">
+                    Raspe a cartela com o dedo e encontre <strong>3 números iguais</strong> para ganhar o valor em reais!
+                    <br>
+                    <span class="text-green-300">Exemplo: 5-5-5 = R$ 5,00 | 10-10-10 = R$ 10,00</span>
+                </p>
+            </div>
+
+            <!-- Seleção de Planos -->
+            <div id="planSelection" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Plano Básico -->
+                <div class="plan-card bg-gradient-to-br from-green-800/90 via-green-700/90 to-green-600/90 backdrop-blur-lg rounded-xl p-6 border border-green-400/30 shadow-2xl cursor-pointer transform hover:scale-105 transition-all duration-300" data-plan="basic">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🌟</div>
+                        <h3 class="text-2xl font-bold text-green-300 mb-2">PLANO BÁSICO</h3>
+                        <div class="text-3xl font-bold text-white mb-2">R$ 3,00</div>
+                        <p class="text-green-200 mb-4">Números de 1 a 10</p>
+                        <div class="bg-green-700/50 rounded-lg p-3 mb-4">
+                            <div class="text-sm text-green-100">• 1 cartela</div>
+                            <div class="text-sm text-green-100">• Prêmios: R$ 1 a R$ 10</div>
+                            <div class="text-sm text-green-100">• Chance: 0.01%</div>
+                            <div class="text-sm text-green-100">• PIX instantâneo</div>
                         </div>
-                        
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="promoPacks">
-                            <!-- Pacotes promocionais serão inseridos aqui -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tela do Jogo -->
-                <div id="gameArea" class="hidden max-w-2xl mx-auto">
-                    <div class="text-center mb-6">
-                        <h2 class="text-2xl font-bold text-yellow-300 mb-2" id="gameTitle">
-                            Plano Selecionado
-                        </h2>
-                        <p class="text-cyan-300">Raspe para revelar os números!</p>
-                        
-                        <button
-                            onclick="backToPlans()"
-                            class="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-                        >
-                            ← Voltar aos Planos
-                        </button>
-                    </div>
-
-                    <!-- Cartela de Raspadinha -->
-                    <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
-                        <div class="relative">
-                            <!-- Números da Cartela -->
-                            <div class="grid grid-cols-5 gap-2 w-full max-w-sm mx-auto mb-4" id="numbersGrid">
-                                <!-- Números serão inseridos aqui -->
-                            </div>
-
-                            <!-- Área de Raspadinha Simplificada -->
-                            <div id="scratchArea" class="relative w-full max-w-sm mx-auto h-48 rounded-lg cursor-pointer border-2 border-white/30 overflow-hidden">
-                                <!-- Overlay de Cobertura -->
-                                <div 
-                                    id="scratchOverlay" 
-                                    class="absolute inset-0 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 flex items-center justify-center transition-opacity duration-500"
-                                    style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"
-                                >
-                                    <div class="text-center">
-                                        <div class="text-2xl font-bold text-gray-700 mb-2">🪙 RASPE AQUI 🪙</div>
-                                        <div class="text-sm text-gray-600 animate-pulse">Clique 5 vezes para revelar</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Barra de Progresso -->
-                            <div class="mt-4 text-sm">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cyan-300">Área raspada: <span id="scratchProgress">0.0%</span></span>
-                                    <span class="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
-                                </div>
-                                <div class="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
-                                    <div 
-                                        id="progressBar"
-                                        class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
-                                        style="width: 0%"
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Resultado -->
-                    <div id="gameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
-                        <div class="text-center mb-4">
-                            <h3 class="text-xl font-bold text-yellow-300 mb-2">🎉 Números Revelados!</h3>
-                            <div id="resultContent">
-                                <!-- Resultado será inserido aqui -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botão Nova Cartela -->
-                    <div id="newGameButton" class="hidden text-center mb-6">
-                        <button
-                            onclick="startNewGame()"
-                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-                        >
-                            🎲 Jogar Novamente
+                        <button class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-colors">
+                            🎲 Escolher Plano
                         </button>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
 
-    <!-- Modal de Depósito -->
-    <div id="depositModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 class="text-xl font-bold text-yellow-300 mb-4">💰 Depósito via PIX</h3>
-            
-            <div class="space-y-4">
-                <input
-                    type="number"
-                    id="depositAmount"
-                    placeholder="Valor (mínimo R$ 10)"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                    min="10"
-                />
-                
-                <div class="text-center">
-                    <p class="text-cyan-300 mb-2">PIX Copia e Cola:</p>
-                    <div class="bg-gray-800 p-3 rounded-lg font-mono text-sm text-green-400 break-all" id="pixCode">
-                        00020126580014br.gov.bcb.pix01364adb8d4e-8b5c-4d5f-9e2f-1234567890ab5204000053039865802BR5925RASPACASH LTDA6009SAO PAULO62140510RPX106304ABCD
+                <!-- Plano Premium -->
+                <div class="plan-card bg-gradient-to-br from-purple-800/90 via-purple-700/90 to-purple-600/90 backdrop-blur-lg rounded-xl p-6 border border-purple-400/30 shadow-2xl cursor-pointer transform hover:scale-105 transition-all duration-300" data-plan="premium">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">💎</div>
+                        <h3 class="text-2xl font-bold text-purple-300 mb-2">PLANO PREMIUM</h3>
+                        <div class="text-3xl font-bold text-white mb-2">R$ 7,00</div>
+                        <p class="text-purple-200 mb-4">Números de 1 a 50</p>
+                        <div class="bg-purple-700/50 rounded-lg p-3 mb-4">
+                            <div class="text-sm text-purple-100">• 3 cartelas</div>
+                            <div class="text-sm text-purple-100">• Prêmios: R$ 1 a R$ 50</div>
+                            <div class="text-sm text-purple-100">• Chance: 0.01%</div>
+                            <div class="text-sm text-purple-100">• PIX instantâneo</div>
+                        </div>
+                        <button class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition-colors">
+                            🎲 Escolher Plano
+                        </button>
                     </div>
                 </div>
-                
-                <div class="flex space-x-3">
-                    <button
-                        onclick="confirmDeposit()"
-                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg"
-                    >
-                        ✅ Confirmar
-                    </button>
-                    <button
-                        onclick="hideModal('depositModal')"
-                        class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
-                    >
-                        Cancelar
-                    </button>
+
+                <!-- Plano VIP -->
+                <div class="plan-card bg-gradient-to-br from-red-800/90 via-red-700/90 to-red-600/90 backdrop-blur-lg rounded-xl p-6 border border-red-400/30 shadow-2xl cursor-pointer transform hover:scale-105 transition-all duration-300 animate-pulse-gold" data-plan="vip">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">👑</div>
+                        <h3 class="text-2xl font-bold text-red-300 mb-2">PLANO VIP</h3>
+                        <div class="text-3xl font-bold text-white mb-2">R$ 15,00</div>
+                        <p class="text-red-200 mb-4">Números de 1 a 100</p>
+                        <div class="bg-red-700/50 rounded-lg p-3 mb-4">
+                            <div class="text-sm text-red-100">• 5 cartelas</div>
+                            <div class="text-sm text-red-100">• Prêmios: R$ 1 a R$ 100</div>
+                            <div class="text-sm text-red-100">• Chance: 0.01%</div>
+                            <div class="text-sm text-yellow-300 font-bold">• BÔNUS EXCLUSIVO!</div>
+                        </div>
+                        <button class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 rounded-lg transition-colors">
+                            👑 MELHOR ESCOLHA
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal de Feed de Ganhos -->
-    <div id="feedModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 class="text-xl font-bold text-yellow-300 mb-4">🏆 Últimos Ganhos</h3>
-            
-            <div class="space-y-3 max-h-64 overflow-y-auto hide-scrollbar" id="feedContent">
-                <!-- Feed será inserido aqui -->
+            <!-- Área do Jogo de Raspadinha -->
+            <div id="scratchGame" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-8 border border-cyan-400/30 shadow-2xl">
+                <h3 class="text-2xl font-bold text-center mb-6 text-yellow-300">🎲 Sua Cartela de Raspadinha</h3>
+                
+                <!-- Container da Raspadinha -->
+                <div class="max-w-md mx-auto">
+                    <!-- Canvas Container -->
+                    <div class="relative bg-gradient-to-br from-yellow-100 to-orange-100 rounded-lg p-4 mb-4 shadow-lg">
+                        <!-- Grid de Números (por trás do canvas) -->
+                        <div id="numbersGrid" class="absolute inset-4 grid grid-cols-3 gap-2 z-0">
+                            <!-- Os números serão gerados dinamicamente -->
+                        </div>
+                        
+                        <!-- Canvas de Raspadinha -->
+                        <canvas 
+                            id="scratchCanvas" 
+                            width="320" 
+                            height="220"
+                            class="scratch-canvas relative z-10 w-full h-full rounded-lg"
+                            style="max-width: 320px; max-height: 220px;"
+                        ></canvas>
+                    </div>
+                    
+                    <!-- Barra de Progresso -->
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-cyan-300">Área raspada: <span id="scratchProgress">0%</span></span>
+                            <span class="text-sm text-yellow-300 font-bold animate-pulse">🪙 Continue raspando! 🪙</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-3 border border-yellow-400/30">
+                            <div 
+                                id="progressBar"
+                                class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
+                                style="width: 0%"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <button
-                onclick="hideModal('feedModal')"
-                class="w-full mt-4 bg-gray-600 text-white font-bold py-3 rounded-lg"
-            >
-                Fechar
-            </button>
-        </div>
-    </div>
 
-    <!-- Modal de Saque -->
-    <div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 class="text-xl font-bold text-yellow-300 mb-4">💸 Saque via PIX</h3>
-            
-            <div class="space-y-4">
-                <input
-                    type="number"
-                    id="withdrawAmount"
-                    placeholder="Valor do saque"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                />
-                
-                <input
-                    type="text"
-                    id="withdrawName"
-                    placeholder="Nome completo"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                />
-                
-                <select
-                    id="pixKeyType"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                >
-                    <option value="cpf">CPF</option>
-                    <option value="email">E-mail</option>
-                    <option value="phone">Telefone</option>
-                    <option value="random">Chave Aleatória</option>
-                </select>
-                
-                <input
-                    type="text"
-                    id="pixKey"
-                    placeholder="Chave PIX"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                />
-                
-                <div class="flex space-x-3">
+            <!-- Resultado -->
+            <div id="gameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
+                <div class="text-center mb-4">
+                    <h4 class="text-xl font-bold text-yellow-300 mb-2">🎉 Resultado da Cartela!</h4>
+                    <div id="resultContent">
+                        <!-- Resultado será inserido aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="text-center space-y-4">
+                <div id="nextButton" class="hidden">
                     <button
-                        onclick="confirmWithdraw()"
-                        class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 rounded-lg"
+                        onclick="nextCard()"
+                        class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
-                        💸 Sacar
+                        🎲 Próxima Cartela
                     </button>
+                </div>
+                
+                <div id="newGameButton" class="hidden">
                     <button
-                        onclick="hideModal('withdrawModal')"
-                        class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
+                        onclick="newGame()"
+                        class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
-                        Cancelar
+                        🎮 Novo Jogo
                     </button>
                 </div>
             </div>
@@ -371,265 +285,26 @@
     </div>
 
     <script>
-        // Estado global da aplicação
+        // Estado do jogo
         let gameState = {
-            isLoggedIn: false,
-            user: { name: '', email: '' },
+            user: null,
             balance: 0,
-            selectedPlan: null,
+            currentPlan: null,
             scratchCard: null,
+            cardsRemaining: 0,
+            scratchCount: 0,
+            scratchedArea: 0,
             isScratching: false,
             isRevealed: false,
-            scratchedArea: 0,
-            prize: 0,
-            loyaltySequences: {
-                1: { spent: 0, games: 0 },
-                2: { spent: 0, games: 0 },
-                3: { spent: 0, games: 0 }
-            },
-            // Novo: controle de pacotes promocionais
-            currentPromoPackage: null,
-            promoCardsRemaining: [],
-            currentPromoCard: 0
+            lastScratchPoint: null,
+            totalPrize: 0
         };
 
-        // Dados dos planos
-        const plans = [
-            {
-                id: 1,
-                name: "Plano Clássico",
-                cost: 5,
-                maxPrize: 500,
-                color: "from-green-400 to-green-600",
-                description: "Diversão garantida com prêmios de até R$ 500!"
-            },
-            {
-                id: 2,
-                name: "Plano Premium",
-                cost: 10,
-                maxPrize: 1000,
-                color: "from-purple-400 to-purple-600",
-                description: "Experiência premium com prêmios de até R$ 1.000!"
-            },
-            {
-                id: 3,
-                name: "Plano VIP",
-                cost: 20,
-                maxPrize: 2000,
-                color: "from-red-400 to-red-600",
-                description: "Exclusividade VIP com prêmios de até R$ 2.000!"
-            }
-        ];
+        // Canvas e contexto
+        let scratchCanvas = null;
+        let scratchCtx = null;
 
-        // Pacotes promocionais
-        const promotionalPacks = [
-            {
-                id: 'promo-1',
-                planId: 1,
-                name: "Pacote Clássico",
-                quantity: 5,
-                originalPrice: 25,
-                promoPrice: 15,
-                discount: 40,
-                color: "from-green-400 to-green-600"
-            },
-            {
-                id: 'promo-2',
-                planId: 2,
-                name: "Pacote Premium",
-                quantity: 5,
-                originalPrice: 50,
-                promoPrice: 40,
-                discount: 20,
-                color: "from-purple-400 to-purple-600"
-            },
-            {
-                id: 'promo-3',
-                planId: 3,
-                name: "Pacote VIP",
-                quantity: 5,
-                originalPrice: 100,
-                promoPrice: 80,
-                discount: 20,
-                color: "from-red-400 to-red-600"
-            }
-        ];
-
-        // Listas para gerar feed dinâmico de ganhos
-        const firstNames = [
-            "Maria", "João", "Ana", "Pedro", "Carla", "Roberto", "Fernanda", "Carlos", 
-            "Juliana", "Ricardo", "Patricia", "Marcos", "Luciana", "Rafael", "Claudia",
-            "Daniel", "Mariana", "Gustavo", "Renata", "Bruno", "Gabriela", "Felipe",
-            "Vanessa carme", "André", "Camila", "Rodrigo", "Beatriz", "Leonardo", "Isabela",
-            "Thiago", "Amanda", "Vinicius", "Larissa", "Fabio", "Natalia", "Diego",
-            "Caroline", "Eduardo", "Priscila", "Henrique", "Tatiane", "Leandro"
-        ];
-        
-        const lastNames = [
-            "Silva", "Santos", "Costa", "Lima", "Souza", "Oliveira", "Pereira", "Rodrigues",
-            "Almeida", "Nascimento", "Ferreira", "Araújo", "Ribeiro", "Rocha", "Martins",
-            "Carvalho", "Barbosa", "Gomes", "Dias", "Mendes", "Cardoso", "Moreira",
-            "Fernandes", "Campos", "Vieira", "Castro", "Ramos", "Pinto", "Freitas",
-            "Teixeira", "Correia", "Monteiro", "Neves", "Machado", "Cavalcante"
-        ];
-        
-        function generateRandomWins() {
-            const wins = [];
-            const planNames = ["Clássico", "Premium", "VIP"];
-            const maxPrizes = [500, 1000, 2000];
-            
-            for (let i = 0; i < 8; i++) {
-                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-                const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-                const planIndex = Math.floor(Math.random() * planNames.length);
-                const minPrize = [10, 20, 40][planIndex];
-                const prize = Math.floor(Math.random() * (maxPrizes[planIndex] - minPrize + 1)) + minPrize;
-                const timeAgo = Math.floor(Math.random() * 60) + 1;
-                
-                wins.push({
-                    name: `${firstName} ${lastName}`,
-                    prize: prize,
-                    plan: planNames[planIndex],
-                    time: `${timeAgo} min atrás`
-                });
-            }
-            
-            // Ordenar por tempo (mais recente primeiro)
-            return wins.sort((a, b) => parseInt(a.time) - parseInt(b.time));
-        }
-
-        // Funções de utilidade - Sistema de Login Persistente
-        function saveGameState() {
-            // Salvar estado do usuário baseado no email como chave única
-            const userKey = `raspacash_user_${gameState.user.email}`;
-            const userData = {
-                name: gameState.user.name,
-                email: gameState.user.email,
-                balance: gameState.balance,
-                loyaltySequences: gameState.loyaltySequences,
-                lastLogin: new Date().toISOString()
-            };
-            localStorage.setItem(userKey, JSON.stringify(userData));
-            localStorage.setItem('raspacash_last_user', gameState.user.email);
-        }
-
-        function loadGameState() {
-            const lastUserEmail = localStorage.getItem('raspacash_last_user');
-            if (lastUserEmail) {
-                const userKey = `raspacash_user_${lastUserEmail}`;
-                const saved = localStorage.getItem(userKey);
-                if (saved) {
-                    const userData = JSON.parse(saved);
-                    gameState.user = { name: userData.name, email: userData.email };
-                    gameState.balance = userData.balance || 0;
-                    gameState.loyaltySequences = userData.loyaltySequences || {
-                        1: { spent: 0, games: 0 },
-                        2: { spent: 0, games: 0 },
-                        3: { spent: 0, games: 0 }
-                    };
-                    gameState.isLoggedIn = true;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function createUserAccount(name, email) {
-            // Verificar se usuário já existe
-            const userKey = `raspacash_user_${email}`;
-            const existingUser = localStorage.getItem(userKey);
-            
-            if (existingUser) {
-                // Usuário existe, carregar dados
-                const userData = JSON.parse(existingUser);
-                gameState.user = { name: userData.name, email: userData.email };
-                gameState.balance = userData.balance || 0;
-                gameState.loyaltySequences = userData.loyaltySequences || {
-                    1: { spent: 0, games: 0 },
-                    2: { spent: 0, games: 0 },
-                    3: { spent: 0, games: 0 }
-                };
-                return true;
-            } else {
-                // Novo usuário, criar conta
-                gameState.user = { name, email };
-                gameState.balance = 0;
-                gameState.loyaltySequences = {
-                    1: { spent: 0, games: 0 },
-                    2: { spent: 0, games: 0 },
-                    3: { spent: 0, games: 0 }
-                };
-                saveGameState();
-                return false; // Indica que é um novo usuário
-            }
-        }
-
-        function updateBalance() {
-            document.getElementById('balance').textContent = `R$ ${gameState.balance.toFixed(2).replace('.', ',')}`;
-        }
-
-        // Algoritmo para determinar vitória
-        function shouldWin(planId) {
-            const loyalty = gameState.loyaltySequences[planId];
-            const plan = plans.find(p => p.id === planId);
-            const loyaltyThreshold = plan.cost * 10;
-            
-            if (loyalty.spent >= loyaltyThreshold) {
-                const bonusGames = loyalty.games - (loyaltyThreshold / plan.cost);
-                const winChance = Math.min(0.1 + (bonusGames * 0.02), 0.3);
-                return Math.random() < winChance;
-            }
-            
-            return false;
-        }
-
-        function calculatePrize(planId) {
-            const plan = plans.find(p => p.id === planId);
-            const minPrize = plan.cost * 2;
-            const maxPrize = plan.maxPrize;
-            return Math.floor(Math.random() * (maxPrize - minPrize + 1)) + minPrize;
-        }
-
-        function generateScratchCard(planId) {
-            const numbers = [];
-            const winningNumbers = [];
-            
-            // Gerar 15 números únicos e aleatórios para cada cartela
-            while (numbers.length < 15) {
-                const num = Math.floor(Math.random() * 99) + 1; // Números de 1 a 99 para mais variedade
-                if (!numbers.includes(num)) {
-                    numbers.push(num);
-                }
-            }
-            
-            const willWin = shouldWin(planId);
-            if (willWin) {
-                const winCount = Math.floor(Math.random() * 3) + 3; // 3 a 5 números vencedores
-                const shuffled = [...numbers].sort(() => 0.5 - Math.random());
-                winningNumbers.push(...shuffled.slice(0, winCount));
-            }
-            
-            return {
-                id: Date.now() + Math.random(), // ID único para cada cartela
-                planId,
-                numbers: numbers.sort((a, b) => a - b),
-                winningNumbers,
-                willWin,
-                prize: willWin ? calculatePrize(planId) : 0
-            };
-        }
-
-        function generateMultipleCards(planId, quantity) {
-            const cards = [];
-            for (let i = 0; i < quantity; i++) {
-                // Pequeno delay para garantir IDs únicos
-                setTimeout(() => {}, i);
-                cards.push(generateScratchCard(planId));
-            }
-            return cards;
-        }
-
-        // Funções de interface
+        // Sistema de Login
         function handleLogin() {
             const name = document.getElementById('userName').value.trim();
             const email = document.getElementById('userEmail').value.trim();
@@ -639,917 +314,210 @@
                 return;
             }
             
-            // Validar email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Por favor, insira um e-mail válido!');
+            if (!email.includes('@')) {
+                alert('Por favor, digite um e-mail válido!');
                 return;
             }
             
-            // Criar ou carregar conta do usuário
-            const isExistingUser = createUserAccount(name, email);
-            gameState.isLoggedIn = true;
+            // Simular login
+            gameState.user = { name, email };
+            gameState.balance = Math.random() * 50 + 10; // Entre R$ 10-60
             
+            document.getElementById('userWelcome').textContent = `Olá, ${name}!`;
+            document.getElementById('userBalance').textContent = `R$ ${gameState.balance.toFixed(2)}`;
+            
+            // Esconder tela de login e mostrar jogo
             document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('gameScreen').classList.remove('hidden');
-            
-            initializeGame();
-            
-            // Mostrar mensagem de boas-vindas
-            if (isExistingUser) {
-                setTimeout(() => {
-                    alert(`Bem-vindo de volta, ${name}! Seu saldo atual é R$ ${gameState.balance.toFixed(2)}`);
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    alert(`Bem-vindo ao RaspaCash, ${name}! Faça um depósito para começar a jogar.`);
-                }, 500);
-            }
-        }
-
-        function initializeGame() {
-            renderPlans();
-            renderPromoPacks();
-            renderFeed();
-            updateBalance();
-        }
-
-        function renderPlans() {
-            const grid = document.getElementById('plansGrid');
-            grid.innerHTML = '';
-            
-            plans.forEach(plan => {
-                const loyalty = gameState.loyaltySequences[plan.id];
-                const loyaltyProgress = (loyalty.spent / (plan.cost * 10)) * 100;
-                
-                const planElement = document.createElement('div');
-                planElement.className = `bg-gradient-to-br ${plan.color} p-1 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300`;
-                
-                planElement.innerHTML = `
-                    <div class="bg-gray-900/90 rounded-lg p-6 h-full">
-                        <h3 class="text-xl font-bold text-yellow-300 mb-2">${plan.name}</h3>
-                        <p class="text-gray-300 text-sm mb-4">${plan.description}</p>
-                        
-                        <div class="space-y-2 mb-4">
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Custo:</span>
-                                <span class="text-white font-bold">R$ ${plan.cost}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Prêmio máximo:</span>
-                                <span class="text-green-400 font-bold">R$ ${plan.maxPrize}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Jogos:</span>
-                                <span class="text-white">${loyalty.games}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Investido:</span>
-                                <span class="text-white">R$ ${loyalty.spent}</span>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-cyan-300">Fidelidade</span>
-                                <span class="text-yellow-300">${loyaltyProgress.toFixed(1)}%</span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div 
-                                    class="bg-gradient-to-r from-green-400 to-yellow-400 h-2 rounded-full transition-all duration-300"
-                                    style="width: ${Math.min(loyaltyProgress, 100)}%"
-                                ></div>
-                            </div>
-                            ${loyaltyProgress < 100 ? 
-                                `<p class="text-xs text-gray-400 mt-1">
-                                    Invista R$ ${(plan.cost * 10 - loyalty.spent).toFixed(0)} para desbloquear bônus!
-                                </p>` :
-                                `<p class="text-xs text-green-400 mt-1">
-                                    ✅ Bônus desbloqueado! Suas chances aumentaram!
-                                </p>`
-                            }
-                        </div>
-                        
-                        <button
-                            onclick="buyCard(${plan.id})"
-                            class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300"
-                        >
-                            🎲 Jogar Agora
-                        </button>
-                    </div>
-                `;
-                
-                grid.appendChild(planElement);
-            });
-        }
-
-        function renderPromoPacks() {
-            const grid = document.getElementById('promoPacks');
-            grid.innerHTML = '';
-            
-            promotionalPacks.forEach(pack => {
-                const packElement = document.createElement('div');
-                packElement.className = `bg-gradient-to-br ${pack.color} p-1 rounded-lg`;
-                
-                packElement.innerHTML = `
-                    <div class="bg-gray-900/90 rounded-md p-4">
-                        <div class="text-center mb-3">
-                            <h4 class="font-bold text-yellow-300">${pack.name}</h4>
-                            <p class="text-sm text-gray-300">${pack.quantity} cartelas</p>
-                        </div>
-                        
-                        <div class="text-center mb-3">
-                            <div class="text-gray-400 line-through">R$ ${pack.originalPrice}</div>
-                            <div class="text-2xl font-bold text-green-400">R$ ${pack.promoPrice}</div>
-                            <div class="text-sm text-orange-300">-${pack.discount}% OFF</div>
-                        </div>
-                        
-                        <button
-                            onclick="buyPromoCard(${pack.planId}, '${pack.id}')"
-                            class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 rounded transition-all duration-300"
-                        >
-                            🛒 Comprar Pacote
-                        </button>
-                    </div>
-                `;
-                
-                grid.appendChild(packElement);
-            });
-        }
-
-        function renderFeed() {
-            const feedContent = document.getElementById('feedContent');
-            feedContent.innerHTML = '';
-            
-            // Gerar novos ganhos dinâmicos a cada abertura
-            const currentWins = generateRandomWins();
-            
-            currentWins.forEach((win, index) => {
-                const winElement = document.createElement('div');
-                winElement.className = 'bg-gray-800/50 rounded-lg p-3 border border-green-400/30';
-                
-                winElement.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-white font-bold">${win.name}</div>
-                            <div class="text-cyan-300 text-sm">${win.plan}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-green-400 font-bold">R$ ${win.prize}</div>
-                            <div class="text-gray-400 text-xs">${win.time}</div>
-                        </div>
-                    </div>
-                `;
-                
-                feedContent.appendChild(winElement);
-            });
-        }
-
-        function buyCard(planId) {
-            const plan = plans.find(p => p.id === planId);
-            
-            if (gameState.balance < plan.cost) {
-                alert('Saldo insuficiente! Faça um depósito para continuar.');
-                showModal('depositModal');
-                return;
-            }
-            
-            // Atualizar fidelidade
-            gameState.loyaltySequences[planId].spent += plan.cost;
-            gameState.loyaltySequences[planId].games += 1;
-            
-            // Debitar saldo
-            gameState.balance -= plan.cost;
-            updateBalance();
-            
-            // Gerar cartela
-            gameState.scratchCard = generateScratchCard(planId);
-            gameState.selectedPlan = planId;
-            
-            // Mostrar tela do jogo
-            document.getElementById('planSelection').classList.add('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
-            document.getElementById('gameTitle').textContent = `${plan.name} - R$ ${plan.cost}`;
             
-            // Inicializar jogo
-            initializeScratchGame();
-            saveGameState();
+            setupPlanSelection();
         }
 
-        function buyPromoCard(planId, promoId) {
-            const pack = promotionalPacks.find(p => p.id === promoId);
+        // Sistema de Seleção de Planos
+        function setupPlanSelection() {
+            const planCards = document.querySelectorAll('.plan-card');
             
-            if (gameState.balance < pack.promoPrice) {
-                alert('Saldo insuficiente! Faça um depósito para continuar.');
-                showModal('depositModal');
+            planCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const plan = card.dataset.plan;
+                    selectPlan(plan);
+                });
+            });
+        }
+
+        function selectPlan(planType) {
+            const plans = {
+                basic: {
+                    name: 'Básico',
+                    price: 3.00,
+                    cards: 1,
+                    minNumber: 1,
+                    maxNumber: 10,
+                    winChance: 0.0001 // 0.01%
+                },
+                premium: {
+                    name: 'Premium',
+                    price: 7.00,
+                    cards: 3,
+                    minNumber: 1,
+                    maxNumber: 50,
+                    winChance: 0.0001 // 0.01%
+                },
+                vip: {
+                    name: 'VIP',
+                    price: 15.00,
+                    cards: 5,
+                    minNumber: 1,
+                    maxNumber: 100,
+                    winChance: 0.0001 // 0.01%
+                }
+            };
+
+            const selectedPlan = plans[planType];
+            
+            if (gameState.balance < selectedPlan.price) {
+                alert('Saldo insuficiente! Adicione mais créditos para jogar.');
                 return;
             }
+
+            gameState.currentPlan = selectedPlan;
+            gameState.cardsRemaining = selectedPlan.cards;
+            gameState.balance -= selectedPlan.price;
             
-            // Atualizar fidelidade
-            gameState.loyaltySequences[planId].spent += pack.promoPrice;
-            gameState.loyaltySequences[planId].games += pack.quantity;
-            
-            // Debitar saldo
-            gameState.balance -= pack.promoPrice;
-            updateBalance();
-            
-            // Gerar cartelas do pacote promocional
-            const promoCards = generateMultipleCards(planId, pack.quantity);
-            
-            // Configurar estado do pacote promocional
-            gameState.currentPromoPackage = {
-                pack: pack,
-                cards: promoCards,
-                currentCard: 0,
-                totalCards: pack.quantity,
-                planId: planId
-            };
-            
-            // Mostrar interface de pacote promocional
-            showPromoPackageInterface();
-            
-            saveGameState();
-        }
-        
-        function showPromoPackageInterface() {
-            // Esconder seleção de planos
+            document.getElementById('userBalance').textContent = `R$ ${gameState.balance.toFixed(2)}`;
             document.getElementById('planSelection').classList.add('hidden');
             
-            // Mostrar interface do pacote promocional
-            let promoInterface = document.getElementById('promoPackageInterface');
-            if (!promoInterface) {
-                // Criar interface do pacote promocional
-                promoInterface = document.createElement('div');
-                promoInterface.id = 'promoPackageInterface';
-                promoInterface.className = 'max-w-4xl mx-auto';
-                
-                promoInterface.innerHTML = `
-                    <div class="text-center mb-6">
-                        <h2 class="text-3xl font-bold text-orange-300 mb-2">🔥 Pacote Promocional 🔥</h2>
-                        <p class="text-cyan-300" id="promoPackageTitle"></p>
-                        <p class="text-yellow-300" id="promoPackageProgress"></p>
-                        
-                        <button
-                            onclick="backToPlansFromPromo()"
-                            class="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-                        >
-                            ← Voltar aos Planos
-                        </button>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" id="promoCardsGrid">
-                        <!-- Cartelas do pacote serão inseridas aqui -->
-                    </div>
-                    
-                    <div id="promoGameArea" class="hidden">
-                        <!-- Área de jogo para cartela individual -->
-                    </div>
-                `;
-                
-                document.querySelector('main').appendChild(promoInterface);
+            startScratchGame();
+        }
+
+        // Sistema Triple Match - Encontrar 3 números iguais
+        function generateTripleMatchCard() {
+            const numbers = [];
+            const plan = gameState.currentPlan;
+            
+            // Gerar 9 números aleatórios
+            for (let i = 0; i < 9; i++) {
+                const num = Math.floor(Math.random() * (plan.maxNumber - plan.minNumber + 1)) + plan.minNumber;
+                numbers.push(num);
             }
             
-            promoInterface.classList.remove('hidden');
-            renderPromoPackage();
-        }
-        
-        function renderPromoPackage() {
-            const pack = gameState.currentPromoPackage;
-            if (!pack) return;
+            // Verificar se jogador ganha (0.01% de chance)
+            const wins = Math.random() < plan.winChance;
             
-            const plan = plans.find(p => p.id === pack.planId);
-            
-            // Atualizar título e progresso
-            document.getElementById('promoPackageTitle').textContent = 
-                `${pack.pack.name} - ${pack.totalCards} cartelas do ${plan.name}`;
-            document.getElementById('promoPackageProgress').textContent = 
-                `Cartelas restantes: ${pack.totalCards - pack.currentCard}`;
-            
-            // Renderizar grade de cartelas
-            const grid = document.getElementById('promoCardsGrid');
-            grid.innerHTML = '';
-            
-            pack.cards.forEach((card, index) => {
-                const cardElement = document.createElement('div');
-                const isPlayed = index < pack.currentCard;
-                const isNext = index === pack.currentCard;
+            if (wins) {
+                // Forçar um triple match
+                const winningNumber = Math.floor(Math.random() * (plan.maxNumber - plan.minNumber + 1)) + plan.minNumber;
                 
-                cardElement.className = `p-4 rounded-xl border-2 transition-all duration-300 ${
-                    isPlayed ? 'bg-gray-800 border-gray-600 opacity-50' :
-                    isNext ? 'bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border-yellow-400 animate-pulse-gold' :
-                    'bg-gradient-to-br from-purple-900/30 to-blue-900/30 border-cyan-400/30'
-                }`;
+                // Substituir 3 posições aleatórias com o número ganhador
+                const positions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+                const shuffledPositions = positions.sort(() => 0.5 - Math.random());
                 
-                cardElement.innerHTML = `
-                    <div class="text-center">
-                        <h3 class="text-lg font-bold ${isPlayed ? 'text-gray-500' : 'text-yellow-300'} mb-2">
-                            Cartela ${index + 1}
-                        </h3>
-                        
-                        ${isPlayed ? 
-                            `<div class="text-gray-500 mb-4">✅ Jogada</div>
-                             <div class="text-sm ${card.willWin ? 'text-green-400' : 'text-red-400'}">
-                                ${card.willWin ? `Prêmio: R$ ${card.prize}` : 'Sem prêmio'}
-                             </div>` :
-                        isNext ?
-                            `<div class="text-orange-300 mb-4 font-bold animate-pulse">🎯 Próxima</div>
-                             <button onclick="playPromoCard(${index})" 
-                                     class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
-                                🎲 Raspar Agora
-                             </button>` :
-                            `<div class="text-cyan-300 mb-4">⏳ Aguardando</div>
-                             <button disabled class="bg-gray-600 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">
-                                Aguarde sua vez
-                             </button>`
-                        }
-                    </div>
-                `;
-                
-                grid.appendChild(cardElement);
-            });
-        }
-        
-        function playPromoCard(cardIndex) {
-            const pack = gameState.currentPromoPackage;
-            if (!pack || cardIndex !== pack.currentCard) return;
-            
-            // Configurar cartela atual
-            gameState.scratchCard = pack.cards[cardIndex];
-            gameState.selectedPlan = pack.planId;
-            
-            // Esconder grid de cartelas e mostrar área de jogo
-            document.getElementById('promoCardsGrid').classList.add('hidden');
-            
-            let gameArea = document.getElementById('promoGameArea');
-            gameArea.innerHTML = `
-                <div class="max-w-2xl mx-auto">
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-yellow-300 mb-2">
-                            Cartela ${cardIndex + 1} de ${pack.totalCards}
-                        </h3>
-                        <p class="text-cyan-300">Raspe para revelar os números!</p>
-                    </div>
-
-                    <!-- Cartela de Raspadinha -->
-                    <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
-                        <div class="relative">
-                            <!-- Números da Cartela -->
-                            <div class="grid grid-cols-5 gap-2 w-full max-w-sm mx-auto mb-4" id="promoNumbersGrid">
-                                <!-- Números serão inseridos aqui -->
-                            </div>
-
-                            <!-- Área de Raspadinha Promocional Simplificada -->
-                            <div id="promoScratchArea" class="relative w-full max-w-sm mx-auto h-48 rounded-lg cursor-pointer border-2 border-white/30 overflow-hidden">
-                                <!-- Overlay de Cobertura Promocional -->
-                                <div 
-                                    id="promoScratchOverlay" 
-                                    class="absolute inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-red-500 flex items-center justify-center transition-opacity duration-500"
-                                    style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"
-                                >
-                                    <div class="text-center">
-                                        <div class="text-2xl font-bold text-white mb-2">🔥 RASPE AQUI 🔥</div>
-                                        <div class="text-sm text-orange-100 animate-pulse">Clique 5 vezes para revelar</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Barra de Progresso -->
-                            <div class="mt-4 text-sm">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cyan-300">Área raspada: <span id="promoScratchProgress">0.0%</span></span>
-                                    <span class="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
-                                </div>
-                                <div class="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
-                                    <div 
-                                        id="promoProgressBar"
-                                        class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
-                                        style="width: 0%"
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Resultado -->
-                    <div id="promoGameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
-                        <div class="text-center mb-4">
-                            <h4 class="text-xl font-bold text-yellow-300 mb-2">🎉 Números Revelados!</h4>
-                            <div id="promoResultContent">
-                                <!-- Resultado será inserido aqui -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botão Próxima Cartela -->
-                    <div id="promoNextButton" class="hidden text-center mb-6">
-                        <button
-                            onclick="finishPromoCard()"
-                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-                        >
-                            🎲 Próxima Cartela
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            gameArea.classList.remove('hidden');
-            
-            // Inicializar jogo da cartela promocional
-            initializePromoScratchGame();
-        }
-        
-        function initializePromoScratchGame() {
-            const canvas = document.getElementById('promoScratchCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Renderizar números
-            renderPromoNumbers();
-            
-            // Inicializar cobertura (mesmo código do jogo normal)
-            const gradient = ctx.createLinearGradient(0, 0, 300, 200);
-            gradient.addColorStop(0, '#C0C0C0');
-            gradient.addColorStop(0.5, '#E5E5E5');
-            gradient.addColorStop(1, '#A0A0A0');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 300, 200);
-            
-            // Adicionar textura
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 50; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * 300, Math.random() * 200, Math.random() * 3, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Texto de instrução
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🪙 RASPE AQUI 🪙', 150, 100);
-            
-            // Reset estado
-            gameState.scratchedArea = 0;
-            gameState.isRevealed = false;
-            
-            // Adicionar eventos específicos para o canvas promocional
-            setupPromoScratchEvents();
-        }
-        
-        function renderPromoNumbers() {
-            const grid = document.getElementById('promoNumbersGrid');
-            grid.innerHTML = '';
-            
-            if (!gameState.scratchCard) return;
-            
-            gameState.scratchCard.numbers.forEach((number, index) => {
-                const numberElement = document.createElement('div');
-                const isWinning = gameState.scratchCard.winningNumbers.includes(number);
-                
-                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
-                    isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
-                }`;
-                
-                numberElement.textContent = number;
-                grid.appendChild(numberElement);
-            });
-        }
-        
-        function setupPromoSimpleScratch() {
-            const scratchArea = document.getElementById('promoScratchArea');
-            if (!scratchArea) return;
-            
-            let clickCount = 0;
-            const totalClicks = 5; // Requer 5 cliques para revelar
-            
-            function handlePromoScratch() {
-                if (gameState.isRevealed) return;
-                
-                clickCount++;
-                const progress = (clickCount / totalClicks) * 100;
-                
-                // Atualizar progresso
-                document.getElementById('promoScratchProgress').textContent = `${progress.toFixed(1)}%`;
-                document.getElementById('promoProgressBar').style.width = `${Math.min(progress, 100)}%`;
-                
-                // Atualizar opacidade da cobertura
-                const overlay = document.getElementById('promoScratchOverlay');
-                if (overlay) {
-                    overlay.style.opacity = Math.max(0, 1 - (clickCount / totalClicks));
+                for (let i = 0; i < 3; i++) {
+                    numbers[shuffledPositions[i]] = winningNumber;
                 }
                 
-                // Revelar após 5 cliques
-                if (clickCount >= totalClicks) {
-                    revealPromoResult();
+                return {
+                    numbers,
+                    winningNumber,
+                    prize: winningNumber,
+                    isWinner: true
+                };
+            }
+            
+            // Garantir que não há triple match acidental
+            const numberCounts = {};
+            numbers.forEach(num => {
+                numberCounts[num] = (numberCounts[num] || 0) + 1;
+            });
+            
+            // Se houver 3 ou mais iguais acidentalmente, randomizar novamente
+            for (let num in numberCounts) {
+                if (numberCounts[num] >= 3) {
+                    // Substituir os extras por números diferentes
+                    const positions = numbers.map((n, i) => n === parseInt(num) ? i : -1).filter(i => i !== -1);
+                    for (let i = 2; i < positions.length; i++) {
+                        let newNum;
+                        do {
+                            newNum = Math.floor(Math.random() * (plan.maxNumber - plan.minNumber + 1)) + plan.minNumber;
+                        } while (newNum === parseInt(num));
+                        numbers[positions[i]] = newNum;
+                    }
                 }
             }
             
-            // Eventos de clique/toque
-            scratchArea.addEventListener('click', handlePromoScratch);
-            scratchArea.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handlePromoScratch();
-            });
+            return {
+                numbers,
+                winningNumber: null,
+                prize: 0,
+                isWinner: false
+            };
         }
-        
-        // Sistema Promocional Emocional
-        function createPromoScratchSurface(ctx, width, height) {
-            // Base com gradiente promocional
+
+        // Iniciar jogo de raspadinha
+        function startScratchGame() {
+            gameState.scratchCard = generateTripleMatchCard();
+            
+            document.getElementById('scratchGame').classList.remove('hidden');
+            
+            setupScratchCanvas();
+            renderNumbers();
+            resetScratchState();
+        }
+
+        // Configurar canvas de raspadinha
+        function setupScratchCanvas() {
+            scratchCanvas = document.getElementById('scratchCanvas');
+            scratchCtx = scratchCanvas.getContext('2d');
+            
+            // Criar cobertura metálica realística
+            createMetallicScratchSurface(scratchCtx, 320, 220);
+            
+            // Adicionar eventos de scratch
+            setupScratchEvents();
+        }
+
+        // Criar superfície metálica de raspadinha
+        function createMetallicScratchSurface(ctx, width, height) {
+            // Base metálica com gradiente
             const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-            gradient.addColorStop(0, '#FF6B35');
-            gradient.addColorStop(0.4, '#F7931E');
-            gradient.addColorStop(0.8, '#FFD700');
-            gradient.addColorStop(1, '#FFA500');
+            gradient.addColorStop(0, '#E8E8E8');
+            gradient.addColorStop(0.3, '#CACACA');
+            gradient.addColorStop(0.6, '#A8A8A8');
+            gradient.addColorStop(1, '#888888');
             
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
             
-            // Efeitos de fogo
+            // Adicionar textura metálica com pontos brilhantes
             ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            for (let i = 0; i < 40; i++) {
+            for (let i = 0; i < 80; i++) {
                 const x = Math.random() * width;
                 const y = Math.random() * height;
-                const size = Math.random() * 3 + 1;
+                const size = Math.random() * 2 + 1;
                 ctx.beginPath();
                 ctx.arc(x, y, size, 0, 2 * Math.PI);
                 ctx.fill();
             }
             
-            // Texto promocional com sombra
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-            ctx.shadowBlur = 3;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-            
-            ctx.fillStyle = '#FFF';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🔥 RASPE COM O DEDO 🔥', width/2, height/2 - 10);
-            
-            ctx.fillStyle = '#FFE4B5';
-            ctx.font = 'bold 12px Arial';
-            ctx.fillText('PACOTE PROMOCIONAL!', width/2, height/2 + 15);
-            
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-        }
-        
-        function setupPromoEmotionalScratch() {
-            const canvas = document.getElementById('promoScratchCanvas');
-            if (!canvas) return;
-            
-            let isScratching = false;
-            let lastPoint = null;
-            
-            function performPromoScratch(x, y) {
-                const ctx = canvas.getContext('2d');
-                
-                ctx.globalCompositeOperation = 'destination-out';
-                
-                const brushSize = 25; // Brush maior para promoção
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
-                gradient.addColorStop(0, 'rgba(0,0,0,1)');
-                gradient.addColorStop(0.6, 'rgba(0,0,0,0.9)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                if (lastPoint) {
-                    ctx.lineWidth = brushSize * 1.8;
-                    ctx.lineCap = 'round';
-                    ctx.strokeStyle = 'rgba(0,0,0,1)';
-                    ctx.beginPath();
-                    ctx.moveTo(lastPoint.x, lastPoint.y);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                }
-                
-                lastPoint = { x, y };
-                
-                if (Math.random() > 0.8) {
-                    updatePromoScratchProgress();
-                }
-            }
-            
-            // Events idênticos ao sistema normal
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            });
-            
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            });
-            
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-                lastPoint = null;
-                updatePromoScratchProgress();
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                isScratching = false;
-                lastPoint = null;
-            });
-            
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                isScratching = false;
-                lastPoint = null;
-                updatePromoScratchProgress();
-            }, { passive: false });
-        }
-        
-        function updatePromoScratchProgress() {
-            if (gameState.isRevealed) return;
-            
-            const canvas = document.getElementById('promoScratchCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            let transparent = 0;
-            
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] < 128) transparent++;
-            }
-            
-            const area = transparent / (canvas.width * canvas.height);
-            gameState.scratchedArea = area;
-            
-            const progress = Math.min(area * 100, 100);
-            document.getElementById('promoScratchProgress').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('promoProgressBar').style.width = `${progress}%`;
-            
-            if (area > 0.6 && !gameState.isRevealed) {
-                setTimeout(() => {
-                    revealPromoResult();
-                }, 300);
-            }
-        }
-        
-        function revealPromoResult() {
-            gameState.isRevealed = true;
-            
-            // Limpar canvas promocional completamente
-            const canvas = document.getElementById('promoScratchCanvas');
-            if (canvas) {
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            
-            // Mostrar resultado
-            const resultDiv = document.getElementById('promoGameResult');
-            const resultContent = document.getElementById('promoResultContent');
-            
-            if (gameState.scratchCard.willWin) {
-                gameState.prize = gameState.scratchCard.prize;
-                gameState.balance += gameState.prize;
-                updateBalance();
-                
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-2xl font-bold mb-2">🏆 PARABÉNS! 🏆</div>
-                        <div class="text-white text-3xl font-bold">R$ ${gameState.prize.toFixed(2)}</div>
-                        <div class="text-green-100 text-sm mt-2">Prêmio creditado na sua conta!</div>
-                    </div>
-                `;
-            } else {
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-xl font-bold mb-2">😔 Que pena!</div>
-                        <div class="text-white text-lg">Não foi dessa vez</div>
-                        <div class="text-gray-300 text-sm mt-2">Continue com as próximas cartelas!</div>
-                    </div>
-                `;
-            }
-            
-            resultDiv.classList.remove('hidden');
-            document.getElementById('promoNextButton').classList.remove('hidden');
-            
-            saveGameState();
-        }
-        
-        function finishPromoCard() {
-            const pack = gameState.currentPromoPackage;
-            
-            // Avançar para próxima cartela
-            pack.currentCard++;
-            
-            // Verificar se há mais cartelas
-            if (pack.currentCard < pack.totalCards) {
-                // Voltar para grid de cartelas
-                document.getElementById('promoGameArea').classList.add('hidden');
-                document.getElementById('promoCardsGrid').classList.remove('hidden');
-                renderPromoPackage();
-            } else {
-                // Todas as cartelas foram jogadas, voltar para planos
-                finishPromoPackage();
-            }
-        }
-        
-        function finishPromoPackage() {
-            const pack = gameState.currentPromoPackage;
-            
-            // Calcular estatísticas finais
-            let totalWins = 0;
-            let totalPrize = 0;
-            
-            pack.cards.forEach(card => {
-                if (card.willWin) {
-                    totalWins++;
-                    totalPrize += card.prize;
-                }
-            });
-            
-            // Mostrar resumo final
-            alert(`🎉 PACOTE PROMOCIONAL CONCLUÍDO! 🎉\n\nCartelas jogadas: ${pack.totalCards}\nCartelas premiadas: ${totalWins}\nTotal de prêmios: R$ ${totalPrize.toFixed(2)}\n\nObrigado por jogar!`);
-            
-            // Limpar estado do pacote promocional
-            gameState.currentPromoPackage = null;
-            
-            // Voltar para seleção de planos
-            backToPlansFromPromo();
-        }
-        
-        function backToPlansFromPromo() {
-            // Esconder interface de pacote promocional
-            const promoInterface = document.getElementById('promoPackageInterface');
-            if (promoInterface) {
-                promoInterface.classList.add('hidden');
-            }
-            
-            // Mostrar seleção de planos
-            document.getElementById('planSelection').classList.remove('hidden');
-            
-            // Limpar estado
-            gameState.currentPromoPackage = null;
-            gameState.scratchCard = null;
-            gameState.selectedPlan = null;
-            gameState.isRevealed = false;
-            gameState.prize = 0;
-            gameState.scratchedArea = 0;
-            
-            // Atualizar planos
-            renderPlans();
-            saveGameState();
-        }
-
-        function initializeScratchGame() {
-            const canvas = document.getElementById('scratchCanvas');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            
-            // Renderizar números primeiro
-            renderNumbers();
-            
-            // Limpar canvas completamente
-            ctx.clearRect(0, 0, 320, 220);
-            
-            // Criar cobertura metálica realística
-            createScratchSurface(ctx, 320, 220);
-            
-            // Reset estado
-            gameState.scratchedArea = 0;
-            gameState.isRevealed = false;
-            gameState.isScratching = false;
-            
-            // Atualizar UI
-            document.getElementById('scratchProgress').textContent = '0.0%';
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('gameResult').classList.add('hidden');
-            document.getElementById('newGameButton').classList.add('hidden');
-            
-            // Configurar eventos otimizados
-            setupEmotionalScratch();
-        }
-
-        function renderNumbers() {
-            const grid = document.getElementById('numbersGrid');
-            grid.innerHTML = '';
-            
-            if (!gameState.scratchCard) return;
-            
-            gameState.scratchCard.numbers.forEach((number, index) => {
-                const numberElement = document.createElement('div');
-                const isWinning = gameState.scratchCard.winningNumbers.includes(number);
-                
-                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
-                    isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
-                }`;
-                
-                numberElement.textContent = number;
-                grid.appendChild(numberElement);
-            });
-        }
-
-        function setupSimpleScratch() {
-            const scratchArea = document.getElementById('scratchArea');
-            if (!scratchArea) return;
-            
-            let clickCount = 0;
-            const totalClicks = 5; // Requer 5 cliques para revelar
-            
-            function handleScratch() {
-                if (gameState.isRevealed) return;
-                
-                clickCount++;
-                const progress = (clickCount / totalClicks) * 100;
-                
-                // Atualizar progresso
-                document.getElementById('scratchProgress').textContent = `${progress.toFixed(1)}%`;
-                document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
-                
-                // Atualizar opacidade da cobertura
-                const overlay = document.getElementById('scratchOverlay');
-                if (overlay) {
-                    overlay.style.opacity = Math.max(0, 1 - (clickCount / totalClicks));
-                }
-                
-                // Revelar após 5 cliques
-                if (clickCount >= totalClicks) {
-                    revealResult();
-                }
-            }
-            
-            // Eventos de clique/toque
-            scratchArea.addEventListener('click', handleScratch);
-            scratchArea.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handleScratch();
-            });
-        }
-
-        // Sistema Emocional de Raspadinha - Experiência Real
-        function createScratchSurface(ctx, width, height) {
-            // Resetar composite operation
-            ctx.globalCompositeOperation = 'source-over';
-            
-            // Base metálica com gradiente
-            const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-            gradient.addColorStop(0, '#E8E8E8');
-            gradient.addColorStop(0.3, '#D0D0D0');
-            gradient.addColorStop(0.6, '#B8B8B8');
-            gradient.addColorStop(1, '#A0A0A0');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // Textura metálica com pontos brilhantes
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            for (let i = 0; i < 80; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 2 + 0.5, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
             // Reflexos metálicos
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
             for (let i = 0; i < 20; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 4 + 2;
                 ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 4 + 1, 0, 2 * Math.PI);
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
                 ctx.fill();
             }
             
             // Sombras para profundidade
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
             for (let i = 0; i < 30; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 3 + 1;
                 ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 3, 0, 2 * Math.PI);
+                ctx.arc(x, y, size, 0, 2 * Math.PI);
                 ctx.fill();
             }
             
@@ -1559,317 +527,274 @@
             ctx.shadowOffsetX = 1;
             ctx.shadowOffsetY = 1;
             
-            ctx.fillStyle = '#666';
+            ctx.fillStyle = '#555';
             ctx.font = 'bold 18px Arial';
             ctx.textAlign = 'center';
             ctx.fillText('🪙 RASPE COM O DEDO 🪙', width/2, height/2 - 10);
             
-            ctx.fillStyle = '#888';
-            ctx.font = '12px Arial';
-            ctx.fillText('Arraste para revelar os números', width/2, height/2 + 15);
+            ctx.fillStyle = '#777';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('Encontre 3 números iguais!', width/2, height/2 + 15);
             
-            // Reset shadow
             ctx.shadowColor = 'transparent';
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
         }
-        
-        function setupEmotionalScratch() {
-            const canvas = document.getElementById('scratchCanvas');
-            if (!canvas) return;
+
+        // Configurar eventos de scratch
+        function setupScratchEvents() {
+            // Eventos de mouse
+            scratchCanvas.addEventListener('mousedown', startScratching);
+            scratchCanvas.addEventListener('mousemove', scratch);
+            scratchCanvas.addEventListener('mouseup', stopScratching);
+            scratchCanvas.addEventListener('mouseleave', stopScratching);
             
-            let isScratching = false;
-            let lastPoint = null;
-            
-            // Função otimizada de scratch
-            function performScratch(x, y) {
-                const ctx = canvas.getContext('2d');
-                
-                // Configurar para remover pixels
-                ctx.globalCompositeOperation = 'destination-out';
-                
-                // Criar brush mais natural
-                const brushSize = 20;
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
-                gradient.addColorStop(0, 'rgba(0,0,0,1)');
-                gradient.addColorStop(0.7, 'rgba(0,0,0,0.8)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                // Conectar pontos para linha contínua
-                if (lastPoint) {
-                    ctx.lineWidth = brushSize * 1.5;
-                    ctx.lineCap = 'round';
-                    ctx.strokeStyle = 'rgba(0,0,0,1)';
-                    ctx.beginPath();
-                    ctx.moveTo(lastPoint.x, lastPoint.y);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                }
-                
-                lastPoint = { x, y };
-                
-                // Calcular progresso de forma otimizada (a cada 5 scratches)
-                if (Math.random() > 0.8) {
-                    updateScratchProgress();
-                }
-            }
-            
-            // Mouse Events
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            });
-            
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            });
-            
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-                lastPoint = null;
-                updateScratchProgress();
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                isScratching = false;
-                lastPoint = null;
-            });
-            
-            // Touch Events - Otimizados para mobile
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                isScratching = false;
-                lastPoint = null;
-                updateScratchProgress();
-            }, { passive: false });
+            // Eventos de touch
+            scratchCanvas.addEventListener('touchstart', startScratching, { passive: false });
+            scratchCanvas.addEventListener('touchmove', scratch, { passive: false });
+            scratchCanvas.addEventListener('touchend', stopScratching, { passive: false });
+            scratchCanvas.addEventListener('touchcancel', stopScratching, { passive: false });
         }
-        
-        function updateScratchProgress() {
+
+        // Sistema de Scratch Emocional Otimizado
+        function startScratching(e) {
             if (gameState.isRevealed) return;
             
-            const canvas = document.getElementById('scratchCanvas');
-            const ctx = canvas.getContext('2d');
+            gameState.isScratching = true;
+            gameState.lastScratchPoint = null;
+            scratch(e);
+        }
+
+        function scratch(e) {
+            if (!gameState.isScratching || gameState.isRevealed) return;
             
-            // Calcular área raspada
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            let transparent = 0;
+            e.preventDefault();
             
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] < 128) transparent++;
+            const rect = scratchCanvas.getBoundingClientRect();
+            const scaleX = scratchCanvas.width / rect.width;
+            const scaleY = scratchCanvas.height / rect.height;
+            
+            let x, y;
+            if (e.type.includes('touch')) {
+                x = (e.touches[0].clientX - rect.left) * scaleX;
+                y = (e.touches[0].clientY - rect.top) * scaleY;
+            } else {
+                x = (e.clientX - rect.left) * scaleX;
+                y = (e.clientY - rect.top) * scaleY;
             }
             
-            const area = transparent / (canvas.width * canvas.height);
-            gameState.scratchedArea = area;
+            // Brush com gradiente suave e linhas conectadas
+            scratchCtx.globalCompositeOperation = 'destination-out';
             
-            // Atualizar UI
-            const progress = Math.min(area * 100, 100);
-            document.getElementById('scratchProgress').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('progressBar').style.width = `${progress}%`;
+            // Conectar com ponto anterior se existir
+            if (gameState.lastScratchPoint) {
+                scratchCtx.lineWidth = 40;
+                scratchCtx.lineCap = 'round';
+                scratchCtx.lineJoin = 'round';
+                
+                const lineGradient = scratchCtx.createRadialGradient(x, y, 0, x, y, 20);
+                lineGradient.addColorStop(0, 'rgba(255,255,255,1)');
+                lineGradient.addColorStop(0.6, 'rgba(255,255,255,0.8)');
+                lineGradient.addColorStop(1, 'rgba(255,255,255,0.2)');
+                
+                scratchCtx.strokeStyle = lineGradient;
+                scratchCtx.beginPath();
+                scratchCtx.moveTo(gameState.lastScratchPoint.x, gameState.lastScratchPoint.y);
+                scratchCtx.lineTo(x, y);
+                scratchCtx.stroke();
+            }
             
-            // Revelar quando 60% raspado (mais emocionante)
-            if (area > 0.6 && !gameState.isRevealed) {
-                setTimeout(() => {
-                    revealResult();
-                }, 300); // Pequeno delay para build up da emoção
+            // Brush principal com gradiente
+            const brushSize = 20;
+            const gradient = scratchCtx.createRadialGradient(x, y, 0, x, y, brushSize);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.6, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0.2)');
+            
+            scratchCtx.fillStyle = gradient;
+            scratchCtx.beginPath();
+            scratchCtx.arc(x, y, brushSize, 0, 2 * Math.PI);
+            scratchCtx.fill();
+            
+            gameState.lastScratchPoint = { x, y };
+            gameState.scratchCount++;
+            
+            // Verificar progresso otimizado
+            if (gameState.scratchCount % 5 === 0) {
+                checkScratchProgress();
             }
         }
 
+        function stopScratching() {
+            gameState.isScratching = false;
+            gameState.lastScratchPoint = null;
+        }
+
+        // Verificar progresso da raspagem
+        function checkScratchProgress() {
+            // Calcular porcentagem raspada
+            const imageData = scratchCtx.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height);
+            const pixels = imageData.data;
+            let transparentPixels = 0;
+            
+            for (let i = 3; i < pixels.length; i += 4) {
+                if (pixels[i] < 255) {
+                    transparentPixels++;
+                }
+            }
+            
+            const totalPixels = scratchCanvas.width * scratchCanvas.height;
+            const percentScratched = (transparentPixels / totalPixels) * 100;
+            
+            gameState.scratchedArea = percentScratched;
+            
+            // Atualizar UI
+            document.getElementById('scratchProgress').textContent = `${percentScratched.toFixed(1)}%`;
+            document.getElementById('progressBar').style.width = `${Math.min(percentScratched, 100)}%`;
+            
+            // Revelar quando atingir 60%
+            if (percentScratched >= 60 && !gameState.isRevealed) {
+                setTimeout(() => {
+                    revealResult();
+                }, 300); // Delay emocional para build-up
+            }
+        }
+
+        // Renderizar números
+        function renderNumbers() {
+            const grid = document.getElementById('numbersGrid');
+            grid.innerHTML = '';
+            
+            if (!gameState.scratchCard) return;
+            
+            gameState.scratchCard.numbers.forEach((number, index) => {
+                const numberElement = document.createElement('div');
+                const isWinning = gameState.scratchCard.isWinner && number === gameState.scratchCard.winningNumber;
+                
+                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
+                    isWinning ? 'winning-number ring-2 ring-green-400' : ''
+                }`;
+                
+                numberElement.textContent = number;
+                grid.appendChild(numberElement);
+            });
+        }
+
+        // Revelar resultado
         function revealResult() {
             gameState.isRevealed = true;
+            gameState.cardsRemaining--;
             
-            // Esconder overlay de cobertura
-            const overlay = document.getElementById('scratchOverlay');
-            if (overlay) {
-                overlay.style.display = 'none';
+            // Remover completamente a cobertura
+            scratchCtx.clearRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+            
+            // Analisar os números para triple match
+            const numberCounts = {};
+            gameState.scratchCard.numbers.forEach(num => {
+                numberCounts[num] = (numberCounts[num] || 0) + 1;
+            });
+            
+            let tripleMatch = null;
+            for (let num in numberCounts) {
+                if (numberCounts[num] >= 3) {
+                    tripleMatch = parseInt(num);
+                    break;
+                }
             }
             
             // Mostrar resultado
-            const resultDiv = document.getElementById('gameResult');
-            const resultContent = document.getElementById('resultContent');
+            let resultHtml = '';
             
-            if (gameState.scratchCard.willWin) {
-                gameState.prize = gameState.scratchCard.prize;
-                gameState.balance += gameState.prize;
-                updateBalance();
+            if (tripleMatch !== null) {
+                const prize = tripleMatch;
+                gameState.balance += prize;
+                gameState.totalPrize += prize;
+                document.getElementById('userBalance').textContent = `R$ ${gameState.balance.toFixed(2)}`;
                 
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-2xl font-bold mb-2">🏆 PARABÉNS! 🏆</div>
-                        <div class="text-white text-3xl font-bold">R$ ${gameState.prize.toFixed(2)}</div>
-                        <div class="text-green-100 text-sm mt-2">Prêmio creditado na sua conta!</div>
+                // Destacar números ganhadores
+                const grid = document.getElementById('numbersGrid');
+                const numberElements = grid.children;
+                for (let i = 0; i < numberElements.length; i++) {
+                    if (parseInt(numberElements[i].textContent) === tripleMatch) {
+                        numberElements[i].classList.add('winning-number', 'ring-2', 'ring-green-400');
+                    }
+                }
+                
+                resultHtml = `
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🎉</div>
+                        <div class="text-2xl font-bold text-green-400 mb-2">TRIPLE MATCH!</div>
+                        <div class="text-lg text-yellow-300 mb-2">Você encontrou: ${tripleMatch} - ${tripleMatch} - ${tripleMatch}</div>
+                        <div class="text-4xl font-bold text-green-400 mb-4">GANHOU R$ ${prize.toFixed(2)}!</div>
+                        <div class="mt-4 p-3 bg-green-900/50 rounded-lg">
+                            <div class="text-green-300">💰 Prêmio adicionado ao seu saldo!</div>
+                        </div>
                     </div>
                 `;
             } else {
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-xl font-bold mb-2">😔 Que pena!</div>
-                        <div class="text-white text-lg">Não foi dessa vez</div>
-                        <div class="text-gray-300 text-sm mt-2">Continue jogando para aumentar suas chances!</div>
+                resultHtml = `
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">😔</div>
+                        <div class="text-xl font-bold text-orange-400 mb-4">Não houve triple match desta vez.</div>
+                        <div class="text-sm text-gray-300 mb-4">
+                            Você precisa encontrar 3 números iguais para ganhar!
+                            <br>
+                            <strong>Seus números:</strong> ${gameState.scratchCard.numbers.join(' - ')}
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-900/50 rounded-lg">
+                            <div class="text-blue-300">🎲 Continue tentando! A sorte pode estar na próxima!</div>
+                        </div>
                     </div>
                 `;
             }
             
-            resultDiv.classList.remove('hidden');
-            document.getElementById('newGameButton').classList.remove('hidden');
+            document.getElementById('resultContent').innerHTML = resultHtml;
+            document.getElementById('gameResult').classList.remove('hidden');
             
-            saveGameState();
+            // Mostrar botões apropriados
+            if (gameState.cardsRemaining > 0) {
+                document.getElementById('nextButton').classList.remove('hidden');
+            } else {
+                document.getElementById('newGameButton').classList.remove('hidden');
+            }
         }
 
-        function startNewGame() {
-            gameState.scratchCard = null;
-            gameState.selectedPlan = null;
-            gameState.isRevealed = false;
-            gameState.prize = 0;
-            gameState.scratchedArea = 0;
+        // Próxima cartela
+        function nextCard() {
+            resetScratchState();
+            document.getElementById('gameResult').classList.add('hidden');
+            document.getElementById('nextButton').classList.add('hidden');
             
-            document.getElementById('gameArea').classList.add('hidden');
-            document.getElementById('planSelection').classList.remove('hidden');
+            startScratchGame();
+        }
+
+        // Novo jogo
+        function newGame() {
+            resetGameState();
             document.getElementById('gameResult').classList.add('hidden');
             document.getElementById('newGameButton').classList.add('hidden');
-            
-            renderPlans();
-            saveGameState();
+            document.getElementById('scratchGame').classList.add('hidden');
+            document.getElementById('planSelection').classList.remove('hidden');
         }
 
-        function backToPlans() {
-            startNewGame();
+        // Reset do estado do scratch
+        function resetScratchState() {
+            gameState.scratchCount = 0;
+            gameState.scratchedArea = 0;
+            gameState.isScratching = false;
+            gameState.isRevealed = false;
+            gameState.lastScratchPoint = null;
         }
 
-        // Funções de modal
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
+        // Reset completo do jogo
+        function resetGameState() {
+            gameState.currentPlan = null;
+            gameState.scratchCard = null;
+            gameState.cardsRemaining = 0;
+            gameState.totalPrize = 0;
+            resetScratchState();
         }
-
-        function hideModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        function confirmDeposit() {
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            
-            if (amount < 10) {
-                alert('Valor mínimo para depósito é R$ 10,00');
-                return;
-            }
-            
-            gameState.balance += amount;
-            updateBalance();
-            
-            document.getElementById('depositAmount').value = '';
-            hideModal('depositModal');
-            
-            alert(`Depósito de R$ ${amount.toFixed(2)} confirmado!`);
-            saveGameState();
-        }
-
-        function confirmWithdraw() {
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-            const name = document.getElementById('withdrawName').value;
-            const pixKey = document.getElementById('pixKey').value;
-            
-            if (!amount || !name || !pixKey) {
-                alert('Preencha todos os campos!');
-                return;
-            }
-            
-            if (amount < 20) {
-                alert('Valor mínimo para saque é R$ 20,00');
-                return;
-            }
-            
-            if (amount > gameState.balance) {
-                alert('Saldo insuficiente!');
-                return;
-            }
-            
-            gameState.balance -= amount;
-            updateBalance();
-            
-            // Limpar campos
-            document.getElementById('withdrawAmount').value = '';
-            document.getElementById('withdrawName').value = '';
-            document.getElementById('pixKey').value = '';
-            
-            hideModal('withdrawModal');
-            
-            alert(`Saque de R$ ${amount.toFixed(2)} processado! Aguarde até 24h úteis.`);
-            saveGameState();
-        }
-
-        // Adicionar botão de logout no header
-        function addLogoutButton() {
-            const header = document.querySelector('header .flex.items-center.space-x-4');
-            
-            // Verificar se botão já existe
-            if (!document.getElementById('logoutButton')) {
-                const logoutButton = document.createElement('button');
-                logoutButton.id = 'logoutButton';
-                logoutButton.onclick = logout;
-                logoutButton.className = 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300';
-                logoutButton.innerHTML = '🚪 Sair';
-                
-                header.appendChild(logoutButton);
-            }
-        }
-        
-        function logout() {
-            if (confirm('Tem certeza que deseja sair? Seus dados serão salvos automaticamente.')) {
-                gameState.isLoggedIn = false;
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('gameScreen').classList.add('hidden');
-                
-                // Limpar campos de login
-                document.getElementById('userName').value = '';
-                document.getElementById('userEmail').value = '';
-            }
-        }
-
-        // Inicialização
-        window.addEventListener('load', () => {
-            const hasUser = loadGameState();
-            
-            if (hasUser && gameState.isLoggedIn) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('gameScreen').classList.remove('hidden');
-                initializeGame();
-                // Aguardar o DOM estar pronto antes de adicionar o botão
-                setTimeout(addLogoutButton, 100);
-            }
-        });
     </script>
 </body>
 </html>
