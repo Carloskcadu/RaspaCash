@@ -1839,16 +1839,25 @@
 
         // Adicionar botão de logout no header
         function addLogoutButton() {
-            const header = document.querySelector('header .flex.items-center.space-x-4');
+            // Tentar vários seletores possíveis para o header
+            const header = document.querySelector('header') || 
+                          document.querySelector('.header') ||
+                          document.querySelector('#header');
+            
+            if (!header) {
+                console.warn('Header não encontrado para adicionar botão de logout');
+                return;
+            }
             
             // Verificar se botão já existe
             if (!document.getElementById('logoutButton')) {
                 const logoutButton = document.createElement('button');
                 logoutButton.id = 'logoutButton';
                 logoutButton.onclick = logout;
-                logoutButton.className = 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300';
+                logoutButton.className = 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 ml-4';
                 logoutButton.innerHTML = '🚪 Sair';
                 
+                // Tentar adicionar no final do header
                 header.appendChild(logoutButton);
             }
         }
