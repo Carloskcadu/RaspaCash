@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RaspaCash - Sistema de Raspadinha Online</title>
+    <title>RaspaCash - O Maior Site de Raspadinhas Online do Brasil</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Meta Tags para SEO -->
-    <meta name="description" content="RaspaCash - O melhor sistema de raspadinha online do Brasil! Ganhe prêmios de até R$ 2.000 raspando cartelas digitais.">
-    <meta name="keywords" content="raspadinha, loteria, prêmios, jogos, Brasil, dinheiro, PIX">
-    <meta property="og:title" content="RaspaCash - Sistema de Raspadinha Online">
-    <meta property="og:description" content="Ganhe prêmios de até R$ 2.000 raspando cartelas digitais!">
+    <meta name="description" content="RaspaCash - Ganhe até R$ 2.000 raspando cartelas digitais! Os maiores prêmios do Brasil em raspadinhas online. Multiplique seu investimento por 100x!">
+    <meta name="keywords" content="raspadinha, loteria, prêmios, jogos, Brasil, dinheiro, PIX, ganhar dinheiro">
+    <meta property="og:title" content="RaspaCash - Ganhe até R$ 2.000 em Raspadinhas Online">
+    <meta property="og:description" content="Os maiores prêmios do Brasil! Multiplique seu investimento por até 100x!">
     <meta property="og:url" content="https://raspacashbr.online">
     <meta property="og:type" content="website">
     
@@ -24,9 +24,11 @@
         @keyframes pulse-gold {
             0%, 100% { 
                 box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+                transform: scale(1);
             }
             50% { 
                 box-shadow: 0 0 40px rgba(251, 191, 36, 0.8);
+                transform: scale(1.05);
             }
         }
         
@@ -34,641 +36,764 @@
             animation: pulse-gold 2s infinite;
         }
         
-        @keyframes shine {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
+        @keyframes slide-banner {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
         
-        .animate-shine {
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
-            background-size: 200% 200%;
-            animation: shine 2s infinite;
+        .animate-slide {
+            animation: slide-banner 20s linear infinite;
         }
         
-        /* Esconder scrollbar mas manter funcionalidade */
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .bg-gradient-animated {
+            background: linear-gradient(-45deg, #ee7724, #d8363a, #dd3675, #b44593);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+            transition: all 0.3s ease;
+        }
+        
+        .banner-slide {
+            animation: slide-banner 25s linear infinite;
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white min-h-screen min-h-[100dvh] overflow-x-hidden">
-    <!-- Container Principal -->
-    <div id="app">
-        <!-- Tela de Login -->
-        <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-            <div class="bg-gradient-to-br from-purple-900/90 via-blue-900/90 to-cyan-900/90 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full border border-cyan-400/30 shadow-2xl">
-                <div class="text-center mb-8">
-                    <h1 class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
-                        🎰 RaspaCash
-                    </h1>
-                    <p class="text-cyan-300">Entre para começar a raspar e ganhar!</p>
-                    <p class="text-sm text-gray-400 mt-2">Prêmios de até R$ 2.000!</p>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white min-h-screen overflow-x-hidden">
+    <!-- Header -->
+    <header class="relative z-50 bg-black/30 backdrop-blur-lg border-b border-purple-500/20">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <img src="k6wHSGJoRliVQ4hXpl8Jv" alt="RaspaCash Logo" class="w-12 h-12 rounded-full">
+                    <div>
+                        <h1 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                            RaspaCash
+                        </h1>
+                        <p class="text-xs text-gray-400">O Maior Site de Raspadinhas do Brasil</p>
+                    </div>
                 </div>
-                
-                <div class="space-y-4">
-                    <input
-                        type="text"
-                        id="userName"
-                        placeholder="Seu nome completo"
-                        class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
-                        required
-                    />
-                    <input
-                        type="email"
-                        id="userEmail"
-                        placeholder="Seu e-mail"
-                        class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
-                        required
-                    />
-                    <button
-                        onclick="handleLogin()"
-                        id="loginButton"
-                        class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
-                    >
-                        🎲 Entrar e Jogar
+                <div class="flex space-x-3">
+                    <button onclick="scrollToPlans()" class="hidden md:block bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 px-3 py-2 rounded-lg transition-all text-sm">
+                        💎 Planos
                     </button>
-                </div>
-                
-                <div class="mt-6 text-center text-sm text-gray-400">
-                    <p>Ao entrar, você concorda com nossos termos de uso</p>
+                    <button onclick="openLogin()" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-4 py-2 rounded-lg font-bold transition-all text-sm border border-blue-400/30">
+                        🔑 Entrar
+                    </button>
+                    <button onclick="goToPurchase('')" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-2 rounded-lg font-bold transition-all text-white shadow-lg animate-pulse">
+                        🎲 JOGAR AGORA!
+                    </button>
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- Tela Principal do Jogo -->
-        <div id="gameScreen" class="hidden">
-            <!-- Header -->
-            <header class="bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg border-b border-cyan-400/30 shadow-lg">
-                <div class="container mx-auto px-4 py-4">
-                    <!-- Logo e Saldo -->
-                    <div class="flex justify-between items-center mb-4 sm:mb-0">
-                        <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                            🎰 RaspaCash
-                        </h1>
-                        
-                        <div class="text-right">
-                            <div class="text-xs sm:text-sm text-cyan-300">Saldo</div>
-                            <div class="text-lg sm:text-xl font-bold text-green-400" id="balance">R$ 0,00</div>
+    <!-- Banner Principal Inspirado -->
+    <section class="relative py-12">
+        <div class="container mx-auto px-4">
+            <!-- Banner Hero Arte -->
+            <div class="relative bg-gradient-to-br from-slate-800 via-blue-900 to-indigo-950 rounded-3xl overflow-hidden shadow-2xl border border-blue-300/20 min-h-[450px]">
+                <!-- Efeitos de Fundo -->
+                <div class="absolute inset-0">
+                    <!-- Cédulas de Dinheiro Ilustrativas -->
+                    <div class="absolute top-4 right-6 transform rotate-12 opacity-20">
+                        <div class="w-32 h-20 bg-gradient-to-r from-green-400 to-green-600 rounded-lg shadow-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-xs">R$ 100</span>
+                        </div>
+                    </div>
+                    <div class="absolute top-16 right-16 transform -rotate-6 opacity-15">
+                        <div class="w-28 h-18 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg shadow-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-xs">R$ 50</span>
                         </div>
                     </div>
                     
-                    <!-- Botões - Layout responsivo -->
-                    <div class="grid grid-cols-3 gap-2 sm:flex sm:justify-end sm:space-x-4">
-                        <button
-                            onclick="showModal('depositModal')"
-                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
-                        >
-                            <span class="hidden sm:inline">💰 Depositar</span>
-                            <span class="sm:hidden">💰</span>
-                        </button>
-                        
-                        <button
-                            onclick="showModal('withdrawModal')"
-                            class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
-                        >
-                            <span class="hidden sm:inline">💸 Sacar</span>
-                            <span class="sm:hidden">💸</span>
-                        </button>
-                        
-                        <button
-                            onclick="showModal('feedModal')"
-                            class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-2 px-2 sm:px-4 rounded-lg transition-all duration-300 text-xs sm:text-sm"
-                        >
-                            <span class="hidden sm:inline">🏆 Ganhos</span>
-                            <span class="sm:hidden">🏆</span>
-                        </button>
-                        
-                        <button
-                            onclick="logout()"
-                            class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-2 rounded-lg transition-all duration-300 text-xs sm:text-sm col-span-3 sm:col-span-1 mt-2 sm:mt-0"
-                        >
-                            🚪 Sair
-                        </button>
-                    </div>
+                    <!-- Partículas Flutuantes -->
+                    <div class="absolute top-20 left-20 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <div class="absolute bottom-32 right-32 w-3 h-3 bg-green-400 rounded-full animate-bounce"></div>
+                    <div class="absolute bottom-40 left-16 w-1 h-1 bg-blue-400 rounded-full animate-ping"></div>
                 </div>
-            </header>
-
-            <main class="container mx-auto px-4 py-4 sm:py-8 min-h-[calc(100vh-120px)]">
-                <!-- Seleção de Planos -->
-                <div id="planSelection">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-yellow-300 mb-2">Escolha seu Plano</h2>
-                        <p class="text-cyan-300">Selecione o plano ideal para você!</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12" id="plansGrid">
-                        <!-- Planos serão inseridos aqui via JavaScript -->
-                    </div>
-                    
-                    <!-- Pacotes Promocionais -->
-                    <div class="bg-gradient-to-br from-orange-900/30 via-red-900/30 to-pink-900/30 backdrop-blur-lg rounded-xl p-6 border border-orange-400/30">
-                        <div class="text-center mb-6">
-                            <h3 class="text-2xl font-bold text-orange-300 mb-2">🔥 Pacotes Promocionais 🔥</h3>
-                            <p class="text-gray-300">Economize comprando em pacotes!</p>
+                
+                <!-- Gradiente Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-blue-900/70 to-indigo-900/50"></div>
+                
+                <!-- Conteúdo Principal -->
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center min-h-[400px] p-8 lg:p-12 gap-8">
+                    <!-- Lado Esquerdo - Mensagem Principal -->
+                    <div class="text-left space-y-6">
+                        <!-- Logo e Branding -->
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-white font-bold text-xl">🎰</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">RaspaCash</h3>
+                                <p class="text-sm text-blue-200">O maior site de raspadinhas do Brasil</p>
+                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4" id="promoPacks">
-                            <!-- Pacotes promocionais serão inseridos aqui -->
+                        <!-- Mensagem de Impacto -->
+                        <div class="space-y-3">
+                            <p class="text-lg text-gray-300">Aqui <span class="text-blue-300 font-bold text-xl">R$1</span> pode virar</p>
+                            <div class="relative">
+                                <!-- Efeito Brilho -->
+                                <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-lg blur-lg opacity-30 animate-pulse"></div>
+                                <h1 class="relative text-6xl lg:text-8xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text">
+                                    R$1.000
+                                </h1>
+                            </div>
+                            <p class="text-lg text-gray-300">em uma <span class="text-blue-300 font-bold text-xl">raspadinha!</span></p>
+                        </div>
+                        
+                        <!-- Call to Action Secundário -->
+                        <div class="bg-gradient-to-r from-orange-600/90 to-red-600/90 text-white px-6 py-3 rounded-xl inline-block shadow-lg">
+                            <p class="font-bold text-sm">✨ Basta uma raspada para mudar o seu dia!</p>
+                        </div>
+                        
+                        <!-- Badges de Confiança -->
+                        <div class="flex flex-wrap gap-3">
+                            <div class="bg-green-600/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-white font-medium shadow-lg">
+                                💰 PIX na Hora
+                            </div>
+                            <div class="bg-blue-600/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-white font-medium shadow-lg">
+                                🔒 100% Seguro
+                            </div>
+                            <div class="bg-purple-600/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm text-white font-medium shadow-lg">
+                                ⚡ Sem Taxas
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Tela do Jogo -->
-                <div id="gameArea" class="hidden max-w-2xl mx-auto">
-                    <div class="text-center mb-6">
-                        <h2 class="text-2xl font-bold text-yellow-300 mb-2" id="gameTitle">
-                            Plano Selecionado
-                        </h2>
-                        <p class="text-cyan-300">Raspe para revelar os números!</p>
-                        
-                        <button
-                            onclick="backToPlans()"
-                            class="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-                        >
-                            ← Voltar aos Planos
-                        </button>
-                    </div>
-
-                    <!-- Cartela de Raspadinha -->
-                    <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
-                        <div class="relative">
-                            <!-- Canvas de Raspadinha -->
-                            <div class="relative bg-gradient-to-br from-yellow-100 to-orange-100 rounded-lg p-4 mb-4 shadow-lg">
-                                <!-- Grid de Números (por trás do canvas) -->
-                                <div id="numbersGrid" class="absolute inset-4 grid grid-cols-3 gap-2 z-0">
-                                    <!-- Os números serão gerados dinamicamente -->
+                    
+                    <!-- Lado Direito - Área de Raspagem Visual -->
+                    <div class="flex justify-center lg:justify-end">
+                        <div class="relative transform hover:scale-105 transition-transform duration-300">
+                            <!-- Cartela Principal -->
+                            <div class="bg-gradient-to-br from-gray-200 to-gray-400 p-8 rounded-3xl shadow-2xl border-4 border-white/80 relative overflow-hidden">
+                                <!-- Header da Cartela -->
+                                <div class="text-center mb-6">
+                                    <div class="bg-red-600 text-white px-4 py-2 rounded-full inline-block mb-2 font-bold text-sm">
+                                        🎲 RASPADINHA VIP
+                                    </div>
+                                    <p class="text-gray-700 font-bold text-sm">RASPE E GANHE ATÉ:</p>
+                                    <p class="text-green-600 font-black text-2xl">R$ 1.000</p>
                                 </div>
                                 
-                                <canvas 
-                                    id="scratchCanvas" 
-                                    width="320" 
-                                    height="220"
-                                    class="scratch-canvas relative z-10 w-full h-full rounded-lg cursor-crosshair"
-                                    style="max-width: 320px; max-height: 220px; user-select: none; touch-action: none;"
-                                ></canvas>
+                                <!-- Área de Raspagem Simulada -->
+                                <div class="relative">
+                                    <!-- Fundo com Números (Revelado) -->
+                                    <div class="absolute inset-0 bg-white rounded-2xl p-6 grid grid-cols-3 gap-4">
+                                        <div class="bg-green-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-green-600 font-bold text-2xl">7</span>
+                                        </div>
+                                        <div class="bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-blue-600 font-bold text-2xl">3</span>
+                                        </div>
+                                        <div class="bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-purple-600 font-bold text-2xl">7</span>
+                                        </div>
+                                        <div class="bg-red-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-red-600 font-bold text-2xl">9</span>
+                                        </div>
+                                        <div class="bg-yellow-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-yellow-600 font-bold text-2xl">7</span>
+                                        </div>
+                                        <div class="bg-pink-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-pink-600 font-bold text-2xl">2</span>
+                                        </div>
+                                        <div class="bg-indigo-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-indigo-600 font-bold text-2xl">5</span>
+                                        </div>
+                                        <div class="bg-teal-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-teal-600 font-bold text-2xl">1</span>
+                                        </div>
+                                        <div class="bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-orange-600 font-bold text-2xl">4</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Overlay de Raspagem (Cobertura) -->
+                                    <div class="relative bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600 rounded-2xl p-6 h-40">
+                                        <!-- Texture de Metal -->
+                                        <div class="absolute inset-0 opacity-30">
+                                            <div class="w-full h-full bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 rounded-2xl"></div>
+                                            <div class="absolute inset-0 bg-gradient-to-tl from-transparent via-white/20 to-transparent"></div>
+                                        </div>
+                                        
+                                        <!-- Áreas "Raspadas" -->
+                                        <div class="absolute top-3 left-3 w-12 h-12 bg-white/0 rounded-lg border-2 border-white/30"></div>
+                                        <div class="absolute bottom-3 right-3 w-12 h-12 bg-white/0 rounded-lg border-2 border-white/30"></div>
+                                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-12 bg-white/0 rounded-lg border-2 border-white/30"></div>
+                                        
+                                        <!-- Texto Central -->
+                                        <div class="relative z-10 flex items-center justify-center h-full">
+                                            <div class="text-center">
+                                                <p class="text-gray-200 font-bold text-lg tracking-wider">RASPE</p>
+                                                <p class="text-gray-300 text-sm">& GANHE</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Destaque Triple Match -->
+                                <div class="absolute -top-3 -right-3 bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                                    3x = R$7
+                                </div>
                             </div>
                             
-                            <!-- Barra de Progresso -->
-                            <div class="mt-4 text-sm">
+                            <!-- Indicação Visual -->
+                            <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 hidden lg:block">
+                                <div class="text-center">
+                                    <div class="text-3xl animate-bounce">👆</div>
+                                    <p class="text-white text-xs font-bold mt-1">Toque para começar!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Principal Separado -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-2xl mx-auto">
+                <div class="bg-gradient-to-r from-black/60 via-purple-900/60 to-black/60 backdrop-blur-xl rounded-2xl p-8 border border-green-400/30 shadow-2xl">
+                    <h2 class="text-3xl font-bold text-white mb-4">🎯 PRONTO PARA GANHAR?</h2>
+                    <p class="text-gray-300 mb-6">Cadastre-se em 30 segundos e comece a raspar!</p>
+                    
+                    <button onclick="openLogin()" class="animate-pulse-gold bg-gradient-to-r from-green-500 via-green-600 to-emerald-600 hover:from-green-600 hover:via-green-700 hover:to-emerald-700 text-white font-bold py-5 px-16 rounded-2xl text-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 mb-4">
+                        🚀 COMEÇAR A GANHAR AGORA!
+                    </button>
+                    
+                    <div class="flex justify-center items-center space-x-6 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-green-400">⚡</span>
+                            <span class="text-gray-300">Cadastro em 30s</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-green-400">🔒</span>
+                            <span class="text-gray-300">100% Seguro</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-green-400">💰</span>
+                            <span class="text-gray-300">PIX Instantâneo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner 100x Retorno -->
+    <section class="py-16 bg-gradient-to-r from-green-900/30 to-emerald-900/30 backdrop-blur">
+        <div class="container mx-auto px-4">
+            <div class="bg-gradient-to-br from-green-800/90 via-emerald-700/90 to-green-600/90 backdrop-blur-xl rounded-3xl p-8 lg:p-12 border border-green-400/30 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-4 right-4 bg-yellow-500 text-black px-6 py-2 rounded-full font-bold text-lg animate-pulse">
+                    🔥 MULTIPLICADOR ATIVO!
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h2 class="text-5xl lg:text-6xl font-black text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text mb-4">
+                            100x
+                        </h2>
+                        <h3 class="text-3xl font-bold text-white mb-4">MULTIPLICADOR DE GANHOS!</h3>
+                        <p class="text-xl text-green-100 mb-6">Invista R$ 15 e ganhe até R$ 1.500! O maior retorno do Brasil!</p>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">💰</span>
+                                <span class="text-green-100">Retorno de até 100x o valor investido</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">⚡</span>
+                                <span class="text-green-100">PIX instantâneo para winners</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">🎯</span>
+                                <span class="text-green-100">Apenas 3 números iguais = GANHOU!</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="openLogin()" class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold py-4 px-8 rounded-xl text-xl shadow-lg transform hover:scale-105 transition-all">
+                            🚀 MULTIPLICAR AGORA!
+                        </button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <img src="T2glQSLEY1sWcfcoK5Cr7" alt="Cartela 100x" class="w-full max-w-sm mx-auto rounded-2xl shadow-2xl animate-pulse-gold">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Max Wins -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="bg-gradient-to-br from-purple-800/90 via-pink-700/90 to-red-600/90 backdrop-blur-xl rounded-3xl p-8 lg:p-12 border border-purple-400/30 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-4 right-4 bg-pink-500 text-white px-6 py-2 rounded-full font-bold text-lg animate-bounce">
+                    🏆 RECORDES DIÁRIOS!
+                </div>
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-5xl lg:text-6xl font-black text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text mb-4">
+                        MAX WINS
+                    </h2>
+                    <h3 class="text-3xl font-bold text-white mb-4">🎰 MAIORES GANHOS DO DIA</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-black/30 backdrop-blur rounded-xl p-6 border border-pink-400/30">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🥇</div>
+                            <p class="text-pink-200 text-sm mb-2">1º LUGAR HOJE</p>
+                            <p class="text-white font-bold text-2xl">R$ 1.500</p>
+                            <p class="text-pink-300 text-xs mt-1">Carlos M. - VIP</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black/30 backdrop-blur rounded-xl p-6 border border-purple-400/30">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🥈</div>
+                            <p class="text-purple-200 text-sm mb-2">2º LUGAR HOJE</p>
+                            <p class="text-white font-bold text-2xl">R$ 950</p>
+                            <p class="text-purple-300 text-xs mt-1">Ana S. - Premium</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black/30 backdrop-blur rounded-xl p-6 border border-indigo-400/30">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🥉</div>
+                            <p class="text-indigo-200 text-sm mb-2">3º LUGAR HOJE</p>
+                            <p class="text-white font-bold text-2xl">R$ 750</p>
+                            <p class="text-indigo-300 text-xs mt-1">João P. - VIP</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-white text-xl mb-6">🔥 Seja o próximo GRANDE GANHADOR!</p>
+                    <button onclick="openLogin()" class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-xl text-xl shadow-lg transform hover:scale-105 transition-all">
+                        🏆 DISPUTAR MAX WIN!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Bônus Fidelidade -->
+    <section class="py-16 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 backdrop-blur">
+        <div class="container mx-auto px-4">
+            <div class="bg-gradient-to-br from-yellow-600/90 via-orange-600/90 to-red-600/90 backdrop-blur-xl rounded-3xl p-8 lg:p-12 border border-yellow-400/30 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-4 right-4 bg-white text-orange-600 px-6 py-2 rounded-full font-bold text-lg">
+                    ⭐ PROGRAMA VIP!
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h2 class="text-5xl lg:text-6xl font-black text-transparent bg-gradient-to-r from-white via-yellow-200 to-orange-200 bg-clip-text mb-4">
+                            FIDELIDADE
+                        </h2>
+                        <h3 class="text-3xl font-bold text-white mb-4">🎁 BÔNUS DE FIDELIDADE</h3>
+                        <p class="text-xl text-yellow-100 mb-6">Quanto mais joga, mais BÔNUS ganha! Sistema de recompensas exclusivo!</p>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="bg-black/30 backdrop-blur rounded-lg p-4 border border-yellow-400/30">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-cyan-300">Área raspada: <span id="scratchProgress">0.0%</span></span>
-                                    <span class="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl">🌟</span>
+                                        <div>
+                                            <p class="text-white font-bold">Nível Bronze</p>
+                                            <p class="text-yellow-200 text-sm">5 jogadas = +10% bônus</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
-                                    <div 
-                                        id="progressBar"
-                                        class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
-                                        style="width: 0%"
-                                    ></div>
+                            </div>
+                            
+                            <div class="bg-black/30 backdrop-blur rounded-lg p-4 border border-yellow-400/30">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl">💎</span>
+                                        <div>
+                                            <p class="text-white font-bold">Nível Prata</p>
+                                            <p class="text-yellow-200 text-sm">10 jogadas = +25% bônus</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-black/30 backdrop-blur rounded-lg p-4 border border-yellow-400/30">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl">👑</span>
+                                        <div>
+                                            <p class="text-white font-bold">Nível Ouro</p>
+                                            <p class="text-yellow-200 text-sm">20 jogadas = +50% bônus</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        <button onclick="openLogin()" class="bg-gradient-to-r from-white to-yellow-200 text-orange-600 font-bold py-4 px-8 rounded-xl text-xl shadow-lg transform hover:scale-105 transition-all">
+                            ⭐ ATIVAR FIDELIDADE!
+                        </button>
                     </div>
+                    
+                    <div class="text-center">
+                        <img src="aALNqXqOZJeWPqKzlm5g0" alt="Bônus Fidelidade" class="w-full max-w-sm mx-auto rounded-2xl shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    <!-- Resultado -->
-                    <div id="gameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
-                        <div class="text-center mb-4">
-                            <h3 class="text-xl font-bold text-yellow-300 mb-2">🎉 Números Revelados!</h3>
-                            <div id="resultContent">
-                                <!-- Resultado será inserido aqui -->
+    <!-- Seção de Vitrine - Cartelas Disponíveis -->
+    <section class="py-20 bg-black/20 backdrop-blur">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+                    🎰 CARTELAS DISPONÍVEIS
+                </h2>
+                <p class="text-xl text-gray-300">Escolha sua cartela e comece a ganhar!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Plano Básico -->
+                <div class="card-hover bg-gradient-to-br from-green-800/90 via-green-700/90 to-green-600/90 backdrop-blur-lg rounded-2xl p-8 border border-green-400/30 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-green-500 text-black px-3 py-1 rounded-full text-sm font-bold">
+                        POPULAR
+                    </div>
+                    <div class="text-center">
+                        <img src="8GBrSLgzU5jEpWDGH6yhp" alt="Cartela Básica" class="w-full h-48 object-cover rounded-lg mb-6 shadow-lg">
+                        <div class="text-4xl mb-4">🌟</div>
+                        <h3 class="text-3xl font-bold text-white mb-2">PLANO BÁSICO</h3>
+                        <div class="text-4xl font-bold text-green-300 mb-2">R$ 5,00</div>
+                        <p class="text-green-200 mb-6">Ganhe de R$ 1 a R$ 25</p>
+                        
+                        <div class="bg-green-700/50 rounded-lg p-4 mb-6 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-green-100">• 1 cartela</span>
+                                <span class="text-yellow-300 font-bold">5x seu dinheiro!</span>
                             </div>
+                            <div class="text-green-100">• Números de 1 a 25</div>
+                            <div class="text-green-100">• PIX na hora</div>
                         </div>
-                    </div>
-
-                    <!-- Botão Nova Cartela -->
-                    <div id="newGameButton" class="hidden text-center mb-6">
-                        <button
-                            onclick="startNewGame()"
-                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-                        >
-                            🎲 Jogar Novamente
+                        
+                        <button onclick="openLogin()" class="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-4 rounded-lg transition-colors text-lg">
+                            🎲 JOGAR AGORA
                         </button>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
 
-    <!-- Modal de Depósito -->
-    <div id="depositModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 class="text-xl font-bold text-yellow-300 mb-4">💰 Depósito via PIX</h3>
-            
-            <div class="space-y-4">
-                <input
-                    type="number"
-                    id="depositAmount"
-                    placeholder="Valor (mínimo R$ 10)"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                    min="10"
-                />
-                
-                <div class="text-center">
-                    <p class="text-cyan-300 mb-2">PIX Copia e Cola:</p>
-                    <div class="bg-gray-800 p-3 rounded-lg font-mono text-sm text-green-400 break-all" id="pixCode">
-                        00020126580014br.gov.bcb.pix01364adb8d4e-8b5c-4d5f-9e2f-1234567890ab5204000053039865802BR5925RASPACASH LTDA6009SAO PAULO62140510RPX106304ABCD
+                <!-- Plano Premium -->
+                <div class="card-hover bg-gradient-to-br from-purple-800/90 via-purple-700/90 to-purple-600/90 backdrop-blur-lg rounded-2xl p-8 border border-purple-400/30 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        RECOMENDADO
+                    </div>
+                    <div class="text-center">
+                        <img src="JYbVn94tj5a11lc5uz8VT" alt="Cartela Premium" class="w-full h-48 object-cover rounded-lg mb-6 shadow-lg">
+                        <div class="text-4xl mb-4">💎</div>
+                        <h3 class="text-3xl font-bold text-white mb-2">PLANO PREMIUM</h3>
+                        <div class="text-4xl font-bold text-purple-300 mb-2">R$ 10,00</div>
+                        <p class="text-purple-200 mb-6">Ganhe de R$ 1 a R$ 100</p>
+                        
+                        <div class="bg-purple-700/50 rounded-lg p-4 mb-6 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-purple-100">• 3 cartelas</span>
+                                <span class="text-yellow-300 font-bold">10x seu dinheiro!</span>
+                            </div>
+                            <div class="text-purple-100">• Números de 1 a 100</div>
+                            <div class="text-purple-100">• PIX na hora</div>
+                        </div>
+                        
+                        <button onclick="openLogin()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 rounded-lg transition-colors text-lg">
+                            💎 JOGAR PREMIUM
+                        </button>
                     </div>
                 </div>
-                
-                <div class="flex space-x-3">
-                    <button
-                        onclick="confirmDeposit()"
-                        class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 rounded-lg"
-                    >
-                        ✅ Confirmar
-                    </button>
-                    <button
-                        onclick="hideModal('depositModal')"
-                        class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
-                    >
-                        Cancelar
-                    </button>
+
+                <!-- Plano VIP -->
+                <div class="card-hover bg-gradient-to-br from-red-800/90 via-red-700/90 to-red-600/90 backdrop-blur-lg rounded-2xl p-8 border border-red-400/30 shadow-2xl relative overflow-hidden animate-pulse-gold">
+                    <div class="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                        100x GANHO!
+                    </div>
+                    <div class="text-center">
+                        <img src="T2glQSLEY1sWcfcoK5Cr7" alt="Cartela VIP" class="w-full h-48 object-cover rounded-lg mb-6 shadow-lg">
+                        <div class="text-4xl mb-4">👑</div>
+                        <h3 class="text-3xl font-bold text-white mb-2">PLANO VIP</h3>
+                        <div class="text-4xl font-bold text-red-300 mb-2">R$ 15,00</div>
+                        <p class="text-red-200 mb-6">Ganhe de R$ 1 a R$ 1.500</p>
+                        
+                        <div class="bg-red-700/50 rounded-lg p-4 mb-6 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-red-100">• 5 cartelas</span>
+                                <span class="text-yellow-300 font-bold text-xl">100x retorno!</span>
+                            </div>
+                            <div class="text-red-100">• Números de 1 a 1500</div>
+                            <div class="text-yellow-300 font-bold">• BÔNUS EXCLUSIVO!</div>
+                        </div>
+                        
+                        <button onclick="openLogin()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-4 rounded-lg transition-colors text-lg">
+                            👑 VIRAR VIP
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Modal de Feed de Ganhos -->
-    <div id="feedModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 class="text-xl font-bold text-yellow-300 mb-4">🏆 Últimos Ganhos</h3>
-            
-            <div class="space-y-3 max-h-64 overflow-y-auto hide-scrollbar" id="feedContent">
-                <!-- Feed será inserido aqui -->
+    <!-- Seção de Depoimentos -->
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">
+                    💬 QUEM JÁ GANHOU
+                </h2>
+                <p class="text-xl text-gray-300">Veja os depoimentos de quem já multiplicou o dinheiro!</p>
             </div>
-            
-            <button
-                onclick="hideModal('feedModal')"
-                class="w-full mt-4 bg-gray-600 text-white font-bold py-3 rounded-lg"
-            >
-                Fechar
-            </button>
-        </div>
-    </div>
 
-    <!-- Modal de Saque -->
-    <div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 rounded-xl p-6 max-w-md w-full border border-cyan-400/30">
-            <h3 class="text-xl font-bold text-yellow-300 mb-4">💸 Saque via PIX</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Depoimento 1 -->
+                <div class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur p-6 rounded-xl border border-green-500/30">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-black font-bold">M</div>
+                        <div class="ml-4">
+                            <h4 class="text-white font-bold">Maria Silva</h4>
+                            <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-4">"Ganhei R$ 50 na primeira cartela VIP! O PIX chegou em segundos. Site confiável!"</p>
+                    <div class="text-green-400 font-bold">💰 Ganhou: R$ 50</div>
+                </div>
+
+                <!-- Depoimento 2 -->
+                <div class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur p-6 rounded-xl border border-purple-500/30">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">J</div>
+                        <div class="ml-4">
+                            <h4 class="text-white font-bold">João Santos</h4>
+                            <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-4">"Comecei com R$ 3 e já ganhei mais de R$ 200! Viciei nesse site!"</p>
+                    <div class="text-green-400 font-bold">💰 Ganhou: R$ 200+</div>
+                </div>
+
+                <!-- Depoimento 3 -->
+                <div class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur p-6 rounded-xl border border-red-500/30">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                        <div class="ml-4">
+                            <h4 class="text-white font-bold">Ana Costa</h4>
+                            <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 mb-4">"O MAIOR PRÊMIO! R$ 100 no plano VIP. Estou muito feliz, recomendo!"</p>
+                    <div class="text-green-400 font-bold">💰 Ganhou: R$ 100</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Promoções -->
+    <section class="py-20 bg-gradient-to-r from-red-900/30 to-orange-900/30 backdrop-blur">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="animate-float mb-6">
+                    <img src="aALNqXqOZJeWPqKzlm5g0" alt="Promoções" class="w-32 h-32 mx-auto rounded-full shadow-2xl">
+                </div>
+                <h2 class="text-5xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent mb-4">
+                    🔥 PROMOÇÕES ESPECIAIS
+                </h2>
+                <p class="text-xl text-gray-300">Ofertas limitadas para multiplicar seus ganhos!</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto space-y-8">
+                <!-- Promoção 1 -->
+                <div class="bg-gradient-to-r from-orange-600/80 to-red-600/80 backdrop-blur rounded-2xl p-8 border border-orange-400/50 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded-full font-bold animate-pulse">
+                        OFERTA LIMITADA!
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 class="text-3xl font-bold text-white mb-4">🎁 PACOTE PROMOCIONAL VIP</h3>
+                            <p class="text-xl text-orange-100 mb-6">Compre 3 cartelas VIP e ganhe 2 GRÁTIS!</p>
+                            <div class="space-y-2 mb-6">
+                                <div class="flex justify-between">
+                                    <span>3 Cartelas VIP:</span>
+                                    <span className="line-through text-gray-400">R$ 45</span>
+                                </div>
+                                <div class="flex justify-between text-2xl font-bold text-yellow-300">
+                                    <span>VOCÊ PAGA:</span>
+                                    <span>R$ 30</span>
+                                </div>
+                            </div>
+                            <button onclick="openLogin()" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-lg text-lg">
+                                🎁 APROVEITAR OFERTA
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <img src="5XPsyu-PGTQ_rra-huAOx" alt="Pacote Promocional" class="w-full max-w-sm mx-auto rounded-xl shadow-2xl">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Promoção 2 -->
+                <div class="bg-gradient-to-r from-purple-600/80 to-pink-600/80 backdrop-blur rounded-2xl p-8 border border-purple-400/50">
+                    <div class="text-center">
+                        <h3 class="text-3xl font-bold text-white mb-4">⚡ PRIMEIRA CARTELA COM 50% OFF</h3>
+                        <p class="text-xl text-purple-100 mb-6">Para novos usuários! Experimente por apenas R$ 1,50</p>
+                        <button onclick="openLogin()" class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-4 px-12 rounded-lg text-xl">
+                            ⚡ CADASTRAR E GANHAR 50% OFF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-br from-purple-900/95 via-blue-900/95 to-cyan-900/95 backdrop-blur-xl rounded-2xl p-8 max-w-md w-full border border-cyan-400/30 shadow-2xl relative">
+            <button onclick="closeLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">×</button>
+            
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+                    🎰 RaspaCash
+                </h1>
+                <p class="text-cyan-300">Entre para começar a raspar e ganhar!</p>
+                <p class="text-sm text-gray-400 mt-2">Encontre 3 números iguais e ganhe!</p>
+            </div>
             
             <div class="space-y-4">
                 <input
-                    type="number"
-                    id="withdrawAmount"
-                    placeholder="Valor do saque"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                />
-                
-                <input
                     type="text"
-                    id="withdrawName"
-                    placeholder="Nome completo"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                    id="userName"
+                    placeholder="Seu nome completo"
+                    class="w-full p-3 bg-gray-800/80 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 backdrop-blur"
+                    required
                 />
-                
-                <select
-                    id="pixKeyType"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
+                <input
+                    type="email"
+                    id="userEmail"
+                    placeholder="Seu e-mail"
+                    class="w-full p-3 bg-gray-800/80 border border-cyan-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 backdrop-blur"
+                    required
+                />
+                <button
+                    onclick="handleLogin()"
+                    id="loginButton"
+                    class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
                 >
-                    <option value="cpf">CPF</option>
-                    <option value="email">E-mail</option>
-                    <option value="phone">Telefone</option>
-                    <option value="random">Chave Aleatória</option>
-                </select>
-                
-                <input
-                    type="text"
-                    id="pixKey"
-                    placeholder="Chave PIX"
-                    class="w-full p-3 bg-gray-800 border border-cyan-400/30 rounded-lg text-white"
-                />
-                
-                <div class="flex space-x-3">
-                    <button
-                        onclick="confirmWithdraw()"
-                        class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 rounded-lg"
-                    >
-                        💸 Sacar
-                    </button>
-                    <button
-                        onclick="hideModal('withdrawModal')"
-                        class="flex-1 bg-gray-600 text-white font-bold py-3 rounded-lg"
-                    >
-                        Cancelar
-                    </button>
-                </div>
+                    🎲 Entrar e Começar a Ganhar
+                </button>
+            </div>
+            
+            <div class="mt-6 text-center text-sm text-gray-400">
+                <p>🎯 Regra: Encontre 3 números iguais para ganhar o valor em R$!</p>
+                <p class="mt-2">Ao entrar, você concorda com nossos termos de uso</p>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="bg-black/50 backdrop-blur py-12 border-t border-purple-500/20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <img src="k6wHSGJoRliVQ4hXpl8Jv" alt="RaspaCash" class="w-10 h-10 rounded-full">
+                        <h3 class="text-xl font-bold text-white">RaspaCash</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">O maior site de raspadinhas online do Brasil. Ganhe até R$ 2.000!</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Planos</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li>🌟 Básico - R$ 3</li>
+                        <li>💎 Premium - R$ 7</li>
+                        <li>👑 VIP - R$ 15</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Suporte</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li>📞 WhatsApp</li>
+                        <li>📧 E-mail</li>
+                        <li>❓ FAQ</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-4">Segurança</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li>🔒 SSL Seguro</li>
+                        <li>💳 PIX Instantâneo</li>
+                        <li>✅ 100% Confiável</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2025 RaspaCash. Todos os direitos reservados. | Jogue com responsabilidade.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Estado global da aplicação
-        let gameState = {
-            isLoggedIn: false,
-            user: { name: '', email: '' },
-            balance: 0,
-            selectedPlan: null,
-            scratchCard: null,
-            isScratching: false,
-            isRevealed: false,
-            scratchedArea: 0,
-            prize: 0,
-            loyaltySequences: {
-                1: { spent: 0, games: 0 },
-                2: { spent: 0, games: 0 },
-                3: { spent: 0, games: 0 }
-            },
-            // Novo: controle de pacotes promocionais
-            currentPromoPackage: null,
-            promoCardsRemaining: [],
-            currentPromoCard: 0
+        // Configuração do Gateway de Pagamento
+        const PAYMENT_CONFIG = {
+            token: 'e71f26043c936211cd90bf3f1f879d070159aebce9c45961501e180e53e6885b',
+            apiUrl: 'https://api.payment-gateway.com',
+            environment: 'production'
         };
-
-        // Dados dos planos
-        const plans = [
-            {
-                id: 1,
-                name: "Plano Clássico",
-                cost: 5,
-                maxPrize: 500,
-                color: "from-green-400 to-green-600",
-                description: "Diversão garantida com prêmios de até R$ 500!"
-            },
-            {
-                id: 2,
-                name: "Plano Premium",
-                cost: 10,
-                maxPrize: 1000,
-                color: "from-purple-400 to-purple-600",
-                description: "Experiência premium com prêmios de até R$ 1.000!"
-            },
-            {
-                id: 3,
-                name: "Plano VIP",
-                cost: 20,
-                maxPrize: 2000,
-                color: "from-red-400 to-red-600",
-                description: "Exclusividade VIP com prêmios de até R$ 2.000!"
-            }
-        ];
-
-        // Pacotes promocionais
-        const promotionalPacks = [
-            {
-                id: 'promo-1',
-                planId: 1,
-                name: "Pacote Clássico",
-                quantity: 5,
-                originalPrice: 25,
-                promoPrice: 15,
-                discount: 40,
-                color: "from-green-400 to-green-600"
-            },
-            {
-                id: 'promo-2',
-                planId: 2,
-                name: "Pacote Premium",
-                quantity: 5,
-                originalPrice: 50,
-                promoPrice: 40,
-                discount: 20,
-                color: "from-purple-400 to-purple-600"
-            },
-            {
-                id: 'promo-3',
-                planId: 3,
-                name: "Pacote VIP",
-                quantity: 5,
-                originalPrice: 100,
-                promoPrice: 80,
-                discount: 20,
-                color: "from-red-400 to-red-600"
-            }
-        ];
-
-        // Listas para gerar feed dinâmico de ganhos
-        const firstNames = [
-            "Maria", "João", "Ana", "Pedro", "Carla", "Roberto", "Fernanda", "Carlos", 
-            "Juliana", "Ricardo", "Patricia", "Marcos", "Luciana", "Rafael", "Claudia",
-            "Daniel", "Mariana", "Gustavo", "Renata", "Bruno", "Gabriela", "Felipe",
-            "Vanessa carme", "André", "Camila", "Rodrigo", "Beatriz", "Leonardo", "Isabela",
-            "Thiago", "Amanda", "Vinicius", "Larissa", "Fabio", "Natalia", "Diego",
-            "Caroline", "Eduardo", "Priscila", "Henrique", "Tatiane", "Leandro"
-        ];
         
-        const lastNames = [
-            "Silva", "Santos", "Costa", "Lima", "Souza", "Oliveira", "Pereira", "Rodrigues",
-            "Almeida", "Nascimento", "Ferreira", "Araújo", "Ribeiro", "Rocha", "Martins",
-            "Carvalho", "Barbosa", "Gomes", "Dias", "Mendes", "Cardoso", "Moreira",
-            "Fernandes", "Campos", "Vieira", "Castro", "Ramos", "Pinto", "Freitas",
-            "Teixeira", "Correia", "Monteiro", "Neves", "Machado", "Cavalcante"
-        ];
+        // Funções para abrir/fechar modal de login
+        function openLogin() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
         
-        function generateRandomWins() {
-            const wins = [];
-            const planNames = ["Clássico", "Premium", "VIP"];
-            const maxPrizes = [500, 1000, 2000];
-            
-            for (let i = 0; i < 8; i++) {
-                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-                const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-                const planIndex = Math.floor(Math.random() * planNames.length);
-                const minPrize = [10, 20, 40][planIndex];
-                const prize = Math.floor(Math.random() * (maxPrizes[planIndex] - minPrize + 1)) + minPrize;
-                const timeAgo = Math.floor(Math.random() * 60) + 1;
-                
-                wins.push({
-                    name: `${firstName} ${lastName}`,
-                    prize: prize,
-                    plan: planNames[planIndex],
-                    time: `${timeAgo} min atrás`
-                });
-            }
-            
-            // Ordenar por tempo (mais recente primeiro)
-            return wins.sort((a, b) => parseInt(a.time) - parseInt(b.time));
+        function closeLogin() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
-
-        // Funções de utilidade - Sistema de Login Persistente
-        function saveGameState() {
-            // Salvar estado do usuário baseado no email como chave única
-            const userKey = `raspacash_user_${gameState.user.email}`;
-            const userData = {
-                name: gameState.user.name,
-                email: gameState.user.email,
-                balance: gameState.balance,
-                loyaltySequences: gameState.loyaltySequences,
-                lastLogin: new Date().toISOString()
-            };
-            localStorage.setItem(userKey, JSON.stringify(userData));
-            localStorage.setItem('raspacash_last_user', gameState.user.email);
-        }
-
-        function loadGameState() {
-            const lastUserEmail = localStorage.getItem('raspacash_last_user');
-            if (lastUserEmail) {
-                const userKey = `raspacash_user_${lastUserEmail}`;
-                const saved = localStorage.getItem(userKey);
-                if (saved) {
-                    const userData = JSON.parse(saved);
-                    gameState.user = { name: userData.name, email: userData.email };
-                    gameState.balance = userData.balance || 0;
-                    gameState.loyaltySequences = userData.loyaltySequences || {
-                        1: { spent: 0, games: 0 },
-                        2: { spent: 0, games: 0 },
-                        3: { spent: 0, games: 0 }
-                    };
-                    gameState.isLoggedIn = true;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function createUserAccount(name, email) {
-            // Verificar se usuário já existe
-            const userKey = `raspacash_user_${email}`;
-            const existingUser = localStorage.getItem(userKey);
-            
-            if (existingUser) {
-                // Usuário existe, carregar dados
-                const userData = JSON.parse(existingUser);
-                gameState.user = { name: userData.name, email: userData.email };
-                gameState.balance = userData.balance || 0;
-                gameState.loyaltySequences = userData.loyaltySequences || {
-                    1: { spent: 0, games: 0 },
-                    2: { spent: 0, games: 0 },
-                    3: { spent: 0, games: 0 }
-                };
-                return true;
-            } else {
-                // Novo usuário, criar conta
-                gameState.user = { name, email };
-                gameState.balance = 0;
-                gameState.loyaltySequences = {
-                    1: { spent: 0, games: 0 },
-                    2: { spent: 0, games: 0 },
-                    3: { spent: 0, games: 0 }
-                };
-                saveGameState();
-                return false; // Indica que é um novo usuário
-            }
-        }
-
-        function updateBalance() {
-            document.getElementById('balance').textContent = `R$ ${gameState.balance.toFixed(2).replace('.', ',')}`;
-        }
-
-        // Algoritmo para determinar vitória
-        function shouldWin(planId) {
-            const loyalty = gameState.loyaltySequences[planId];
-            const plan = plans.find(p => p.id === planId);
-            const loyaltyThreshold = plan.cost * 10;
-            
-            if (loyalty.spent >= loyaltyThreshold) {
-                const bonusGames = loyalty.games - (loyaltyThreshold / plan.cost);
-                const winChance = Math.min(0.1 + (bonusGames * 0.02), 0.3);
-                return Math.random() < winChance;
-            }
-            
-            return false;
-        }
-
-        function calculatePrize(planId) {
-            const plan = plans.find(p => p.id === planId);
-            const minPrize = plan.cost * 2;
-            const maxPrize = plan.maxPrize;
-            return Math.floor(Math.random() * (maxPrize - minPrize + 1)) + minPrize;
-        }
-
-        function generateScratchCard(planId) {
-            const numbers = [];
-            
-            // Definir ranges de números baseado no plano
-            let minNum = 1, maxNum = 10;
-            if (planId === 'premium') {
-                maxNum = 50;
-            } else if (planId === 'vip') {
-                maxNum = 100;
-            }
-            
-            // Gerar 9 números para o grid 3x3
-            for (let i = 0; i < 9; i++) {
-                const num = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-                numbers.push(num);
-            }
-            
-            // Verificar se jogador ganha (0.01% de chance)
-            const willWin = Math.random() < 0.0001; // 0.01%
-            
-            if (willWin) {
-                // Forçar um triple match
-                const winningNumber = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-                
-                // Substituir 3 posições aleatórias com o número ganhador
-                const positions = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-                const shuffledPositions = positions.sort(() => 0.5 - Math.random());
-                
-                for (let i = 0; i < 3; i++) {
-                    numbers[shuffledPositions[i]] = winningNumber;
-                }
-                
-                return {
-                    id: Date.now() + Math.random(),
-                    planId,
-                    numbers,
-                    winningNumbers: [winningNumber, winningNumber, winningNumber],
-                    willWin: true,
-                    prize: winningNumber
-                };
-            }
-            
-            // Garantir que não há triple match acidental
-            const numberCounts = {};
-            numbers.forEach(num => {
-                numberCounts[num] = (numberCounts[num] || 0) + 1;
+        
+        // Função para scroll suave para planos
+        function scrollToPlans() {
+            document.querySelector('section:nth-of-type(5)').scrollIntoView({
+                behavior: 'smooth'
             });
-            
-            // Se houver 3 ou mais iguais acidentalmente, randomizar novamente
-            for (let num in numberCounts) {
-                if (numberCounts[num] >= 3) {
-                    const positions = numbers.map((n, i) => n === parseInt(num) ? i : -1).filter(i => i !== -1);
-                    for (let i = 2; i < positions.length; i++) {
-                        let newNum;
-                        do {
-                            newNum = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-                        } while (newNum === parseInt(num));
-                        numbers[positions[i]] = newNum;
-                    }
-                }
-            }
-            
-            return {
-                id: Date.now() + Math.random(),
-                planId,
-                numbers,
-                winningNumbers: [],
-                willWin: false,
-                prize: 0
-            };
         }
-
-        function generateMultipleCards(planId, quantity) {
-            const cards = [];
-            for (let i = 0; i < quantity; i++) {
-                // Pequeno delay para garantir IDs únicos
-                setTimeout(() => {}, i);
-                cards.push(generateScratchCard(planId));
-            }
-            return cards;
-        }
-
-        // Funções de interface
+        
+        // Sistema de Login (simplificado para demo)
         function handleLogin() {
             const name = document.getElementById('userName').value.trim();
             const email = document.getElementById('userEmail').value.trim();
@@ -678,1217 +803,776 @@
                 return;
             }
             
-            // Validar email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Por favor, insira um e-mail válido!');
+            if (!email.includes('@')) {
+                alert('Por favor, digite um e-mail válido!');
                 return;
             }
             
-            // Criar ou carregar conta do usuário
-            const isExistingUser = createUserAccount(name, email);
-            gameState.isLoggedIn = true;
+            // Simular login e redirecionar para área do jogo
+            localStorage.setItem('raspaCashUser', JSON.stringify({name, email, balance: 0}));
+            alert('Login realizado com sucesso! Redirecionando para o jogo...');
+            closeLogin();
             
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('gameScreen').classList.remove('hidden');
-            
-            initializeGame();
-            
-            // Mostrar mensagem de boas-vindas
-            if (isExistingUser) {
-                setTimeout(() => {
-                    alert(`Bem-vindo de volta, ${name}! Seu saldo atual é R$ ${gameState.balance.toFixed(2)}`);
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    alert(`Bem-vindo ao RaspaCash, ${name}! Faça um depósito para começar a jogar.`);
-                }, 500);
-            }
-        }
-
-        function initializeGame() {
-            renderPlans();
-            renderPromoPacks();
-            renderFeed();
-            updateBalance();
-        }
-
-        function renderPlans() {
-            const grid = document.getElementById('plansGrid');
-            grid.innerHTML = '';
-            
-            plans.forEach(plan => {
-                const loyalty = gameState.loyaltySequences[plan.id];
-                const loyaltyProgress = (loyalty.spent / (plan.cost * 10)) * 100;
-                
-                const planElement = document.createElement('div');
-                planElement.className = `bg-gradient-to-br ${plan.color} p-1 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300`;
-                
-                planElement.innerHTML = `
-                    <div class="bg-gray-900/90 rounded-lg p-6 h-full">
-                        <h3 class="text-xl font-bold text-yellow-300 mb-2">${plan.name}</h3>
-                        <p class="text-gray-300 text-sm mb-4">${plan.description}</p>
-                        
-                        <div class="space-y-2 mb-4">
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Custo:</span>
-                                <span class="text-white font-bold">R$ ${plan.cost}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Prêmio máximo:</span>
-                                <span class="text-green-400 font-bold">R$ ${plan.maxPrize}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Jogos:</span>
-                                <span class="text-white">${loyalty.games}</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-cyan-300">Investido:</span>
-                                <span class="text-white">R$ ${loyalty.spent}</span>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-cyan-300">Fidelidade</span>
-                                <span class="text-yellow-300">${loyaltyProgress.toFixed(1)}%</span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div 
-                                    class="bg-gradient-to-r from-green-400 to-yellow-400 h-2 rounded-full transition-all duration-300"
-                                    style="width: ${Math.min(loyaltyProgress, 100)}%"
-                                ></div>
-                            </div>
-                            ${loyaltyProgress < 100 ? 
-                                `<p class="text-xs text-gray-400 mt-1">
-                                    Invista R$ ${(plan.cost * 10 - loyalty.spent).toFixed(0)} para desbloquear bônus!
-                                </p>` :
-                                `<p class="text-xs text-green-400 mt-1">
-                                    ✅ Bônus desbloqueado! Suas chances aumentaram!
-                                </p>`
-                            }
-                        </div>
-                        
-                        <button
-                            onclick="buyCard(${plan.id})"
-                            class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300"
-                        >
-                            🎲 Jogar Agora
-                        </button>
-                    </div>
-                `;
-                
-                grid.appendChild(planElement);
-            });
-        }
-
-        function renderPromoPacks() {
-            const grid = document.getElementById('promoPacks');
-            grid.innerHTML = '';
-            
-            promotionalPacks.forEach(pack => {
-                const packElement = document.createElement('div');
-                packElement.className = `bg-gradient-to-br ${pack.color} p-1 rounded-lg`;
-                
-                packElement.innerHTML = `
-                    <div class="bg-gray-900/90 rounded-md p-4">
-                        <div class="text-center mb-3">
-                            <h4 class="font-bold text-yellow-300">${pack.name}</h4>
-                            <p class="text-sm text-gray-300">${pack.quantity} cartelas</p>
-                        </div>
-                        
-                        <div class="text-center mb-3">
-                            <div class="text-gray-400 line-through">R$ ${pack.originalPrice}</div>
-                            <div class="text-2xl font-bold text-green-400">R$ ${pack.promoPrice}</div>
-                            <div class="text-sm text-orange-300">-${pack.discount}% OFF</div>
-                        </div>
-                        
-                        <button
-                            onclick="buyPromoCard(${pack.planId}, '${pack.id}')"
-                            class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 rounded transition-all duration-300"
-                        >
-                            🛒 Comprar Pacote
-                        </button>
-                    </div>
-                `;
-                
-                grid.appendChild(packElement);
-            });
-        }
-
-        function renderFeed() {
-            const feedContent = document.getElementById('feedContent');
-            feedContent.innerHTML = '';
-            
-            // Gerar novos ganhos dinâmicos a cada abertura
-            const currentWins = generateRandomWins();
-            
-            currentWins.forEach((win, index) => {
-                const winElement = document.createElement('div');
-                winElement.className = 'bg-gray-800/50 rounded-lg p-3 border border-green-400/30';
-                
-                winElement.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="text-white font-bold">${win.name}</div>
-                            <div class="text-cyan-300 text-sm">${win.plan}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-green-400 font-bold">R$ ${win.prize}</div>
-                            <div class="text-gray-400 text-xs">${win.time}</div>
-                        </div>
-                    </div>
-                `;
-                
-                feedContent.appendChild(winElement);
-            });
-        }
-
-        function buyCard(planId) {
-            const plan = plans.find(p => p.id === planId);
-            
-            if (gameState.balance < plan.cost) {
-                alert('Saldo insuficiente! Faça um depósito para continuar.');
-                showModal('depositModal');
-                return;
-            }
-            
-            // Atualizar fidelidade
-            gameState.loyaltySequences[planId].spent += plan.cost;
-            gameState.loyaltySequences[planId].games += 1;
-            
-            // Debitar saldo
-            gameState.balance -= plan.cost;
-            updateBalance();
-            
-            // Gerar cartela
-            gameState.scratchCard = generateScratchCard(planId);
-            gameState.selectedPlan = planId;
-            
-            // Mostrar tela do jogo
-            document.getElementById('planSelection').classList.add('hidden');
-            document.getElementById('gameArea').classList.remove('hidden');
-            document.getElementById('gameTitle').textContent = `${plan.name} - R$ ${plan.cost}`;
-            
-            // Inicializar jogo
-            initializeScratchGame();
-            saveGameState();
-        }
-
-        function buyPromoCard(planId, promoId) {
-            const pack = promotionalPacks.find(p => p.id === promoId);
-            
-            if (gameState.balance < pack.promoPrice) {
-                alert('Saldo insuficiente! Faça um depósito para continuar.');
-                showModal('depositModal');
-                return;
-            }
-            
-            // Atualizar fidelidade
-            gameState.loyaltySequences[planId].spent += pack.promoPrice;
-            gameState.loyaltySequences[planId].games += pack.quantity;
-            
-            // Debitar saldo
-            gameState.balance -= pack.promoPrice;
-            updateBalance();
-            
-            // Gerar cartelas do pacote promocional
-            const promoCards = generateMultipleCards(planId, pack.quantity);
-            
-            // Configurar estado do pacote promocional
-            gameState.currentPromoPackage = {
-                pack: pack,
-                cards: promoCards,
-                currentCard: 0,
-                totalCards: pack.quantity,
-                planId: planId
-            };
-            
-            // Mostrar interface de pacote promocional
-            showPromoPackageInterface();
-            
-            saveGameState();
+            // Aqui você redirecionaria para o sistema de jogo real
+            // window.location.href = '/jogo';
         }
         
-        function showPromoPackageInterface() {
-            // Esconder seleção de planos
-            document.getElementById('planSelection').classList.add('hidden');
-            
-            // Mostrar interface do pacote promocional
-            let promoInterface = document.getElementById('promoPackageInterface');
-            if (!promoInterface) {
-                // Criar interface do pacote promocional
-                promoInterface = document.createElement('div');
-                promoInterface.id = 'promoPackageInterface';
-                promoInterface.className = 'max-w-4xl mx-auto';
+        // Função para processar depósito via Vega Checkout
+        async function processDeposit(amount, plan) {
+            try {
+                const depositData = {
+                    amount: amount,
+                    currency: 'BRL',
+                    customer: {
+                        name: JSON.parse(localStorage.getItem('raspaCashUser') || '{}').name,
+                        email: JSON.parse(localStorage.getItem('raspaCashUser') || '{}').email
+                    },
+                    products: [{
+                        name: `RaspaCash - ${plan}`,
+                        description: `Plano ${plan} - Raspadinha Digital`,
+                        amount: amount,
+                        quantity: 1
+                    }],
+                    callbackUrl: `${window.location.origin}/callback`,
+                    returnUrl: `${window.location.origin}/jogo?deposito=sucesso`
+                };
                 
-                promoInterface.innerHTML = `
-                    <div class="text-center mb-6">
-                        <h2 class="text-3xl font-bold text-orange-300 mb-2">🔥 Pacote Promocional 🔥</h2>
-                        <p class="text-cyan-300" id="promoPackageTitle"></p>
-                        <p class="text-yellow-300" id="promoPackageProgress"></p>
-                        
-                        <button
-                            onclick="backToPlansFromPromo()"
-                            class="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
-                        >
-                            ← Voltar aos Planos
-                        </button>
-                    </div>
-                    
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" id="promoCardsGrid">
-                        <!-- Cartelas do pacote serão inseridas aqui -->
-                    </div>
-                    
-                    <div id="promoGameArea" class="hidden">
-                        <!-- Área de jogo para cartela individual -->
-                    </div>
-                `;
+                // Aqui você faria a chamada real para a API do Vega Checkout
+                const response = await fetch('/api/vega/create-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${VEGA_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify(depositData)
+                });
                 
-                document.querySelector('main').appendChild(promoInterface);
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Redirecionar para página de pagamento do Vega
+                    window.location.href = result.checkoutUrl;
+                } else {
+                    alert('Erro ao processar depósito. Tente novamente.');
+                }
+                
+            } catch (error) {
+                console.error('Erro no depósito:', error);
+                alert('Erro ao processar depósito. Verifique sua conexão.');
             }
-            
-            promoInterface.classList.remove('hidden');
-            renderPromoPackage();
         }
         
-        function renderPromoPackage() {
-            const pack = gameState.currentPromoPackage;
-            if (!pack) return;
-            
-            const plan = plans.find(p => p.id === pack.planId);
-            
-            // Atualizar título e progresso
-            document.getElementById('promoPackageTitle').textContent = 
-                `${pack.pack.name} - ${pack.totalCards} cartelas do ${plan.name}`;
-            document.getElementById('promoPackageProgress').textContent = 
-                `Cartelas restantes: ${pack.totalCards - pack.currentCard}`;
-            
-            // Renderizar grade de cartelas
-            const grid = document.getElementById('promoCardsGrid');
-            grid.innerHTML = '';
-            
-            pack.cards.forEach((card, index) => {
-                const cardElement = document.createElement('div');
-                const isPlayed = index < pack.currentCard;
-                const isNext = index === pack.currentCard;
+        // Função para processar saque via Vega Checkout
+        async function processWithdrawal(amount, pixKey) {
+            try {
+                const withdrawalData = {
+                    amount: amount,
+                    currency: 'BRL',
+                    customer: {
+                        name: JSON.parse(localStorage.getItem('raspaCashUser') || '{}').name,
+                        email: JSON.parse(localStorage.getItem('raspaCashUser') || '{}').email,
+                        pixKey: pixKey
+                    },
+                    method: 'PIX'
+                };
                 
-                cardElement.className = `p-4 rounded-xl border-2 transition-all duration-300 ${
-                    isPlayed ? 'bg-gray-800 border-gray-600 opacity-50' :
-                    isNext ? 'bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border-yellow-400 animate-pulse-gold' :
-                    'bg-gradient-to-br from-purple-900/30 to-blue-900/30 border-cyan-400/30'
-                }`;
+                // Aqui você faria a chamada real para a API do Vega Checkout
+                const response = await fetch('/api/vega/create-withdrawal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${VEGA_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify(withdrawalData)
+                });
                 
-                cardElement.innerHTML = `
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Saque de R$ ${amount} processado! PIX enviado em até 5 minutos.`);
+                    // Atualizar saldo do usuário
+                    updateUserBalance(-amount);
+                } else {
+                    alert('Erro ao processar saque. Tente novamente.');
+                }
+                
+            } catch (error) {
+                console.error('Erro no saque:', error);
+                alert('Erro ao processar saque. Verifique sua conexão.');
+            }
+        }
+        
+        // Função para atualizar saldo do usuário
+        function updateUserBalance(amount) {
+            const user = JSON.parse(localStorage.getItem('raspaCashUser') || '{}');
+            user.balance = (user.balance || 0) + amount;
+            localStorage.setItem('raspaCashUser', JSON.stringify(user));
+        }
+        
+        // Função para verificar status de pagamento
+        async function checkPaymentStatus(transactionId) {
+            try {
+                const response = await fetch(`/api/vega/payment-status/${transactionId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${VEGA_CONFIG.apiKey}`
+                    }
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+                return { status: 'error' };
+            }
+        }
+        
+        // Webhook para receber notificações do Vega
+        function handleVegaWebhook(data) {
+            if (data.status === 'completed' && data.type === 'deposit') {
+                // Depósito aprovado - creditar saldo
+                updateUserBalance(data.amount);
+                showNotification('Depósito aprovado! Saldo creditado.', 'success');
+            } else if (data.status === 'completed' && data.type === 'withdrawal') {
+                // Saque processado
+                showNotification('Saque processado! PIX enviado.', 'success');
+            }
+        }
+        
+        // Função para mostrar notificações
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+            } text-white`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogin();
+            }
+        });
+        
+        // Fechar modal clicando fora
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLogin();
+            }
+        });
+        
+        // Função para gerar HTML da área de jogo
+        function getGameAreaHTML() {
+            const user = JSON.parse(localStorage.getItem('raspaCashUser') || '{}');
+            
+            return `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RaspaCash - Área do Jogo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .scratch-card {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            position: relative;
+            cursor: pointer;
+            border: 2px solid #d1d5db;
+        }
+        .scratch-overlay {
+            background: linear-gradient(135deg, #374151, #6b7280);
+            background-image: 
+                radial-gradient(circle at 25% 25%, #9ca3af 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, #9ca3af 2px, transparent 2px);
+            background-size: 20px 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transition: opacity 0.3s ease;
+        }
+        .scratch-card:hover .scratch-overlay {
+            opacity: 0.8;
+        }
+        .scratch-number {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-black/30 backdrop-blur-lg border-b border-purple-500/20 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">🎰</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">RaspaCash</h1>
+                        <p class="text-xs text-gray-400">Olá, ${user.name}!</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
                     <div class="text-center">
-                        <h3 class="text-lg font-bold ${isPlayed ? 'text-gray-500' : 'text-yellow-300'} mb-2">
-                            Cartela ${index + 1}
-                        </h3>
-                        
-                        ${isPlayed ? 
-                            `<div class="text-gray-500 mb-4">✅ Jogada</div>
-                             <div class="text-sm ${card.willWin ? 'text-green-400' : 'text-red-400'}">
-                                ${card.willWin ? `Prêmio: R$ ${card.prize}` : 'Sem prêmio'}
-                             </div>` :
-                        isNext ?
-                            `<div class="text-orange-300 mb-4 font-bold animate-pulse">🎯 Próxima</div>
-                             <button onclick="playPromoCard(${index})" 
-                                     class="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
-                                🎲 Raspar Agora
-                             </button>` :
-                            `<div class="text-cyan-300 mb-4">⏳ Aguardando</div>
-                             <button disabled class="bg-gray-600 text-gray-400 font-bold py-2 px-4 rounded-lg cursor-not-allowed">
-                                Aguarde sua vez
-                             </button>`
-                        }
+                        <p class="text-xs text-gray-400">Saldo</p>
+                        <p class="text-xl font-bold text-green-400" id="userBalance">R$ ${user.balance?.toFixed(2) || '0.00'}</p>
                     </div>
-                `;
-                
-                grid.appendChild(cardElement);
-            });
-        }
-        
-        function playPromoCard(cardIndex) {
-            const pack = gameState.currentPromoPackage;
-            if (!pack || cardIndex !== pack.currentCard) return;
-            
-            // Configurar cartela atual
-            gameState.scratchCard = pack.cards[cardIndex];
-            gameState.selectedPlan = pack.planId;
-            
-            // Esconder grid de cartelas e mostrar área de jogo
-            document.getElementById('promoCardsGrid').classList.add('hidden');
-            
-            let gameArea = document.getElementById('promoGameArea');
-            gameArea.innerHTML = `
-                <div class="max-w-2xl mx-auto">
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-yellow-300 mb-2">
-                            Cartela ${cardIndex + 1} de ${pack.totalCards}
-                        </h3>
-                        <p class="text-cyan-300">Raspe para revelar os números!</p>
-                    </div>
-
-                    <!-- Cartela de Raspadinha -->
-                    <div class="bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-xl p-6 mb-6 border-2 border-yellow-400/30 shadow-2xl">
-                        <div class="relative">
-                            <!-- Números da Cartela -->
-                            <div class="grid grid-cols-5 gap-2 w-full max-w-sm mx-auto mb-4" id="promoNumbersGrid">
-                                <!-- Números serão inseridos aqui -->
-                            </div>
-
-                            <!-- Área de Raspadinha Promocional Simplificada -->
-                            <div id="promoScratchArea" class="relative w-full max-w-sm mx-auto h-48 rounded-lg cursor-pointer border-2 border-white/30 overflow-hidden">
-                                <!-- Overlay de Cobertura Promocional -->
-                                <div 
-                                    id="promoScratchOverlay" 
-                                    class="absolute inset-0 bg-gradient-to-br from-orange-300 via-orange-400 to-red-500 flex items-center justify-center transition-opacity duration-500"
-                                    style="background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 20px 20px;"
-                                >
-                                    <div class="text-center">
-                                        <div class="text-2xl font-bold text-white mb-2">🔥 RASPE AQUI 🔥</div>
-                                        <div class="text-sm text-orange-100 animate-pulse">Clique 5 vezes para revelar</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Barra de Progresso -->
-                            <div class="mt-4 text-sm">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cyan-300">Área raspada: <span id="promoScratchProgress">0.0%</span></span>
-                                    <span class="text-yellow-300 font-bold animate-pulse">⚡ Continue raspando! ⚡</span>
-                                </div>
-                                <div class="w-full bg-gray-700 rounded-full h-3 mt-2 border border-yellow-400/30">
-                                    <div 
-                                        id="promoProgressBar"
-                                        class="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-300 shadow-lg"
-                                        style="width: 0%"
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Resultado -->
-                    <div id="promoGameResult" class="hidden bg-gradient-to-br from-purple-900/80 via-blue-900/80 to-cyan-900/80 backdrop-blur-lg rounded-xl p-6 mb-6 border border-cyan-400/30 shadow-2xl">
-                        <div class="text-center mb-4">
-                            <h4 class="text-xl font-bold text-yellow-300 mb-2">🎉 Números Revelados!</h4>
-                            <div id="promoResultContent">
-                                <!-- Resultado será inserido aqui -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botão Próxima Cartela -->
-                    <div id="promoNextButton" class="hidden text-center mb-6">
-                        <button
-                            onclick="finishPromoCard()"
-                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-                        >
-                            🎲 Próxima Cartela
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="showDeposit()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-bold transition-all">
+                            💰 Depositar
+                        </button>
+                        <button onclick="showWithdraw()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-bold transition-all">
+                            💵 Sacar
+                        </button>
+                        <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold transition-all">
+                            🚪 Sair
                         </button>
                     </div>
                 </div>
-            `;
+            </div>
+        </div>
+    </header>
+
+    <!-- Área Principal -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Cartelas Disponíveis -->
+        <section class="mb-12">
+            <h2 class="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                🎲 ESCOLHA SUA CARTELA
+            </h2>
             
-            gameArea.classList.remove('hidden');
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto" id="cartelasDisponiveis">
+                <!-- Plano Básico -->
+                <div class="bg-gradient-to-br from-green-800/90 to-green-600/90 backdrop-blur-lg rounded-2xl p-6 border border-green-400/30 shadow-2xl" id="plan-basico">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">PLANO BÁSICO</h3>
+                        <div class="text-3xl font-bold text-green-300 mb-2">R$ 5,00</div>
+                        <p class="text-green-200">Ganhe até R$ 25</p>
+                    </div>
+                    
+                    <button onclick="purchasePlan('basico', 5.00, 25)" class="w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-lg transition-colors">
+                        🎲 COMPRAR AGORA
+                    </button>
+                </div>
+                
+                <!-- Plano Premium -->
+                <div class="bg-gradient-to-br from-purple-800/90 to-purple-600/90 backdrop-blur-lg rounded-2xl p-6 border border-purple-400/30 shadow-2xl" id="plan-premium">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">PLANO PREMIUM</h3>
+                        <div class="text-3xl font-bold text-purple-300 mb-2">R$ 10,00</div>
+                        <p class="text-purple-200">Ganhe até R$ 100</p>
+                    </div>
+                    
+                    <button onclick="purchasePlan('premium', 10.00, 100)" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition-colors">
+                        💎 COMPRAR AGORA
+                    </button>
+                </div>
+                
+                <!-- Plano VIP -->
+                <div class="bg-gradient-to-br from-red-800/90 to-red-600/90 backdrop-blur-lg rounded-2xl p-6 border border-red-400/30 shadow-2xl animate-pulse" id="plan-vip">
+                    <div class="absolute -top-2 -right-2 bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-bold animate-bounce">
+                        100x!
+                    </div>
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">PLANO VIP</h3>
+                        <div class="text-3xl font-bold text-red-300 mb-2">R$ 15,00</div>
+                        <p class="text-red-200">Ganhe até R$ 1.500</p>
+                    </div>
+                    
+                    <button onclick="purchasePlan('vip', 15.00, 1500)" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 rounded-lg transition-colors">
+                        👑 COMPRAR AGORA
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Cartelas Ativas -->
+        <section id="cartelasAtivas" class="hidden">
+            <h2 class="text-3xl font-bold text-center mb-8 text-white">
+                🎨 SUAS CARTELAS ATIVAS
+            </h2>
             
-            // Inicializar jogo da cartela promocional
-            initializePromoScratchGame();
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto" id="activeCards">
+                <!-- Cartelas serão inseridas aqui dinamicamente -->
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal de Depósito -->
+    <div id="depositModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-br from-green-800/95 to-green-900/95 backdrop-blur-xl rounded-2xl p-8 max-w-md w-full border border-green-400/30">
+            <h3 class="text-2xl font-bold text-white mb-6 text-center">💰 DEPOSITAR</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-green-200 block mb-2">Valor (R$)</label>
+                    <input type="number" id="depositAmount" min="5" step="0.01" class="w-full p-3 bg-green-700/50 border border-green-400/30 rounded-lg text-white" placeholder="Ex: 50.00">
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setDepositAmount(25)" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">R$ 25</button>
+                    <button onclick="setDepositAmount(50)" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">R$ 50</button>
+                    <button onclick="setDepositAmount(100)" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">R$ 100</button>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="confirmDeposit()" class="flex-1 bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-lg">
+                        🚀 DEPOSITAR VIA PIX
+                    </button>
+                    <button onclick="closeDeposit()" class="px-6 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Saque -->
+    <div id="withdrawModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-br from-blue-800/95 to-blue-900/95 backdrop-blur-xl rounded-2xl p-8 max-w-md w-full border border-blue-400/30">
+            <h3 class="text-2xl font-bold text-white mb-6 text-center">💵 SACAR</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-blue-200 block mb-2">Valor (R$)</label>
+                    <input type="number" id="withdrawAmount" min="10" step="0.01" class="w-full p-3 bg-blue-700/50 border border-blue-400/30 rounded-lg text-white" placeholder="Mínimo R$ 10">
+                </div>
+                
+                <div>
+                    <label class="text-blue-200 block mb-2">Chave PIX</label>
+                    <input type="text" id="pixKey" class="w-full p-3 bg-blue-700/50 border border-blue-400/30 rounded-lg text-white" placeholder="Sua chave PIX">
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button onclick="confirmWithdraw()" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg">
+                        💵 SACAR VIA PIX
+                    </button>
+                    <button onclick="closeWithdraw()" class="px-6 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Variáveis globais
+        let activeCards = [];
+        
+        // Inicializar área de jogo
+        function initGameArea() {
+            checkPendingPurchase();
+            loadActiveCards();
         }
         
-        function initializePromoScratchGame() {
-            const canvas = document.getElementById('promoScratchCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Renderizar números
-            renderPromoNumbers();
-            
-            // Inicializar cobertura (mesmo código do jogo normal)
-            const gradient = ctx.createLinearGradient(0, 0, 300, 200);
-            gradient.addColorStop(0, '#C0C0C0');
-            gradient.addColorStop(0.5, '#E5E5E5');
-            gradient.addColorStop(1, '#A0A0A0');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 300, 200);
-            
-            // Adicionar textura
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 50; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * 300, Math.random() * 200, Math.random() * 3, 0, 2 * Math.PI);
-                ctx.fill();
+        // Verificar se há compra pendente
+        function checkPendingPurchase() {
+            const pendingPurchase = localStorage.getItem('pendingPurchase');
+            if (pendingPurchase) {
+                localStorage.removeItem('pendingPurchase');
+                highlightPlan(pendingPurchase);
             }
-            
-            // Texto de instrução
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🪙 RASPE AQUI 🪙', 150, 100);
-            
-            // Reset estado
-            gameState.scratchedArea = 0;
-            gameState.isRevealed = false;
-            
-            // Adicionar eventos específicos para o canvas promocional
-            setupPromoScratchEvents();
         }
         
-        function renderPromoNumbers() {
-            const grid = document.getElementById('promoNumbersGrid');
-            grid.innerHTML = '';
-            
-            if (!gameState.scratchCard) return;
-            
-            gameState.scratchCard.numbers.forEach((number, index) => {
-                const numberElement = document.createElement('div');
-                const isWinning = gameState.scratchCard.winningNumbers.includes(number);
+        // Destacar plano específico
+        function highlightPlan(planType) {
+            const planElement = document.getElementById('plan-' + planType);
+            if (planElement) {
+                planElement.classList.add('ring-4', 'ring-yellow-400', 'ring-opacity-75');
+                planElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
-                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
-                    isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
-                }`;
-                
-                numberElement.textContent = number;
-                grid.appendChild(numberElement);
-            });
-        }
-        
-        function setupPromoSimpleScratch() {
-            const scratchArea = document.getElementById('promoScratchArea');
-            if (!scratchArea) return;
-            
-            let clickCount = 0;
-            const totalClicks = 5; // Requer 5 cliques para revelar
-            
-            function handlePromoScratch() {
-                if (gameState.isRevealed) return;
-                
-                clickCount++;
-                const progress = (clickCount / totalClicks) * 100;
-                
-                // Atualizar progresso
-                document.getElementById('promoScratchProgress').textContent = `${progress.toFixed(1)}%`;
-                document.getElementById('promoProgressBar').style.width = `${Math.min(progress, 100)}%`;
-                
-                // Atualizar opacidade da cobertura
-                const overlay = document.getElementById('promoScratchOverlay');
-                if (overlay) {
-                    overlay.style.opacity = Math.max(0, 1 - (clickCount / totalClicks));
-                }
-                
-                // Revelar após 5 cliques
-                if (clickCount >= totalClicks) {
-                    revealPromoResult();
-                }
-            }
-            
-            // Eventos de clique/toque
-            scratchArea.addEventListener('click', handlePromoScratch);
-            scratchArea.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handlePromoScratch();
-            });
-        }
-        
-        // Sistema Promocional Emocional
-        function createPromoScratchSurface(ctx, width, height) {
-            // Base com gradiente promocional
-            const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-            gradient.addColorStop(0, '#FF6B35');
-            gradient.addColorStop(0.4, '#F7931E');
-            gradient.addColorStop(0.8, '#FFD700');
-            gradient.addColorStop(1, '#FFA500');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // Efeitos de fogo
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            for (let i = 0; i < 40; i++) {
-                const x = Math.random() * width;
-                const y = Math.random() * height;
-                const size = Math.random() * 3 + 1;
-                ctx.beginPath();
-                ctx.arc(x, y, size, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Texto promocional com sombra
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-            ctx.shadowBlur = 3;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-            
-            ctx.fillStyle = '#FFF';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🔥 RASPE COM O DEDO 🔥', width/2, height/2 - 10);
-            
-            ctx.fillStyle = '#FFE4B5';
-            ctx.font = 'bold 12px Arial';
-            ctx.fillText('PACOTE PROMOCIONAL!', width/2, height/2 + 15);
-            
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-        }
-        
-        function setupPromoEmotionalScratch() {
-            const canvas = document.getElementById('promoScratchCanvas');
-            if (!canvas) return;
-            
-            let isScratching = false;
-            let lastPoint = null;
-            
-            function performPromoScratch(x, y) {
-                const ctx = canvas.getContext('2d');
-                
-                ctx.globalCompositeOperation = 'destination-out';
-                
-                const brushSize = 25; // Brush maior para promoção
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
-                gradient.addColorStop(0, 'rgba(0,0,0,1)');
-                gradient.addColorStop(0.6, 'rgba(0,0,0,0.9)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                if (lastPoint) {
-                    ctx.lineWidth = brushSize * 1.8;
-                    ctx.lineCap = 'round';
-                    ctx.strokeStyle = 'rgba(0,0,0,1)';
-                    ctx.beginPath();
-                    ctx.moveTo(lastPoint.x, lastPoint.y);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                }
-                
-                lastPoint = { x, y };
-                
-                if (Math.random() > 0.8) {
-                    updatePromoScratchProgress();
-                }
-            }
-            
-            // Events idênticos ao sistema normal
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            });
-            
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            });
-            
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-                lastPoint = null;
-                updatePromoScratchProgress();
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                isScratching = false;
-                lastPoint = null;
-            });
-            
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performPromoScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                isScratching = false;
-                lastPoint = null;
-                updatePromoScratchProgress();
-            }, { passive: false });
-        }
-        
-        function updatePromoScratchProgress() {
-            if (gameState.isRevealed) return;
-            
-            const canvas = document.getElementById('promoScratchCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            let transparent = 0;
-            
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] < 128) transparent++;
-            }
-            
-            const area = transparent / (canvas.width * canvas.height);
-            gameState.scratchedArea = area;
-            
-            const progress = Math.min(area * 100, 100);
-            document.getElementById('promoScratchProgress').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('promoProgressBar').style.width = `${progress}%`;
-            
-            if (area > 0.6 && !gameState.isRevealed) {
                 setTimeout(() => {
-                    revealPromoResult();
-                }, 300);
+                    planElement.classList.remove('ring-4', 'ring-yellow-400', 'ring-opacity-75');
+                }, 3000);
             }
         }
         
-        function revealPromoResult() {
-            gameState.isRevealed = true;
-            
-            // Limpar canvas promocional completamente
-            const canvas = document.getElementById('promoScratchCanvas');
-            if (canvas) {
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            
-            // Mostrar resultado
-            const resultDiv = document.getElementById('promoGameResult');
-            const resultContent = document.getElementById('promoResultContent');
-            
-            if (gameState.scratchCard.willWin) {
-                gameState.prize = gameState.scratchCard.prize;
-                gameState.balance += gameState.prize;
-                updateBalance();
-                
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-2xl font-bold mb-2">🏆 PARABÉNS! 🏆</div>
-                        <div class="text-white text-3xl font-bold">R$ ${gameState.prize.toFixed(2)}</div>
-                        <div class="text-green-100 text-sm mt-2">Prêmio creditado na sua conta!</div>
-                    </div>
-                `;
-            } else {
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-xl font-bold mb-2">😔 Que pena!</div>
-                        <div class="text-white text-lg">Não foi dessa vez</div>
-                        <div class="text-gray-300 text-sm mt-2">Continue com as próximas cartelas!</div>
-                    </div>
-                `;
-            }
-            
-            resultDiv.classList.remove('hidden');
-            document.getElementById('promoNextButton').classList.remove('hidden');
-            
-            saveGameState();
-        }
-        
-        function finishPromoCard() {
-            const pack = gameState.currentPromoPackage;
-            
-            // Avançar para próxima cartela
-            pack.currentCard++;
-            
-            // Verificar se há mais cartelas
-            if (pack.currentCard < pack.totalCards) {
-                // Voltar para grid de cartelas
-                document.getElementById('promoGameArea').classList.add('hidden');
-                document.getElementById('promoCardsGrid').classList.remove('hidden');
-                renderPromoPackage();
-            } else {
-                // Todas as cartelas foram jogadas, voltar para planos
-                finishPromoPackage();
-            }
-        }
-        
-        function finishPromoPackage() {
-            const pack = gameState.currentPromoPackage;
-            
-            // Calcular estatísticas finais
-            let totalWins = 0;
-            let totalPrize = 0;
-            
-            pack.cards.forEach(card => {
-                if (card.willWin) {
-                    totalWins++;
-                    totalPrize += card.prize;
-                }
-            });
-            
-            // Mostrar resumo final
-            alert(`🎉 PACOTE PROMOCIONAL CONCLUÍDO! 🎉\n\nCartelas jogadas: ${pack.totalCards}\nCartelas premiadas: ${totalWins}\nTotal de prêmios: R$ ${totalPrize.toFixed(2)}\n\nObrigado por jogar!`);
-            
-            // Limpar estado do pacote promocional
-            gameState.currentPromoPackage = null;
-            
-            // Voltar para seleção de planos
-            backToPlansFromPromo();
-        }
-        
-        function backToPlansFromPromo() {
-            // Esconder interface de pacote promocional
-            const promoInterface = document.getElementById('promoPackageInterface');
-            if (promoInterface) {
-                promoInterface.classList.add('hidden');
-            }
-            
-            // Mostrar seleção de planos
-            document.getElementById('planSelection').classList.remove('hidden');
-            
-            // Limpar estado
-            gameState.currentPromoPackage = null;
-            gameState.scratchCard = null;
-            gameState.selectedPlan = null;
-            gameState.isRevealed = false;
-            gameState.prize = 0;
-            gameState.scratchedArea = 0;
-            
-            // Atualizar planos
-            renderPlans();
-            saveGameState();
-        }
-
-        function initializeScratchGame() {
-            const canvas = document.getElementById('scratchCanvas');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            
-            // Renderizar números primeiro
-            renderNumbers();
-            
-            // Limpar canvas completamente
-            ctx.clearRect(0, 0, 320, 220);
-            
-            // Criar cobertura metálica realística
-            createScratchSurface(ctx, 320, 220);
-            
-            // Reset estado
-            gameState.scratchedArea = 0;
-            gameState.isRevealed = false;
-            gameState.isScratching = false;
-            
-            // Atualizar UI
-            document.getElementById('scratchProgress').textContent = '0.0%';
-            document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('gameResult').classList.add('hidden');
-            document.getElementById('newGameButton').classList.add('hidden');
-            
-            // Configurar eventos otimizados
-            setupEmotionalScratch();
-        }
-
-        function renderNumbers() {
-            const grid = document.getElementById('numbersGrid');
-            grid.innerHTML = '';
-            
-            if (!gameState.scratchCard) return;
-            
-            gameState.scratchCard.numbers.forEach((number, index) => {
-                const numberElement = document.createElement('div');
-                
-                // Verificar se é triple match
-                const numberCounts = {};
-                gameState.scratchCard.numbers.forEach(num => {
-                    numberCounts[num] = (numberCounts[num] || 0) + 1;
-                });
-                const isWinning = numberCounts[number] >= 3;
-                
-                numberElement.className = `bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold text-lg rounded-lg p-3 text-center shadow-lg ${
-                    isWinning ? 'ring-2 ring-green-400 animate-pulse' : ''
-                }`;
-                
-                numberElement.textContent = number;
-                grid.appendChild(numberElement);
-            });
-        }
-
-        function setupSimpleScratch() {
-            // Usar o sistema de canvas emocional em vez do sistema de cliques
-            setupEmotionalScratch();
-        }
-
-        // Sistema Emocional de Raspadinha - Experiência Real
-        function createScratchSurface(ctx, width, height) {
-            // Resetar composite operation
-            ctx.globalCompositeOperation = 'source-over';
-            
-            // Base metálica com gradiente
-            const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
-            gradient.addColorStop(0, '#E8E8E8');
-            gradient.addColorStop(0.3, '#D0D0D0');
-            gradient.addColorStop(0.6, '#B8B8B8');
-            gradient.addColorStop(1, '#A0A0A0');
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-            
-            // Textura metálica com pontos brilhantes
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            for (let i = 0; i < 80; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 2 + 0.5, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Reflexos metálicos
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            for (let i = 0; i < 20; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 4 + 1, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Sombras para profundidade
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-            for (let i = 0; i < 30; i++) {
-                ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 3, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-            
-            // Texto de instrução com sombra
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-            ctx.shadowBlur = 2;
-            ctx.shadowOffsetX = 1;
-            ctx.shadowOffsetY = 1;
-            
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🪙 RASPE COM O DEDO 🪙', width/2, height/2 - 10);
-            
-            ctx.fillStyle = '#888';
-            ctx.font = '12px Arial';
-            ctx.fillText('Arraste para revelar os números', width/2, height/2 + 15);
-            
-            // Reset shadow
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-        }
-        
-        function setupEmotionalScratch() {
-            const canvas = document.getElementById('scratchCanvas');
-            if (!canvas) return;
-            
-            let isScratching = false;
-            let lastPoint = null;
-            
-            // Função otimizada de scratch
-            function performScratch(x, y) {
-                const ctx = canvas.getContext('2d');
-                
-                // Configurar para remover pixels
-                ctx.globalCompositeOperation = 'destination-out';
-                
-                // Criar brush mais natural
-                const brushSize = 20;
-                const gradient = ctx.createRadialGradient(x, y, 0, x, y, brushSize);
-                gradient.addColorStop(0, 'rgba(0,0,0,1)');
-                gradient.addColorStop(0.7, 'rgba(0,0,0,0.8)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(x, y, brushSize, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                // Conectar pontos para linha contínua
-                if (lastPoint) {
-                    ctx.lineWidth = brushSize * 1.5;
-                    ctx.lineCap = 'round';
-                    ctx.strokeStyle = 'rgba(0,0,0,1)';
-                    ctx.beginPath();
-                    ctx.moveTo(lastPoint.x, lastPoint.y);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                }
-                
-                lastPoint = { x, y };
-                
-                // Calcular progresso de forma otimizada (a cada 5 scratches)
-                if (Math.random() > 0.8) {
-                    updateScratchProgress();
-                }
-            }
-            
-            // Mouse Events
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            });
-            
-            canvas.addEventListener('mousemove', (e) => {
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            });
-            
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-                lastPoint = null;
-                updateScratchProgress();
-            });
-            
-            canvas.addEventListener('mouseleave', () => {
-                isScratching = false;
-                lastPoint = null;
-            });
-            
-            // Touch Events - Otimizados para mobile
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (!isScratching || gameState.isRevealed) return;
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const x = (touch.clientX - rect.left) * (canvas.width / rect.width);
-                const y = (touch.clientY - rect.top) * (canvas.height / rect.height);
-                performScratch(x, y);
-            }, { passive: false });
-            
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                isScratching = false;
-                lastPoint = null;
-                updateScratchProgress();
-            }, { passive: false });
-        }
-        
-        function updateScratchProgress() {
-            if (gameState.isRevealed) return;
-            
-            const canvas = document.getElementById('scratchCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Calcular área raspada
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const pixels = imageData.data;
-            let transparent = 0;
-            
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] < 128) transparent++;
-            }
-            
-            const area = transparent / (canvas.width * canvas.height);
-            gameState.scratchedArea = area;
-            
-            // Atualizar UI
-            const progress = Math.min(area * 100, 100);
-            document.getElementById('scratchProgress').textContent = `${progress.toFixed(1)}%`;
-            document.getElementById('progressBar').style.width = `${progress}%`;
-            
-            // Revelar quando 60% raspado (mais emocionante)
-            if (area > 0.6 && !gameState.isRevealed) {
-                setTimeout(() => {
-                    revealResult();
-                }, 300); // Pequeno delay para build up da emoção
-            }
-        }
-
-        function revealResult() {
-            gameState.isRevealed = true;
-            
-            // Esconder overlay de cobertura
-            const overlay = document.getElementById('scratchOverlay');
-            if (overlay) {
-                overlay.style.display = 'none';
-            }
-            
-            // Mostrar resultado
-            const resultDiv = document.getElementById('gameResult');
-            const resultContent = document.getElementById('resultContent');
-            
-            if (gameState.scratchCard.willWin) {
-                gameState.prize = gameState.scratchCard.prize;
-                gameState.balance += gameState.prize;
-                updateBalance();
-                
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-2xl font-bold mb-2">🏆 PARABÉNS! 🏆</div>
-                        <div class="text-white text-3xl font-bold">R$ ${gameState.prize.toFixed(2)}</div>
-                        <div class="text-green-100 text-sm mt-2">Prêmio creditado na sua conta!</div>
-                    </div>
-                `;
-            } else {
-                resultContent.innerHTML = `
-                    <div class="bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg p-4 mx-auto max-w-sm">
-                        <div class="text-yellow-300 text-xl font-bold mb-2">😔 Que pena!</div>
-                        <div class="text-white text-lg">Não foi dessa vez</div>
-                        <div class="text-gray-300 text-sm mt-2">Continue jogando para aumentar suas chances!</div>
-                    </div>
-                `;
-            }
-            
-            resultDiv.classList.remove('hidden');
-            document.getElementById('newGameButton').classList.remove('hidden');
-            
-            saveGameState();
-        }
-
-        function startNewGame() {
-            gameState.scratchCard = null;
-            gameState.selectedPlan = null;
-            gameState.isRevealed = false;
-            gameState.prize = 0;
-            gameState.scratchedArea = 0;
-            
-            document.getElementById('gameArea').classList.add('hidden');
-            document.getElementById('planSelection').classList.remove('hidden');
-            document.getElementById('gameResult').classList.add('hidden');
-            document.getElementById('newGameButton').classList.add('hidden');
-            
-            renderPlans();
-            saveGameState();
-        }
-
-        function backToPlans() {
-            startNewGame();
-        }
-
         // Funções de modal
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
+        function showDeposit() {
+            document.getElementById('depositModal').classList.remove('hidden');
         }
-
-        function hideModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
+        
+        function closeDeposit() {
+            document.getElementById('depositModal').classList.add('hidden');
         }
-
+        
+        function showWithdraw() {
+            document.getElementById('withdrawModal').classList.remove('hidden');
+        }
+        
+        function closeWithdraw() {
+            document.getElementById('withdrawModal').classList.add('hidden');
+        }
+        
+        function setDepositAmount(amount) {
+            document.getElementById('depositAmount').value = amount;
+        }
+        
+        // Função de compra de plano
+        function purchasePlan(planType, price, maxPrize) {
+            const user = JSON.parse(localStorage.getItem('raspaCashUser') || '{}');
+            
+            if (user.balance < price) {
+                showNotification('Saldo insuficiente! Faça um depósito primeiro.', 'error');
+                showDeposit();
+                return;
+            }
+            
+            if (confirm(`Confirma a compra do plano ${planType.toUpperCase()} por R$ ${price.toFixed(2)}?`)) {
+                // Debitar saldo
+                updateUserBalance(-price);
+                
+                // Criar cartela
+                createScratchCard(planType, maxPrize);
+                
+                showNotification('Cartela comprada com sucesso! Raspe e boa sorte!', 'success');
+                
+                // Scroll para as cartelas ativas
+                setTimeout(() => {
+                    document.getElementById('cartelasAtivas').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 500);
+            }
+        }
+        
+        // Criar cartela de raspadinha
+        function createScratchCard(planType, maxPrize) {
+            const cardId = 'card-' + Date.now();
+            const numbers = generateRandomNumbers(planType);
+            
+            const card = {
+                id: cardId,
+                type: planType,
+                maxPrize: maxPrize,
+                numbers: numbers,
+                revealed: Array(9).fill(false),
+                isComplete: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            activeCards.push(card);
+            saveActiveCards();
+            renderActiveCards();
+        }
+        
+        // Gerar números aleatórios para a cartela
+        function generateRandomNumbers(planType) {
+            const ranges = {
+                'basico': 25,
+                'premium': 100,
+                'vip': 1500
+            };
+            
+            const maxNum = ranges[planType] || 25;
+            const numbers = [];
+            
+            for (let i = 0; i < 9; i++) {
+                numbers.push(Math.floor(Math.random() * maxNum) + 1);
+            }
+            
+            // Chance de 0.01% de ganhar - criar triple match ocasionalmente
+            if (Math.random() < 0.0001) {
+                const winNumber = numbers[0];
+                numbers[1] = winNumber;
+                numbers[2] = winNumber;
+            }
+            
+            return numbers;
+        }
+        
+        // Atualizar saldo do usuário
+        function updateUserBalance(amount) {
+            const user = JSON.parse(localStorage.getItem('raspaCashUser') || '{}');
+            user.balance = Math.max(0, (user.balance || 0) + amount);
+            localStorage.setItem('raspaCashUser', JSON.stringify(user));
+            
+            // Atualizar interface
+            const balanceElement = document.getElementById('userBalance');
+            if (balanceElement) {
+                balanceElement.textContent = 'R$ ' + user.balance.toFixed(2);
+            }
+        }
+        
+        // Salvar cartelas ativas
+        function saveActiveCards() {
+            localStorage.setItem('raspaCashActiveCards', JSON.stringify(activeCards));
+        }
+        
+        // Carregar cartelas ativas
+        function loadActiveCards() {
+            activeCards = JSON.parse(localStorage.getItem('raspaCashActiveCards') || '[]');
+            renderActiveCards();
+        }
+        
+        // Renderizar cartelas ativas
+        function renderActiveCards() {
+            const container = document.getElementById('activeCards');
+            const section = document.getElementById('cartelasAtivas');
+            
+            if (activeCards.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            section.classList.remove('hidden');
+            container.innerHTML = activeCards.map(card => \`
+                <div class="bg-gradient-to-br from-gray-200 to-gray-400 p-6 rounded-3xl shadow-2xl border-4 border-white/80">
+                    <div class="text-center mb-4">
+                        <h4 class="text-black font-bold">${card.type.toUpperCase()}</h4>
+                        <p class="text-gray-700 text-sm">Max: R$ ${card.maxPrize}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2 mb-4" id="\${card.id}-grid">
+                        ${card.numbers.map((num, index) => \`
+                            <div class="relative scratch-card aspect-square rounded-lg overflow-hidden" onclick="revealNumber('\${card.id}', ${index})">
+                                <div class="absolute inset-0 scratch-number flex items-center justify-center rounded-lg">
+                                    <span class="text-2xl font-bold text-gray-900">${num}</span>
+                                </div>
+                                <div class="scratch-overlay flex items-center justify-center rounded-lg \${card.revealed[index] ? 'hidden' : ''}">
+                                    <div class="text-center">
+                                        <div class="text-white font-bold text-xs mb-1">🔍</div>
+                                        <div class="text-gray-200 font-bold text-xs">RASPE</div>
+                                    </div>
+                                </div>
+                            </div>
+                        \`).join('')}
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-black text-xs mb-2">Encontre 3 números iguais para ganhar!</p>
+                        <div id="\${card.id}-result" class="text-center font-bold"></div>
+                    </div>
+                </div>
+            \`).join('');
+        }
+        
+        // Revelar número da cartela
+        function revealNumber(cardId, index) {
+            const card = activeCards.find(c => c.id === cardId);
+            if (!card || card.revealed[index] || card.isComplete) return;
+            
+            card.revealed[index] = true;
+            saveActiveCards();
+            
+            // Atualizar interface
+            const overlay = document.querySelector(\`#\${cardId}-grid .scratch-card:nth-child(\${index + 1}) .scratch-overlay\`);
+            if (overlay) {
+                overlay.classList.add('hidden');
+            }
+            
+            // Verificar se ganhou
+            if (card.revealed.filter(r => r).length >= 3) {
+                checkForWin(card);
+            }
+        }
+        
+        // Verificar se ganhou
+        function checkForWin(card) {
+            const revealedNumbers = card.numbers.filter((num, index) => card.revealed[index]);
+            const numberCounts = {};
+            
+            revealedNumbers.forEach(num => {
+                numberCounts[num] = (numberCounts[num] || 0) + 1;
+            });
+            
+            const hasTriple = Object.values(numberCounts).some(count => count >= 3);
+            
+            if (hasTriple) {
+                const winNumber = Object.keys(numberCounts).find(num => numberCounts[num] >= 3);
+                const prize = parseInt(winNumber);
+                
+                card.isComplete = true;
+                updateUserBalance(prize);
+                
+                // Mostrar resultado
+                const resultDiv = document.getElementById(card.id + '-result');
+                if (resultDiv) {
+                    resultDiv.innerHTML = \`
+                        <div class="bg-green-500 text-white p-3 rounded-lg animate-bounce">
+                            <div class="text-xl">🎉 GANHOU!</div>
+                            <div class="text-lg font-bold">R$ \${prize},00</div>
+                        </div>
+                    \`;
+                }
+                
+                alert(\`Parabéns! Você ganhou R$ \${prize},00!\`);
+                
+                setTimeout(() => {
+                    // Remover cartela após 10 segundos
+                    activeCards = activeCards.filter(c => c.id !== card.id);
+                    saveActiveCards();
+                    renderActiveCards();
+                }, 10000);
+            }
+        }
+        
+        // Funções de depósito e saque
         function confirmDeposit() {
             const amount = parseFloat(document.getElementById('depositAmount').value);
-            
-            if (amount < 10) {
-                alert('Valor mínimo para depósito é R$ 10,00');
+            if (!amount || amount < 5) {
+                showNotification('Valor mínimo de depósito: R$ 5,00', 'error');
                 return;
             }
             
-            gameState.balance += amount;
-            updateBalance();
-            
-            document.getElementById('depositAmount').value = '';
-            hideModal('depositModal');
-            
-            alert(`Depósito de R$ ${amount.toFixed(2)} confirmado!`);
-            saveGameState();
+            closeDeposit();
+            processRealDeposit(amount);
         }
-
-        function confirmWithdraw() {
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-            const name = document.getElementById('withdrawName').value;
-            const pixKey = document.getElementById('pixKey').value;
-            
-            if (!amount || !name || !pixKey) {
-                alert('Preencha todos os campos!');
-                return;
-            }
-            
-            if (amount < 20) {
-                alert('Valor mínimo para saque é R$ 20,00');
-                return;
-            }
-            
-            if (amount > gameState.balance) {
-                alert('Saldo insuficiente!');
-                return;
-            }
-            
-            gameState.balance -= amount;
-            updateBalance();
-            
-            // Limpar campos
-            document.getElementById('withdrawAmount').value = '';
-            document.getElementById('withdrawName').value = '';
-            document.getElementById('pixKey').value = '';
-            
-            hideModal('withdrawModal');
-            
-            alert(`Saque de R$ ${amount.toFixed(2)} processado! Aguarde até 24h úteis.`);
-            saveGameState();
-        }
-
-        // Adicionar botão de logout no header
-        function addLogoutButton() {
-            // Tentar vários seletores possíveis para o header
-            const header = document.querySelector('header') || 
-                          document.querySelector('.header') ||
-                          document.querySelector('#header');
-            
-            if (!header) {
-                console.warn('Header não encontrado para adicionar botão de logout');
-                return;
-            }
-            
-            // Verificar se botão já existe
-            if (!document.getElementById('logoutButton')) {
-                const logoutButton = document.createElement('button');
-                logoutButton.id = 'logoutButton';
-                logoutButton.onclick = logout;
-                logoutButton.className = 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 ml-4';
-                logoutButton.innerHTML = '🚪 Sair';
+        
+        // Processar depósito real via gateway
+        async function processRealDeposit(amount) {
+            try {
+                showNotification('Processando depósito...', 'info');
                 
-                // Tentar adicionar no final do header
-                header.appendChild(logoutButton);
+                // Por enquanto simula depósito instantâneo
+                // Integrar com API real do gateway usando o token
+                setTimeout(() => {
+                    updateUserBalance(amount);
+                    showNotification(\`Depósito de R$ \${amount.toFixed(2)} realizado com sucesso!\`, 'success');
+                }, 2000);
+                
+                /* Código para integração real com gateway:
+                const response = await fetch('/api/deposit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': \`Bearer \${PAYMENT_CONFIG.token}\`
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        currency: 'BRL',
+                        method: 'pix',
+                        userId: JSON.parse(localStorage.getItem('raspaCashUser')).email
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    showPixQRCode(result.pixCode, result.transactionId, amount);
+                }
+                */
+                
+            } catch (error) {
+                console.error('Erro no depósito:', error);
+                showNotification('Erro ao processar depósito. Tente novamente.', 'error');
             }
         }
         
-        function logout() {
-            if (confirm('Tem certeza que deseja sair? Seus dados serão salvos automaticamente.')) {
-                gameState.isLoggedIn = false;
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('gameScreen').classList.add('hidden');
+        function confirmWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const pixKey = document.getElementById('pixKey').value.trim();
+            const user = JSON.parse(localStorage.getItem('raspaCashUser') || '{}');
+            
+            if (!amount || amount < 10) {
+                showNotification('Valor mínimo de saque: R$ 10,00', 'error');
+                return;
+            }
+            
+            if (!pixKey) {
+                showNotification('Informe sua chave PIX', 'error');
+                return;
+            }
+            
+            if (user.balance < amount) {
+                showNotification('Saldo insuficiente!', 'error');
+                return;
+            }
+            
+            closeWithdraw();
+            processRealWithdraw(amount, pixKey);
+        }
+        
+        // Processar saque real via gateway
+        async function processRealWithdraw(amount, pixKey) {
+            try {
+                showNotification('Processando saque...', 'info');
                 
-                // Limpar campos de login
-                document.getElementById('userName').value = '';
-                document.getElementById('userEmail').value = '';
+                // Por enquanto simula saque instantâneo
+                // Integrar com API real do gateway usando o token
+                setTimeout(() => {
+                    updateUserBalance(-amount);
+                    showNotification(\`Saque de R$ \${amount.toFixed(2)} processado! PIX enviado em até 5 minutos.\`, 'success');
+                }, 2000);
+                
+                /* Código para integração real com gateway:
+                const response = await fetch('/api/withdraw', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': \`Bearer \${PAYMENT_CONFIG.token}\`
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        pixKey: pixKey,
+                        userId: JSON.parse(localStorage.getItem('raspaCashUser')).email
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    updateUserBalance(-amount);
+                    showNotification(\`Saque processado com sucesso!\`, 'success');
+                }
+                */
+                
+            } catch (error) {
+                console.error('Erro no saque:', error);
+                showNotification('Erro ao processar saque. Tente novamente.', 'error');
             }
         }
-
-        // Inicialização
-        window.addEventListener('load', () => {
-            const hasUser = loadGameState();
+        
+        // Logout
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                localStorage.removeItem('raspaCashUser');
+                localStorage.removeItem('raspaCashActiveCards');
+                location.reload();
+            }
+        }
+        
+        // Inicializar quando carregar
+        window.onload = initGameArea;
+    </script>
+</body>
+</html>
+            `;
+        }
+        
+        // Verificar parâmetros de URL para callbacks
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const deposito = urlParams.get('deposito');
+            const transactionId = urlParams.get('transaction_id');
             
-            if (hasUser && gameState.isLoggedIn) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('gameScreen').classList.remove('hidden');
-                initializeGame();
-                addLogoutButton();
+            if (deposito === 'sucesso' && transactionId) {
+                checkPaymentStatus(transactionId).then(result => {
+                    if (result.status === 'completed') {
+                        showNotification('Depósito realizado com sucesso!', 'success');
+                        updateUserBalance(result.amount);
+                    }
+                });
+            }
+            
+            // Verificar se usuário já está logado ao carregar a página
+            if (isLoggedIn()) {
+                const user = JSON.parse(localStorage.getItem('raspaCashUser') || '{}');
+                showNotification(\`Bem-vindo de volta, \${user.name}!\`, 'info');
             }
         });
     </script>
